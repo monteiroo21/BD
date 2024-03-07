@@ -1,0 +1,27 @@
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<h1>SQL Server Connection Test</h1>
+<form>
+    <label for="connection_string">Connection String:</label><br>
+    <input type="text" id="connection_string" name="connection_string" size="100"><br><br>
+
+    <label for="database_name">Database:</label><br>
+    <input type="text" id="database_name" name="database_name"><br><br>
+
+    <label for="user">User:</label><br>
+    <input type="text" id="user" name="user"><br><br>
+
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password"><br><br>
+
+    <!-- Button to test connection -->
+    <button type="button" hx-post="/test_connection" hx-trigger="click" hx-target="#test_connection_result">Test Connection <span class="htmx-indicator">... plz wait</span></button>
+    <div id="test_connection_result">
+    </div>
+
+    <br><br>
+
+    <!-- Button to show hello table -->
+    <button type="button" hx-post="/hello" hx-trigger="click" hx-target="#hello_table_result">Show Hello Table</button>
+    <div id="hello_table_result"></div>
+</form>
+
