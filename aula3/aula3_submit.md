@@ -6,27 +6,6 @@
 ### *a)*
 
 ```
-... Write here your answer ...
-```
-
-
-### *b)* 
-
-```
-... Write here your answer ...
-```
-
-
-### *c)* 
-
-![ex_3_1c!](ex_3_1c.jpg "AnImage")
-
-
-## ​Problema 3.2
-
-### *a)*
-
-```
 Cliente (nome, endereço, num_carta, NIF*)
 Aluguer (número*, duração, data)
 Balcão (nome, número*, endereço)
@@ -63,6 +42,27 @@ Aluguer - (NIF_cliente, num_balcão, matrícula_veículo)
 Ligeiro - cod_veículo
 Pesado - cod_veículo
 Similaridade - (cod_veic_1, cod_veic_2)
+```
+
+
+### *c)* 
+
+![ex_3_1c!](ex_3_1c.jpg "AnImage")
+
+
+## ​Problema 3.2
+
+### *a)*
+
+```
+
+```
+
+
+### *b)* 
+
+```
+
 ```
 
 
