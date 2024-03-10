@@ -1,8 +1,7 @@
 # BD: Guião 3
 
-
 ## ​Problema 3.1
- 
+
 ### *a)*
 
 ```
@@ -16,8 +15,7 @@ Pesado (peso, passageiros)
 Similaridade (código veículo 1*, código veículo 2*)
 ```
 
-
-### *b)* 
+### *b)*
 
 ```
 Candidate keys:
@@ -44,35 +42,68 @@ Pesado - cod_veículo
 Similaridade - (cod_veic_1, cod_veic_2)
 ```
 
-
-### *c)* 
+### *c)*
 
 ![ex_3_1c!](ex_3_1c.jpg "AnImage")
-
 
 ## ​Problema 3.2
 
 ### *a)*
 
 ```
+Airport (Airport_Code*, City, State, Name)
+Can_Land (Airport_Code*, Airplane_Type_Name*)
+Airplane_Type (Type_Name*, Max_Seats, Company)
+Airplane (Airplane_Id*, Total_No_Of_Seats, Airplane_Type_Name)
+Flight (Number*, Airplane, Weekdays)
+Fare (Fare_Code*, Amount, Restrictions, Flight_Number*)
+Flight_Leg (Flight_Leg_No*, Flight_Number*, Scheduled_Dep_time, Scheduled_Arr_time, Airport_Code)
+Leg_Instance (Leg_instance_Date*, No_Of_Avail_Seats, Airport_Code, Airport_Id, Dep_time, Arr_Time, Flight_Leg_No*, Flight_Number*)
+Seat(Seat_No*, Customer_Name, CPhone, Leg_instance_Date*, Flight_Number*, Flight_Leg_No*)
+```
+
+### *b)*
+
+```
+Candidate Keys:
+Airport (Airport_Code)
+Can_Land (Airport_Code, Airplane_Type_Name)
+Airplane_Type (Type_Name)
+Airplane (Airplane_Id)
+Flight (Number)
+Fare (Fare_Code, Flight_Number)
+Flight_Leg (Flight_Leg_No, Flight_Number)
+Leg_Instance (Leg_instance_Date, Flight_Leg_No*, Flight_Number)
+Seat (Seat_No, Leg_instance_Date, Flight_Number, Flight_Leg_No)
+
+
+Primary Keys:
+Airport - Airport_Code
+Can_Land - (Airport_Code*, Airplane_Type_Name*)
+Airplane_Type - Type_Name
+Airplane - Airplane_Id
+Flight - Number
+Fare - Fare_Code, Flight_Number
+Flight_Leg - Flight_Leg_No, Flight_Number
+Leg_Instance - Leg_instance_Date, Flight_Leg_No, Flight_Number
+Seat - Seat_No, Leg_instance_Date, Flight_Number, Flight_Leg_No
+
+
+Foreign keys:
+Can_Land - (Airport_Code*, Airplane_Type_Name*)
+Airplane - Airplane_Type_Name
+Fare - Flight_Number
+Flight_Leg - Airport_Code, Flight_Number
+Leg_Instance - Airport_Code, Airport_Id, Flight_Leg_No, Flight_Number
+Seat - Leg_instance_Date, Flight_Number, Flight_Leg_No
 
 ```
 
+### *c)*
 
-### *b)* 
-
-```
-
-```
-
-
-### *c)* 
-
-![ex_3_2c!](ex_3_2c.jpg "AnImage")
-
+![ex_3_2c!](ex_3_2c.png "AnImage")
 
 ## ​Problema 3.3
-
 
 ### *a)* 2.1
 
