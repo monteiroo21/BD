@@ -14,7 +14,7 @@ CREATE TABLE Participantes (
     nome                VARCHAR NOT NULL,
     [address]           VARCHAR,
     end_email           VARCHAR,
-    data_insc           VARCHAR NOT NULL,
+    data_insc           DATE NOT NULL,
     nome_inst           VARCHAR
 
     PRIMARY KEY(nome),

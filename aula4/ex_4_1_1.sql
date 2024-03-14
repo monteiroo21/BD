@@ -31,7 +31,7 @@ CREATE TABLE Veículo (
 CREATE TABLE Aluguer (
     numero              INT NOT NULL,
     duração             INT NOT NULL,
-    [data]              VARCHAR(10) NOT NULL,
+    [data]              DATE NOT NULL,
     nif_cliente         INT NOT NULL,
     num_balcão          INT NOT NULL,
     matricula_veiculo   VARCHAR NOT NULL,
