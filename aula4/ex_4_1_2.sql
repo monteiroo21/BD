@@ -52,7 +52,7 @@ CREATE TABLE Fare (
     restrictions    VARCHAR,
     flight_number   INT NOT NULL,
 
-    PRIMARY KEY(fare_code),
+    PRIMARY KEY(fare_code, flight_number),
     FOREIGN KEY(flight_number) REFERENCES Flight([number])
 );
 
