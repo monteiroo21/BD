@@ -15,8 +15,8 @@ CREATE TABLE Encomenda (
 CREATE TABLE Fornecedor (
     nif INT NOT NULL,
     nome VARCHAR NOT NULL,
-    endereco VARCHAR NOT NULL,
-    fax INT NOT NULL,
+    endereco VARCHAR,
+    fax INT,
     condicoes_pagamento VARCHAR NOT NULL,
     codigo_interno INT NOT NULL,
 
@@ -36,7 +36,7 @@ CREATE TABLE Produto (
     codigo_produto INT NOT NULL,
     nome VARCHAR NOT NULL,
     preco INT NOT NULL,
-    IVA INT NOT NULL,
+    IVA INT,
 
     PRIMARY KEY(codigo_produto),
     CHECK(IVA >= 0 AND IVA <= 100),
@@ -44,7 +44,7 @@ CREATE TABLE Produto (
 );
 
 CREATE TABLE Contem (
-    num_de_unidades_armazem INT NOT NULL,
+    num_de_unidades_armazem INT,
     num_encomenda INT NOT NULL,
     codigo_produto INT NOT NULL,
 
