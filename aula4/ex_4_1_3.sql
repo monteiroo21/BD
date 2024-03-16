@@ -3,13 +3,11 @@ GO
 USE DELIVERYCOMPANY;
 GO
 
-CREATE TABLE Encomenda (
-    num_encomenda INT NOT NULL,
-    data_entrega DATE NOT NULL,
-    fornecedor_nif INT NOT NULL,
+CREATE TABLE TipoFornecedor (
+    cod_interno INT NOT NULL,
+    designacao VARCHAR NOT NULL,
 
-    PRIMARY KEY(num_encomenda),
-    FOREIGN KEY(fornecedor_nif) REFERENCES Fornecedor(nif)
+    PRIMARY KEY(cod_interno)
 );
 
 CREATE TABLE Fornecedor (
@@ -25,11 +23,13 @@ CREATE TABLE Fornecedor (
     UNIQUE(nome, endereco, fax)
 );
 
-CREATE TABLE TipoFornecedor (
-    cod_interno INT NOT NULL,
-    designacao VARCHAR NOT NULL,
+CREATE TABLE Encomenda (
+    num_encomenda INT NOT NULL,
+    data_entrega DATE NOT NULL,
+    fornecedor_nif INT NOT NULL,
 
-    PRIMARY KEY(cod_interno)
+    PRIMARY KEY(num_encomenda),
+    FOREIGN KEY(fornecedor_nif) REFERENCES Fornecedor(nif)
 );
 
 CREATE TABLE Produto (
