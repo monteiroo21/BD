@@ -6,9 +6,7 @@
 ### *a)*
 
 ```
-Write here your answer e.g:
-π Fname, Lname, Ssn (employee) ⨝ project
-π Pname, Fname, Lname, Ssn (project ⨝ Pnumber=Pno works_on ⨝ employee) 
+π Ssn, Fname, Minit, Lname, Pname (((employee) ⨝ Ssn=Essn (works_on)) ⨝ Pno = Pnumber (project))  
 ```
 
 
@@ -66,7 +64,7 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 ### *i)* 
 
 ```
-... Write here your answer ...
+π Fname, Lname (σ Dlocation!='Aveiro' ∧ Plocation='Aveiro' (((employee ⨝ Dno=Dnumber department) ⨝ department.Dnumber=dept_location.Dnumber dept_location) ⨝ department.Dnumber=Dnum project))
 ```
 
 
