@@ -102,20 +102,20 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 ### *a)*
 
 ```
-... Write here your answer ...
+π nome, numUtente (σ numPresc = null (prescricao ⟖ paciente))
 ```
 
 ### *b)* 
 
 ```
-... Write here your answer ...
+γ especialidade; count(numPresc) -> presc (medico ⨝ numSNS = numMedico prescricao)
 ```
 
 
 ### *c)* 
 
 ```
-... Write here your answer ...
+γ nome, endereco; count(numPresc) -> presc (farmacia ⨝ nome=farmacia prescricao)
 ```
 
 
@@ -134,5 +134,5 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 ### *f)* 
 
 ```
-... Write here your answer ...
+π paciente.numUtente, nome (σ medico_num > 1 (γ paciente.numUtente, nome; count(numMedico)->medico_num (paciente ⨝ paciente.numUtente=prescricao.numUtente prescricao)))
 ```
