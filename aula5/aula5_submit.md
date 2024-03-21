@@ -108,8 +108,6 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 
 ```
 (π nome (σ numRegFarm=906 (farmaco))) - (π nomeFarmaco (σ numRegFarm=906 (presc_farmaco)))
-
--- lista com todos os fármacos - lista de todos aqueles que já foram prescritos = aqueles que ainda não foram prescritos 
 ```
 
 ### *e)*
