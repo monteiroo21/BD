@@ -66,8 +66,7 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 
 ```
 ... Write here your answer ...
-fornecedores = fornecedor ⟕ nif=fornecedor (encomenda)
-π nome (σ numero=null (fornecedores))
+π nome (σ numero = null (fornecedor ⟕ nif = fornecedor (encomenda)))
 /*
 projetar o nome dos fornecedores que têm o número de encomendas == 0 fazendo um  left outer join.
 */
@@ -77,7 +76,7 @@ projetar o nome dos fornecedores que têm o número de encomendas == 0 fazendo u
 
 ```
 ... Write here your answer ...
-γ codProd; avg(unidades) -> MediaProd item
+π nome, MediaProd ((γ codProd; avg(unidades) -> MediaProd item) ⨝ codProd = codigo (produto))
 
 /*
 o codProd é a primary key do produto
@@ -89,12 +88,15 @@ ver também a resolução do zegameiro!!!!
 
 ```
 ... Write here your answer ...
+ π AverageTable ((γ avg(NumProdEnc) -> AverageTable (γ numEnc; count(codProd) -> NumProdEnc (item))))
+
 ```
 
 ### *d)*
 
 ```
 ... Write here your answer ...
+π produto.nome, NumProdutos (γ codProd, produto.nome; count(codProd) -> NumProdutos (((item ⨝ codProd=codigo (produto)) ⨝ numEnc=numero (encomenda)) ⨝ fornecedor=nif (fornecedor)))
 ```
 
 ## ​Problema 5.3
