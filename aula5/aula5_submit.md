@@ -107,13 +107,15 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 ### *d)*
 
 ```
-... Write here your answer ...
+(π nome (σ numRegFarm=906 (farmaco))) - (π nomeFarmaco (σ numRegFarm=906 (presc_farmaco)))
+
+-- lista com todos os fármacos - lista de todos aqueles que já foram prescritos = aqueles que ainda não foram prescritos 
 ```
 
 ### *e)*
 
 ```
-... Write here your answer ...
+γ farmacia.nome, farmaceutica.nome; count(presc_farmaco.nomeFarmaco) -> numFarmacosVendidos (((presc_farmaco ⨝ numRegFarm=numReg (farmaceutica)) ⨝ presc_farmaco.numPresc=prescricao.numPresc (prescricao)) ⨝ farmacia=farmacia.nome (farmacia))
 ```
 
 ### *f)*
