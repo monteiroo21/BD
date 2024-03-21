@@ -59,7 +59,7 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 ### *h)* 
 
 ```
-... Write here your answer ...
+σ Essn=null ((employee ⨝ Ssn=Mgr_ssn department) ⟕ Ssn = Essn dependent)
 ```
 
 
