@@ -8,7 +8,7 @@
 ```
 Write here your answer e.g:
 π Fname, Lname, Ssn (employee) ⨝ project
-(π Pname, Pnumber (project) ⨝ Pno=Pnumber (works_on)) ⨝.... 
+π Pname, Fname, Lname, Ssn (project ⨝ Pnumber=Pno works_on ⨝ employee) 
 ```
 
 
@@ -24,35 +24,35 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 ### *c)* 
 
 ```
-
+γ Pnumber, Pname; sum(Hours) -> Hours ((project) ⨝ Pnumber=Pno (works_on))
 ```
 
 
 ### *d)* 
 
 ```
-... Write here your answer ...
+π Fname, Lname (σ Dno = 3 ∧ Hours > 20 (employee ⨝ Ssn=Essn works_on))
 ```
 
 
 ### *e)* 
 
 ```
-... Write here your answer ...
+π Fname, Lname (σ Hours=null (employee ⟕ Ssn=Essn works_on))
 ```
 
 
 ### *f)* 
 
 ```
-... Write here your answer ...
+γ Dname; avg(Salary) -> avg_Salary (σ Sex='F' (employee ⨝ Dno=Dnumber department))
 ```
 
 
 ### *g)* 
 
 ```
-... Write here your answer ...
+π Fname, Lname (σ count_Dep > 2 (γ Fname, Lname; count(Essn) -> count_Dep (employee⨝Ssn=Essn dependent)))
 ```
 
 
