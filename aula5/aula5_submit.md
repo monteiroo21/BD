@@ -55,7 +55,7 @@ carlos_ssn = π Ssn (sigma Fname='Carlos' ∧ Lname='Gomes' (employee))
 ### *i)*
 
 ```
-π Fname, Lname (σ Dlocation!='Aveiro' ∧ Plocation='Aveiro' (((employee ⨝ Dno=Dnumber department) ⨝ department.Dnumber=dept_location.Dnumber dept_location) ⨝ department.Dnumber=Dnum project))
+π Fname, Lname, Address (σ Dlocation!='Aveiro' ∧ Plocation='Aveiro' (((employee ⨝ Dno=Dnumber department) ⨝ department.Dnumber=dept_location.Dnumber dept_location) ⨝ department.Dnumber=Dnum project))
 ```
 
 ## ​Problema 5.2
