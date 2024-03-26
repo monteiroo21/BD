@@ -9,71 +9,152 @@ CREATE TABLE Instrumentation (
     [role]          VARCHAR,
 
     PRIMARY KEY(instrument),
-    UNIQUE(num_carta)
 );
 
-CREATE TABLE Balcão (
-    numero          INT NOT NULL,
-    nome            VARCHAR NOT NULL,
-    endereco        VARCHAR,
+CREATE TABLE MusicalGenre (
+    id              INT NOT NULL,
+    [name]          VARCHAR NOT NULL,
 
-    PRIMARY KEY(numero)
+    PRIMARY KEY(id),
+    UNIQUE([name])
 );
 
-CREATE TABLE Veículo (
-    matrícula       VARCHAR NOT NULL,
-    marca           VARCHAR,
-    ano             INT NOT NULL
+CREATE TABLE Music (
+    music_id        INT NOT NULL,
+    title           VARCHAR NOT NULL,
+    [year]          INT,
+    musGenre_id     INT NOT NULL,
+    instrumentation VARCHAR NOT NULL,
 
-    PRIMARY KEY(matrícula)
+    PRIMARY KEY(music_id),
+    FOREIGN KEY(musGenre_id) REFERENCES MusicalGenre(id),
+    FOREIGN KEY(instrumentation) REFERENCES Instrumentation(instrument)
 );
 
-CREATE TABLE Aluguer (
-    numero              INT NOT NULL,
-    duração             INT NOT NULL,
-    [data]              DATE NOT NULL,
-    nif_cliente         INT NOT NULL,
-    num_balcão          INT NOT NULL,
-    matricula_veiculo   VARCHAR NOT NULL,
+CREATE TABLE Editor (
+    identifier          INT NOT NULL,
+    [name]              VARCHAR NOT NULL,
+    [location]          VARCHAR,
 
-    PRIMARY KEY(numero),
-    FOREIGN KEY(nif_cliente) REFERENCES Cliente(nif),
-    FOREIGN KEY(num_balcão) REFERENCES Balcão(numero),
-    FOREIGN KEY(matricula_veiculo) REFERENCES Veículo(matrícula)
+    PRIMARY KEY(identifier),
+    UNIQUE([location])
 );
 
-CREATE TABLE Tipo_Veículo (
-    código              VARCHAR NOT NULL,
-    designação          VARCHAR,
-    ar_condicionado     BIT,
+CREATE TABLE Score (
+    register_num        INT NOT NULL,
+    [edition]           INT,
+    price               MONEY NOT NULL,
+    [availability]      INT NOT NULL,
+    difficultyGrade     INT,
+    musicId             INT NOT NULL,
+    editorId            INT NOT NULL,
 
-    PRIMARY KEY(código)
+    PRIMARY KEY(register_num),
+    FOREIGN KEY(musicId) REFERENCES Music(music_id),
+    FOREIGN KEY(editorId) REFERENCES Editor(identifier)
 );
 
-CREATE TABLE Similaridade (
-    cod_veic_1          VARCHAR NOT NULL,
-    cod_veic_2          VARCHAR NOT NULL,
+CREATE TABLE Warehouse (
+    id          INT NOT NULL,
+    [name]      VARCHAR,
+    storage     INT,
+    editorId    INT NOT NULL,
 
-    PRIMARY KEY(cod_veic_1,cod_veic_2),
-    FOREIGN KEY(cod_veic_1) REFERENCES Tipo_Veículo(código),
-    FOREIGN KEY(cod_veic_2) REFERENCES Tipo_Veículo(código)
+    PRIMARY KEY(id),
+    FOREIGN KEY(editorId) REFERENCES Editor(identifier)
 );
 
-CREATE TABLE Ligeiro (
-    cod_veic            VARCHAR NOT NULL,
-    combustível         VARCHAR,
-    portas              INT,
-    numLugares          INT,
+CREATE TABLE Customer (
+    numCC               INT NOT NULL,
+    email_address       VARCHAR,
+    numBankAccount      INT NOT NULL,
+    cellNumber          INT,
+    [name]              VARCHAR NOT NULL,
 
-    PRIMARY KEY(cod_veic),
-    FOREIGN KEY(cod_veic) REFERENCES Tipo_Veículo(código)
+    PRIMARY KEY(numCC)
 );
 
-CREATE TABLE Pesado (
-    cod_veic            VARCHAR NOT NULL,
-    peso                INT,
-    passageiros         INT,
+CREATE TABLE StaffPersonel (
+    numCC               INT NOT NULL,
+    email_address       VARCHAR NOT NULL,
+    employeeId          INT NOT NULL,
+    cellNumber          INT,
+    [name]              VARCHAR NOT NULL,
 
-    PRIMARY KEY(cod_veic),
-    FOREIGN KEY(cod_veic) REFERENCES Tipo_Veículo(código)
+    PRIMARY KEY(employeeId),
+    UNIQUE(numCC)
+);
+
+CREATE TABLE [Transaction] (
+    transcation_id          INT NOT NULL,
+    [value]                 MONEY NOT NULL,
+    [date]                  DATE,
+    customer_CC             INT NOT NULL,
+    employee_id             INT NOT NULL,
+
+    PRIMARY KEY(transcation_id),
+    FOREIGN KEY(customer_CC) REFERENCES Customer(numCC),
+    FOREIGN KEY(employee_id) REFERENCES StaffPersonel(employeeId)
+);
+
+CREATE TABLE Writer (
+    id              INT NOT NULL,
+    Fname           VARCHAR NOT NULL,
+    Lname           VARCHAR,
+    genre           CHAR,
+    birthYear       DATE,
+    deathYear       DATE,
+
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE Arranger (
+    id            INT NOT NULL,
+
+    PRIMARY KEY(id),
+    FOREIGN KEY(id) REFERENCES Writer(id)
+);
+
+CREATE TABLE Composer (
+    id              INT NOT NULL,
+    musGenre_id     INT NOT NULL,
+
+    PRIMARY KEY(id),
+    FOREIGN KEY(id) REFERENCES Writer(id),
+    FOREIGN KEY(musGenre_id) REFERENCES MusicalGenre(id)
+);
+
+CREATE TABLE writes (
+    music_id            INT NOT NULL,
+    writer_id           INT NOT NULL,
+
+    PRIMARY KEY(music_id, writer_id),
+    FOREIGN KEY(music_id) REFERENCES Music(music_id),
+    FOREIGN KEY(writer_id) REFERENCES Writer(id)
+);
+
+CREATE TABLE stores (
+    warehouse_id        INT NOT NULL,
+    score_register      INT NOT NULL,
+
+    PRIMARY KEY(warehouse_id, score_register),
+    FOREIGN KEY(warehouse_id) REFERENCES Warehouse(id),
+    FOREIGN KEY(score_register) REFERENCES Score(register_num)
+);
+
+CREATE TABLE purchases (
+    costumerCC          INT NOT NULL,
+    score_register      INT NOT NULL,
+
+    PRIMARY KEY(costumerCC, score_register),
+    FOREIGN KEY(costumerCC) REFERENCES Customer(numCC),
+    FOREIGN KEY(score_register) REFERENCES Score(register_num)
+);
+
+CREATE TABLE warehouse_location (
+    warehouse_location  VARCHAR NOT NULL,
+    warehouse_id        INT NOT NULL,
+
+    PRIMARY KEY(warehouse_location, warehouse_id),
+    FOREIGN KEY(warehouse_id) REFERENCES Warehouse(id)
 );

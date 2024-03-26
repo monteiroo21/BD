@@ -10,3 +10,6 @@
 
 ![modelo relacional diagram](ER.png "AnImage")
 
+### 3. Base de Dados
+
+![dataBase diagram](BD.png "AnImage")
