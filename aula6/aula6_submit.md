@@ -78,31 +78,53 @@ SELECT au_fname, au_lname, COUNT(type) as num_types
 ### *l)* Para os títulos, obter o preço médio e o número total de vendas agrupado por tipo (type) e editora (pub_id);
 
 ```
-... Write here your answer ...
+SELECT titles.type, publishers.pub_name, avg(price) AS avg_price, COUNT(qty) AS sales 
+	FROM ((titles JOIN sales ON titles.title_id = sales.title_id) 
+		JOIN publishers ON publishers.pub_id = titles.pub_id)
+	GROUP BY titles.type, publishers.pub_name
 ```
 
 ### *m)* Obter o(s) tipo(s) de título(s) para o(s) qual(is) o máximo de dinheiro “à cabeça” (advance) é uma vez e meia superior à média do grupo (tipo);
 
 ```
-... Write here your answer ...
+SELECT [type], max(advance) as max_advance, avg(advance) as avg_advance 
+FROM titles
+GROUP BY [type]
+HAVING (max(advance) > 1.5*avg(advance))
 ```
 
 ### *n)* Obter, para cada título, nome dos autores e valor arrecadado por estes com a sua venda;
 
 ```
-... Write here your answer ...
+SELECT DISTINCT title, au_fname, au_lname, sum(qty)*price as sales
+FROM titles JOIN sales ON titles.title_id=sales.title_id 
+				JOIN titleauthor ON titles.title_id = titleauthor.title_id
+					JOIN authors ON titleauthor.au_id = authors.au_id
+GROUP BY title, au_fname, au_lname, price
 ```
 
 ### *o)* Obter uma lista que incluía o número de vendas de um título (ytd_sales), o seu nome, a faturação total, o valor da faturação relativa aos autores e o valor da faturação relativa à editora;
 
 ```
-... Write here your answer ...
+SELECT title, ytd_sales, 
+    price*ytd_sales as total_revenue, 
+    price*ytd_sales*(100-royalty)/100 as publisher_revenue,
+    price*ytd_sales*royalty/100 as author_revenue
+FROM titles 
+WHERE ytd_sales IS NOT NULL
 ```
 
 ### *p)* Obter uma lista que incluía o número de vendas de um título (ytd_sales), o seu nome, o nome de cada autor, o valor da faturação de cada autor e o valor da faturação relativa à editora;
 
 ```
-... Write here your answer ...
+SELECT title, au_fname, au_lname, ytd_sales, 
+    price*ytd_sales as total_revenue, 
+    price*ytd_sales*(100-royalty)/100 as publisher_revenue,
+    (price*ytd_sales*royalty*royaltyper)/10000 as author_revenue
+FROM titles JOIN titleauthor ON titles.title_id = titleauthor.title_id
+				JOIN authors ON titleauthor.au_id = authors.au_id
+WHERE ytd_sales IS NOT NULL
+ORDER BY title ASC
 ```
 
 ### *q)* Lista de lojas que venderam pelo menos um exemplar de todos os livros;
