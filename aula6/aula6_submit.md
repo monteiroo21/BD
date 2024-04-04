@@ -68,7 +68,11 @@ SELECT stor_name, title FROM ((stores INNER JOIN sales ON stores.stor_id = sales
 ### *k)* Nome de autores que tenham publicações de tipos diferentes; 
 
 ```
-... Write here your answer ...
+SELECT au_fname, au_lname, COUNT(type) as num_types 
+		FROM (authors JOIN titleauthor ON titleauthor.au_id = authors.au_id)
+			JOIN titles ON titles.title_id = titleauthor.title_id 
+		GROUP BY au_fname, au_lname
+		HAVING COUNT(type) > 1
 ```
 
 ### *l)* Para os títulos, obter o preço médio e o número total de vendas agrupado por tipo (type) e editora (pub_id);
