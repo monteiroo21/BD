@@ -316,13 +316,23 @@ SELECT nome, endereco, COUNT(numPresc) AS num_presc
 ##### *d)* 
 
 ```
-... Write here your answer ...
+SELECT nome
+		FROM farmaco 
+		WHERE numRegFarm=906 EXCEPT
+		SELECT nomeFarmaco
+		FROM presc_farmaco
+		WHERE numRegFarm=906
 ```
 
 ##### *e)* 
 
 ```
-... Write here your answer ...
+SELECT farmacia.nome, farmaceutica.nome, COUNT(presc_farmaco.nomeFarmaco) AS numFarmacosVendidos
+	FROM presc_farmaco JOIN farmaceutica ON presc_farmaco.numRegFarm=farmaceutica.numReg
+										 JOIN prescricao ON presc_farmaco.numPresc = prescricao.numPresc
+                     JOIN farmacia ON prescricao.farmacia = farmacia.nome
+	GROUP BY farmacia.nome, farmaceutica.nome
+
 ```
 
 ##### *f)* 
