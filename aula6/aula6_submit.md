@@ -268,27 +268,41 @@ TODO:(VER ESTA!!)
 ##### *a)*
 
 ```
-... Write here your answer ...
+SELECT nome
+	FROM fornecedor LEFT outer JOIN encomenda ON fornecedor.nif=encomenda.fornecedor
+	WHERE numero IS NULL
 ```
 
 ##### *b)* 
 
 ```
-... Write here your answer ...
+SELECT nome, AVG(I.unidades) AS MediaProd
+	FROM item AS I
+		JOIN produto ON I.codProd=produto.codigo
+	GROUP BY codProd, nome
 ```
 
 
 ##### *c)* 
 
 ```
-... Write here your answer ...
+SELECT AVG(I.NumProdEnc) AS AverageTable
+	FROM (
+		SELECT numEnc, COUNT(codProd) AS NumProdEnc
+		FROM item
+		GROUP BY numEnc
+	) AS I
 ```
 
 
 ##### *d)* 
 
 ```
-... Write here your answer ...
+SELECT produto.nome, COUNT(codProd) AS NumProdutos
+	FROM item JOIN produto ON item.codProd=produto.codigo
+						JOIN encomenda ON item.numEnc=encomenda.numero
+						JOIN fornecedor ON encomenda.fornecedor=fornecedor.nif
+	GROUP BY produto.nome
 ```
 
 ### 5.3
