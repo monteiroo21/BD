@@ -130,7 +130,11 @@ ORDER BY title ASC
 ### *q)* Lista de lojas que venderam pelo menos um exemplar de todos os livros;
 
 ```
-... Write here your answer ...
+SELECT stor_name
+FROM stores JOIN sales ON stores.stor_id=sales.stor_id
+			JOIN titles ON sales.title_id=titles.title_id
+			GROUP BY stor_name
+			HAVING COUNT(title)=(SELECT COUNT(title) FROM titles)
 ```
 
 ### *r)* Lista de lojas que venderam mais livros do que a média de todas as lojas;
@@ -283,20 +287,29 @@ WHERE title NOT IN (
 ##### *a)*
 
 ```
-... Write here your answer ...
+SELECT nome, paciente.numUtente
+		FROM prescricao RIGHT OUTER JOIN paciente
+										ON prescricao.numUtente=paciente.numUtente
+		WHERE prescricao.numPresc IS NULL
 ```
 
 ##### *b)* 
 
 ```
-... Write here your answer ...
+SELECT especialidade, COUNT(numPresc) AS num_presc
+		FROM medico JOIN prescricao
+								ON medico.numSNS = prescricao.numMedico
+		GROUP BY especialidade
 ```
 
 
 ##### *c)* 
 
 ```
-... Write here your answer ...
+SELECT nome, endereco, COUNT(numPresc) AS num_presc
+		FROM farmacia JOIN prescricao
+									ON farmacia.nome = prescricao.farmacia
+		GROUP BY nome, endereco
 ```
 
 
