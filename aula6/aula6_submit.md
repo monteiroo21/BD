@@ -136,13 +136,24 @@ ORDER BY title ASC
 ### *r)* Lista de lojas que venderam mais livros do que a média de todas as lojas;
 
 ```
-... Write here your answer ...
+SELECT stor_name, SUM(qty) as num_books, (SELECT AVG(qty) from sales) as avg_books
+FROM stores JOIN sales ON stores.stor_id = sales.stor_id
+			JOIN titles ON sales.title_id = titles.title_id
+			GROUP BY stor_name
+			HAVING SUM(qty) > (SELECT AVG(qty) from sales)
 ```
 
 ### *s)* Nome dos títulos que nunca foram vendidos na loja “Bookbeat”;
 
 ```
-... Write here your answer ...
+SELECT title
+FROM titles
+WHERE title NOT IN (
+		SELECT title
+		FROM titles JOIN sales ON titles.title_id = sales.title_id
+					JOIN stores ON sales.stor_id = sales.stor_id
+			AND stores.stor_name = 'Bookbeat'
+);
 ```
 
 ### *t)* Para cada editora, a lista de todas as lojas que nunca venderam títulos dessa editora; 
