@@ -181,7 +181,13 @@ WHERE title NOT IN (
 ### *t)* Para cada editora, a lista de todas as lojas que nunca venderam títulos dessa editora
 
 ```
-... Write here your answer ...
+SELECT publishers.pub_name, stores.stor_name
+	FROM stores, publishers
+	EXCEPT SELECT pub_name, stor_name
+				FROM publishers JOIN 
+					(SELECT pub_id, sales.stor_id, stor_name
+						FROM titles JOIN sales ON titles.title_id=sales.title_id
+									JOIN stores ON sales.stor_id=stores.stor_id) AS T on publishers.pub_id=T.pub_id
 ```
 
 ## Problema 6.2
