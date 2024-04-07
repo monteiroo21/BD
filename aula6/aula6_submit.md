@@ -176,7 +176,6 @@ WHERE title NOT IN (
      JOIN stores ON sales.stor_id = sales.stor_id
    AND stores.stor_name = 'Bookbeat'
 )
-TODO:(VER ESTA!!)
 ```
 
 ### *t)* Para cada editora, a lista de todas as lojas que nunca venderam títulos dessa editora
