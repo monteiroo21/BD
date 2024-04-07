@@ -2,20 +2,20 @@
 
 ## Problema 6.1
 
-### *a)* Todos os tuplos da tabela autores (authors);
+### *a)* Todos os tuplos da tabela autores (authors)
 
 ```
 SELECT * FROM authors
 ```
 
-### *b)* O primeiro nome, o último nome e o telefone dos autores;
+### *b)* O primeiro nome, o último nome e o telefone dos autores
 
 ```
 SELECT au_fname, au_lname, phone 
     FROM authors
 ```
 
-### *c)* Consulta definida em b) mas ordenada pelo primeiro nome (ascendente) e depois o último nome (ascendente); 
+### *c)* Consulta definida em b) mas ordenada pelo primeiro nome (ascendente) e depois o último nome (ascendente)
 
 ```
 SELECT au_fname, au_lname, phone 
@@ -23,7 +23,7 @@ SELECT au_fname, au_lname, phone
     ORDER BY au_fname, au_lname ASC
 ```
 
-### *d)* Consulta definida em c) mas renomeando os atributos para (first_name, last_name, telephone); 
+### *d)* Consulta definida em c) mas renomeando os atributos para (first_name, last_name, telephone)
 
 ```
 SELECT au_fname as first_name, au_lname as last_name, phone as telephone 
@@ -31,7 +31,7 @@ SELECT au_fname as first_name, au_lname as last_name, phone as telephone
     ORDER BY first_name, last_name ASC
 ```
 
-### *e)* Consulta definida em d) mas só os autores da Califórnia (CA) cujo último nome é diferente de ‘Ringer’; 
+### *e)* Consulta definida em d) mas só os autores da Califórnia (CA) cujo último nome é diferente de ‘Ringer’
 
 ```
 SELECT au_fname as first_name, au_lname as last_name, phone as telephone 
@@ -40,7 +40,7 @@ SELECT au_fname as first_name, au_lname as last_name, phone as telephone
     ORDER BY first_name, last_name ASC
 ```
 
-### *f)* Todas as editoras (publishers) que tenham ‘Bo’ em qualquer parte do nome; 
+### *f)* Todas as editoras (publishers) que tenham ‘Bo’ em qualquer parte do nome
 
 ```
 SELECT * 
@@ -48,7 +48,7 @@ SELECT *
     WHERE pub_name LIKE '%Bo%'
 ```
 
-### *g)* Nome das editoras que têm pelo menos uma publicação do tipo ‘Business’; 
+### *g)* Nome das editoras que têm pelo menos uma publicação do tipo ‘Business’
 
 ```
 SELECT DISTINCT pub_name FROM publishers 
@@ -56,7 +56,7 @@ SELECT DISTINCT pub_name FROM publishers
     WHERE [type] = 'Business'
 ```
 
-### *h)* Número total de vendas de cada editora; 
+### *h)* Número total de vendas de cada editora
 
 ```
 SELECT pub_name, COUNT(qty) as sales 
@@ -65,7 +65,7 @@ SELECT pub_name, COUNT(qty) as sales
     GROUP BY(pub_name)
 ```
 
-### *i)* Número total de vendas de cada editora agrupado por título; 
+### *i)* Número total de vendas de cada editora agrupado por título
 
 ```
 SELECT pub_name, title, COUNT(qty) as sales 
@@ -74,7 +74,7 @@ SELECT pub_name, title, COUNT(qty) as sales
     GROUP BY pub_name, title
 ```
 
-### *j)* Nome dos títulos vendidos pela loja ‘Bookbeat’; 
+### *j)* Nome dos títulos vendidos pela loja ‘Bookbeat’
 
 ```
 SELECT stor_name, title 
@@ -83,26 +83,26 @@ SELECT stor_name, title
     WHERE stor_name='Bookbeat'
 ```
 
-### *k)* Nome de autores que tenham publicações de tipos diferentes; 
+### *k)* Nome de autores que tenham publicações de tipos diferentes
 
 ```
 SELECT au_fname, au_lname, COUNT(type) as num_types 
-		FROM (authors JOIN titleauthor ON titleauthor.au_id = authors.au_id)
-			          JOIN titles ON titles.title_id = titleauthor.title_id 
-		GROUP BY au_fname, au_lname
-		HAVING COUNT(type) > 1
+  FROM (authors JOIN titleauthor ON titleauthor.au_id = authors.au_id)
+             JOIN titles ON titles.title_id = titleauthor.title_id 
+  GROUP BY au_fname, au_lname
+  HAVING COUNT(type) > 1
 ```
 
-### *l)* Para os títulos, obter o preço médio e o número total de vendas agrupado por tipo (type) e editora (pub_id);
+### *l)* Para os títulos, obter o preço médio e o número total de vendas agrupado por tipo (type) e editora (pub_id)
 
 ```
 SELECT titles.type, publishers.pub_name, avg(price) AS avg_price, COUNT(qty) AS sales 
-	FROM ((titles JOIN sales ON titles.title_id = sales.title_id) 
-		JOIN publishers ON publishers.pub_id = titles.pub_id)
-	GROUP BY titles.type, publishers.pub_name
+ FROM ((titles JOIN sales ON titles.title_id = sales.title_id) 
+  JOIN publishers ON publishers.pub_id = titles.pub_id)
+ GROUP BY titles.type, publishers.pub_name
 ```
 
-### *m)* Obter o(s) tipo(s) de título(s) para o(s) qual(is) o máximo de dinheiro “à cabeça” (advance) é uma vez e meia superior à média do grupo (tipo);
+### *m)* Obter o(s) tipo(s) de título(s) para o(s) qual(is) o máximo de dinheiro “à cabeça” (advance) é uma vez e meia superior à média do grupo (tipo)
 
 ```
 SELECT [type], max(advance) as max_advance, avg(advance) as avg_advance 
@@ -111,17 +111,17 @@ SELECT [type], max(advance) as max_advance, avg(advance) as avg_advance
     HAVING (max(advance) > 1.5*avg(advance))
 ```
 
-### *n)* Obter, para cada título, nome dos autores e valor arrecadado por estes com a sua venda;
+### *n)* Obter, para cada título, nome dos autores e valor arrecadado por estes com a sua venda
 
 ```
 SELECT DISTINCT title, au_fname, au_lname, sum(qty)*price*royalty*royaltyper/10000 as sales
 FROM titles JOIN sales ON titles.title_id=sales.title_id 
-				JOIN titleauthor ON titles.title_id = titleauthor.title_id
-					JOIN authors ON titleauthor.au_id = authors.au_id
+    JOIN titleauthor ON titles.title_id = titleauthor.title_id
+     JOIN authors ON titleauthor.au_id = authors.au_id
 GROUP BY title, au_fname, au_lname, price, royalty, royaltyper
 ```
 
-### *o)* Obter uma lista que incluía o número de vendas de um título (ytd_sales), o seu nome, a faturação total, o valor da faturação relativa aos autores e o valor da faturação relativa à editora;
+### *o)* Obter uma lista que incluía o número de vendas de um título (ytd_sales), o seu nome, a faturação total, o valor da faturação relativa aos autores e o valor da faturação relativa à editora
 
 ```
 SELECT title, ytd_sales, 
@@ -132,7 +132,7 @@ FROM titles
 WHERE ytd_sales IS NOT NULL
 ```
 
-### *p)* Obter uma lista que incluía o número de vendas de um título (ytd_sales), o seu nome, o nome de cada autor, o valor da faturação de cada autor e o valor da faturação relativa à editora;
+### *p)* Obter uma lista que incluía o número de vendas de um título (ytd_sales), o seu nome, o nome de cada autor, o valor da faturação de cada autor e o valor da faturação relativa à editora
 
 ```
 SELECT title, au_fname, au_lname, ytd_sales, 
@@ -140,46 +140,46 @@ SELECT title, au_fname, au_lname, ytd_sales,
     price*ytd_sales*(100-royalty)/100 as publisher_revenue,
     (price*ytd_sales*royalty*royaltyper)/10000 as author_revenue
 FROM titles JOIN titleauthor ON titles.title_id = titleauthor.title_id
-				JOIN authors ON titleauthor.au_id = authors.au_id
+    JOIN authors ON titleauthor.au_id = authors.au_id
 WHERE ytd_sales IS NOT NULL
 ORDER BY title ASC
 ```
 
-### *q)* Lista de lojas que venderam pelo menos um exemplar de todos os livros;
+### *q)* Lista de lojas que venderam pelo menos um exemplar de todos os livros
 
 ```
 SELECT stor_name
 FROM stores JOIN sales ON stores.stor_id=sales.stor_id
-			JOIN titles ON sales.title_id=titles.title_id
-			GROUP BY stor_name
-			HAVING COUNT(title)=(SELECT COUNT(title) FROM titles)
+   JOIN titles ON sales.title_id=titles.title_id
+   GROUP BY stor_name
+   HAVING COUNT(title)=(SELECT COUNT(title) FROM titles)
 ```
 
-### *r)* Lista de lojas que venderam mais livros do que a média de todas as lojas;
+### *r)* Lista de lojas que venderam mais livros do que a média de todas as lojas
 
 ```
 SELECT stor_name, SUM(qty) as num_books, (SELECT AVG(qty) from sales) as avg_books
 FROM stores JOIN sales ON stores.stor_id = sales.stor_id
-			JOIN titles ON sales.title_id = titles.title_id
-			GROUP BY stor_name
-			HAVING SUM(qty) > (SELECT AVG(qty) from sales)
+   JOIN titles ON sales.title_id = titles.title_id
+   GROUP BY stor_name
+   HAVING SUM(qty) > (SELECT AVG(qty) from sales)
 ```
 
-### *s)* Nome dos títulos que nunca foram vendidos na loja “Bookbeat”;
+### *s)* Nome dos títulos que nunca foram vendidos na loja “Bookbeat”
 
 ```
 SELECT title
 FROM titles
 WHERE title NOT IN (
-		SELECT title
-		FROM titles JOIN sales ON titles.title_id = sales.title_id
-					JOIN stores ON sales.stor_id = sales.stor_id
-			AND stores.stor_name = 'Bookbeat'
+  SELECT title
+  FROM titles JOIN sales ON titles.title_id = sales.title_id
+     JOIN stores ON sales.stor_id = sales.stor_id
+   AND stores.stor_name = 'Bookbeat'
 )
 TODO:(VER ESTA!!)
 ```
 
-### *t)* Para cada editora, a lista de todas as lojas que nunca venderam títulos dessa editora; 
+### *t)* Para cada editora, a lista de todas as lojas que nunca venderam títulos dessa editora
 
 ```
 ... Write here your answer ...
@@ -190,7 +190,7 @@ TODO:(VER ESTA!!)
 ### ​5.1
 
 #### a) SQL DDL Script
- 
+
 [a) SQL DDL File](ex_6_2_1_ddl.sql "SQLFileQuestion")
 
 #### b) Data Insertion Script
@@ -202,61 +202,91 @@ TODO:(VER ESTA!!)
 ##### *a)*
 
 ```
-... Write here your answer ...
+SELECT Ssn, Fname, Minit, Lname, Pname FROM Employee Join Works_on ON Employee.Ssn = Works_on.Essn Join Project ON Works_on.Pno = Project.Pnumber;
 ```
 
-##### *b)* 
+##### *b)*
 
 ```
-... Write here your answer ...
-```
-
-##### *c)* 
-
-```
-... Write here your answer ...
-```
-
-##### *d)* 
+SELECT Employees.Fname, Employees.Lname, Employees.Super_ssn 
+FROM Employee AS Employees 
+JOIN Employee AS Carlos_ssn ON Employees.Super_ssn = Carlos_ssn.Ssn 
+WHERE Carlos_ssn.Fname = 'Carlos' AND Carlos_ssn.Lname = 'Gomes';
 
 ```
-... Write here your answer ...
-```
 
-##### *e)* 
+##### *c)*
 
 ```
-... Write here your answer ...
+SELECT Pnumber, Pname, SUM(Hours) AS TotalHours FROM Project
+JOIN Works_on ON Project.Pnumber = Works_on.Pno
+GROUP BY Pnumber, Pname;
 ```
 
-##### *f)* 
+##### *d)*
 
 ```
-... Write here your answer ...
+SELECT Fname, Lname FROM Employee
+JOIN Works_on ON Employee.Ssn = Works_on.Essn
+WHERE Dno = 3 AND Hours > 20;
 ```
 
-##### *g)* 
+##### *e)*
 
 ```
-... Write here your answer ...
+SELECT Fname, Lname FROM Employee
+LEFT JOIN Works_on ON Employee.Ssn= Works_on.Essn
+WHERE Hours IS NULL;
 ```
 
-##### *h)* 
+##### *f)*
 
 ```
-... Write here your answer ...
+SELECT Dname, AVG(Salary) AS SalaryAvg FROM Employee
+JOIN Department ON Employee.Dno = Department.Dnumber
+WHERE Sex = 'F'
+GROUP BY Dname; 
 ```
 
-##### *i)* 
+##### *g)*
 
 ```
-... Write here your answer ...
+SELECT Fname, Lname FROM (
+ SELECT Fname, Lname, COUNT(Essn) AS Count_Dep FROM Employee
+ JOIN Dependent ON Employee.Ssn = Dependent.Essn
+ GROUP BY Fname, Lname
+) AS Dep_Counts
+WHERE Count_Dep > 2;
+```
+
+##### *h)*
+
+```
+SELECT Emp_Dept.*, Dependent.*
+FROM (
+    SELECT Employee.*, Department.*
+    FROM Employee
+    JOIN Department ON Employee.Ssn = Department.Mgr_ssn
+) AS Emp_Dept
+LEFT JOIN Dependent ON Emp_Dept.Ssn = Dependent.Essn
+WHERE Dependent.Essn IS NULL;
+
+```
+
+##### *i)*
+
+```
+SELECT DISTINCT Fname, Lname, Address FROM Employee
+JOIN Department ON Employee.Dno = Department.Dnumber
+JOIN Dept_locations ON Department.Dnumber = Dept_locations.Dnumber
+JOIN Project ON Department.Dnumber = Project.Dnum
+WHERE Dlocation != 'Aveiro' AND Plocation = 'Aveiro';
 ```
 
 ### 5.2
 
 #### a) SQL DDL Script
- 
+
 [a) SQL DDL File](ex_6_2_2_ddl.sql "SQLFileQuestion")
 
 #### b) Data Insertion Script
@@ -269,46 +299,44 @@ TODO:(VER ESTA!!)
 
 ```
 SELECT nome
-	FROM fornecedor LEFT outer JOIN encomenda ON fornecedor.nif=encomenda.fornecedor
-	WHERE numero IS NULL
+ FROM fornecedor LEFT outer JOIN encomenda ON fornecedor.nif=encomenda.fornecedor
+ WHERE numero IS NULL
 ```
 
-##### *b)* 
+##### *b)*
 
 ```
 SELECT nome, AVG(I.unidades) AS MediaProd
-	FROM item AS I
-		JOIN produto ON I.codProd=produto.codigo
-	GROUP BY codProd, nome
+ FROM item AS I
+  JOIN produto ON I.codProd=produto.codigo
+ GROUP BY codProd, nome
 ```
 
-
-##### *c)* 
+##### *c)*
 
 ```
 SELECT AVG(I.NumProdEnc) AS AverageTable
-	FROM (
-		SELECT numEnc, COUNT(codProd) AS NumProdEnc
-		FROM item
-		GROUP BY numEnc
-	) AS I
+ FROM (
+  SELECT numEnc, COUNT(codProd) AS NumProdEnc
+  FROM item
+  GROUP BY numEnc
+ ) AS I
 ```
 
-
-##### *d)* 
+##### *d)*
 
 ```
 SELECT produto.nome, COUNT(codProd) AS NumProdutos
-	FROM item JOIN produto ON item.codProd=produto.codigo
-						JOIN encomenda ON item.numEnc=encomenda.numero
-						JOIN fornecedor ON encomenda.fornecedor=fornecedor.nif
-	GROUP BY produto.nome
+ FROM item JOIN produto ON item.codProd=produto.codigo
+      JOIN encomenda ON item.numEnc=encomenda.numero
+      JOIN fornecedor ON encomenda.fornecedor=fornecedor.nif
+ GROUP BY produto.nome
 ```
 
 ### 5.3
 
 #### a) SQL DDL Script
- 
+
 [a) SQL DDL File](ex_6_2_3_ddl.sql "SQLFileQuestion")
 
 #### b) Data Insertion Script
@@ -321,61 +349,59 @@ SELECT produto.nome, COUNT(codProd) AS NumProdutos
 
 ```
 SELECT nome, paciente.numUtente
-		FROM prescricao RIGHT OUTER JOIN paciente
-										ON prescricao.numUtente=paciente.numUtente
-		WHERE prescricao.numPresc IS NULL
+  FROM prescricao RIGHT OUTER JOIN paciente
+          ON prescricao.numUtente=paciente.numUtente
+  WHERE prescricao.numPresc IS NULL
 ```
 
-##### *b)* 
+##### *b)*
 
 ```
 SELECT especialidade, COUNT(numPresc) AS num_presc
-		FROM medico JOIN prescricao
-								ON medico.numSNS = prescricao.numMedico
-		GROUP BY especialidade
+  FROM medico JOIN prescricao
+        ON medico.numSNS = prescricao.numMedico
+  GROUP BY especialidade
 ```
 
-
-##### *c)* 
+##### *c)*
 
 ```
 SELECT nome, endereco, COUNT(numPresc) AS num_presc
-		FROM farmacia JOIN prescricao
-									ON farmacia.nome = prescricao.farmacia
-		GROUP BY nome, endereco
+  FROM farmacia JOIN prescricao
+         ON farmacia.nome = prescricao.farmacia
+  GROUP BY nome, endereco
 ```
 
-
-##### *d)* 
+##### *d)*
 
 ```
 SELECT nome
-		FROM farmaco 
-		WHERE numRegFarm=906 EXCEPT
-		SELECT nomeFarmaco
-		FROM presc_farmaco
-		WHERE numRegFarm=906
+  FROM farmaco 
+  WHERE numRegFarm=906 EXCEPT
+  SELECT nomeFarmaco
+  FROM presc_farmaco
+  WHERE numRegFarm=906
 ```
 
-##### *e)* 
+##### *e)*
 
 ```
 SELECT farmacia.nome, farmaceutica.nome, COUNT(presc_farmaco.nomeFarmaco) AS numFarmacosVendidos
-	FROM presc_farmaco JOIN farmaceutica ON presc_farmaco.numRegFarm=farmaceutica.numReg
-										 JOIN prescricao ON presc_farmaco.numPresc = prescricao.numPresc
+ FROM presc_farmaco JOIN farmaceutica ON presc_farmaco.numRegFarm=farmaceutica.numReg
+           JOIN prescricao ON presc_farmaco.numPresc = prescricao.numPresc
                      JOIN farmacia ON prescricao.farmacia = farmacia.nome
-	GROUP BY farmacia.nome, farmaceutica.nome
+ GROUP BY farmacia.nome, farmaceutica.nome
 
 ```
 
-##### *f)* 
+##### *f)*
 
 ```
 SELECT P.numUtente, nome
-	FROM paciente as P
-		JOIN (SELECT numUtente, COUNT(numMedico) AS medico_num
-					FROM prescricao
-					GROUP BY numUtente) AS T
-		ON P.numUtente=T.numUtente
-	WHERE medico_num > 1
+ FROM paciente as P
+  JOIN (SELECT numUtente, COUNT(numMedico) AS medico_num
+     FROM prescricao
+     GROUP BY numUtente) AS T
+  ON P.numUtente=T.numUtente
+ WHERE medico_num > 1
 ```
