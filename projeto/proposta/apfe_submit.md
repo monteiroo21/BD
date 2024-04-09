@@ -19,6 +19,7 @@ O objetivo deste trabalho é projetar e analisar a estrutura de uma base de dado
 - Pesquisar partituras pelo nome;
 - Pesquisar partituras pelo género musical;
 - Pesquisar partituras pelo compositor;
+- Vender partituras;
 
 ## DER
 
