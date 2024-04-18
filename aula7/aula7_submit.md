@@ -6,16 +6,21 @@
 ### *a)*
 
 ```
-... Write here your answer ...
-It is possible to <u>underline</u> -> {A, B,.. }
--> R1 (_A_, B, C)
--> R2 (B,F)
+1FN(Primeira forma normal)
+Não pode estar na 2FN, porque existem dependências parciais (Nome_Autor -> Afiliacao_Autor).
+Não pode estar na 3FN, porque existem dependências transitivas (Tipo_Livro, NoPaginas -> Preco) e (Editor -> Endereco_Editor).
 ```
 
 ### *b)* 
 
 ```
-... Write here your answer ...
+2FN: R1 (Titulo_Livro, Nome_Autor, Editor, Tipo_Livro, NoPaginas, Ano_Publicacao, Preco, Endereco_Editor) 
+     R2 (Nome_Autor, Afiliacao_Autor)
+
+3FN: R1 (Titulo_Livro, Nome_Autor, Editor, Tipo_Livro, NoPaginas, Ano_Publicacao) 
+     R2 (Nome_Autor, Afiliacao_Autor)
+     R3 (Tipo_Livro, NoPaginas, Preco)
+     R4 (Editor, Endereco_Editor)
 ```
 
 
@@ -26,21 +31,27 @@ It is possible to <u>underline</u> -> {A, B,.. }
 ### *a)*
 
 ```
-... Write here your answer ...
+{A, B}
 ```
 
 
 ### *b)* 
 
 ```
-... Write here your answer ...
+R1 = {A, D, E, I, J}
+R2 = {B, F, G, H}
+R3 = {A, B, C}
 ```
 
 
 ### *c)* 
 
 ```
-... Write here your answer ...
+R1 = {A, D, E}
+R2 = {D, I, J}
+R3 = {B, F}
+R4 = {F, G, H}
+R5 = {A, B, C}
 ```
 
 
@@ -49,14 +60,15 @@ It is possible to <u>underline</u> -> {A, B,.. }
 ### *a)*
 
 ```
-... Write here your answer ...
+{A, B}
 ```
 
 
 ### *b)* 
 
 ```
-... Write here your answer ...
+R1 = {A, B, C, D}
+R2 = {D, E}
 ```
 
 
@@ -73,20 +85,23 @@ It is possible to <u>underline</u> -> {A, B,.. }
 ### *a)*
 
 ```
-... Write here your answer ...
+{A, B}
 ```
 
 ### *b)* 
 
 ```
-... Write here your answer ...
+R1 = {A, C, D}
+R2 = {A, B, D, E}
 ```
 
 
 ### *c)* 
 
 ```
-... Write here your answer ...
+R1 = {A, C}
+R2 = {C, D}
+R2 = {A, B, D, E}
 ```
 
 ### *d)* 
