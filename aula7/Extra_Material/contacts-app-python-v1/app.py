@@ -12,10 +12,20 @@ def base():
     return render_template("index.html", customers=contacts)
 
 
+# @app.route("/contact-list", methods=["GET"])
+# def contact_list():
+#     contacts = customers.list_all()
+#     return render_template("contact_list.html", customers=contacts)
+
 @app.route("/contact-list", methods=["GET"])
 def contact_list():
-    contacts = customers.list_all()
+    name = request.args.get("name")
+    if name:
+        contacts = customers.search_by_name(name)
+    else:
+        contacts = customers.list_all()
     return render_template("contact_list.html", customers=contacts)
+
 
 
 @app.route("/customers", methods=["GET"])
