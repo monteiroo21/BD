@@ -75,7 +75,9 @@ R2 = {D, E}
 ### *c)* 
 
 ```
-... Write here your answer ...
+R1 = {A, B, D}
+R2 = {C, A}
+R3 = {D, E}
 ```
 
 
@@ -107,5 +109,7 @@ R2 = {A, B, D, E}
 ### *d)* 
 
 ```
-... Write here your answer ...
+R1 = {A, C}
+R2 = {C, D}
+R2 = {A, B, D, E}
 ```
