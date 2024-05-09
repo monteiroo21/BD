@@ -24,30 +24,37 @@ Complete the following table.
 
 ```
 CREATE TABLE mytemp ( 
-    rid BIGINT /*IDENTITY (1, 1)*/ NOT NULL PRIMARY KEY CLUSTERED, 
+    rid BIGINT /*IDENTITY (1, 1)*/ NOT NULL, 
     at1 INT NULL, 
     at2 INT NULL, 
     at3 INT NULL, 
-    lixo varchar(100) NULL 
+    lixo varchar(100) NULL,
+
+    PRIMARY KEY (rid)
 );
 ```
 
 ### b)
 
 ```
-... Write here your answer ...
+Fragmentação dos índices: 99,06%
+Ocupação das páginas: 68,76%
 ```
 
 ### c)
 
 ```
-... Write here your answer ...
+65 -> 03:08
+80 -> 03:34
+90 -> 03:31
 ```
 
 ### d)
 
 ```
-... Write here your answer ...
+65 -> 02:14
+80 -> 02:38
+90 -> 02:25
 ```
 
 ### e)
