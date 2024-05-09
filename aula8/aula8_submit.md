@@ -66,15 +66,15 @@ Ocupação das páginas: 68,76%
 ## ​8.3.
 
 ```
-i.   CREATE CLUSTERED INDEX Ssn ON EMPLOYEE(Ssn)
+i.   CREATE INDEX ixSsn ON EMPLOYEE(Ssn)
 
-ii.  CREATE CLUSTERED INDEX Name ON EMPLOYEE(Fname, Lname)
+ii.  CREATE INDEX ixName ON EMPLOYEE(Fname, Lname)
 
-iii. CREATE UNIQUE INDEX Dno ON EMPLOYEE(Dno)
+iii. CREATE INDEX ixDno ON EMPLOYEE(Dno)
 
-iv.  CREATE UNIQUE INDEX Ssn ON WORKS_ON(Essn, Pno)
+iv.  CREATE INDEX ixSsn ON WORKS_ON(Essn, Pno)
 
-v.   CREATE CLUSTERED INDEX Essn ON Dependent(Essn)
+v.   CREATE INDEX ixEssn ON Dependent(Essn)
 
-vi.  CREATE CLUSTERED INDEX Pnumber ON Project(Pnumber, Dnum)
+vi.  CREATE INDEX ixPnumber ON Project(Pnumber, Dnum)
 ```
