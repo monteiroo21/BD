@@ -23,7 +23,13 @@ Complete the following table.
 ### a)
 
 ```
-... Write here your answer ...
+CREATE TABLE mytemp ( 
+    rid BIGINT /*IDENTITY (1, 1)*/ NOT NULL PRIMARY KEY CLUSTERED, 
+    at1 INT NULL, 
+    at2 INT NULL, 
+    at3 INT NULL, 
+    lixo varchar(100) NULL 
+);
 ```
 
 ### b)
@@ -53,5 +59,15 @@ Complete the following table.
 ## ​8.3.
 
 ```
-... Write here your answer ...
+i.   CREATE CLUSTERED INDEX Ssn ON EMPLOYEE(Ssn)
+
+ii.  CREATE CLUSTERED INDEX Name ON EMPLOYEE(Fname, Lname)
+
+iii. CREATE UNIQUE INDEX Dno ON EMPLOYEE(Dno)
+
+iv.  CREATE UNIQUE INDEX Ssn ON WORKS_ON(Essn, Pno)
+
+v.   CREATE CLUSTERED INDEX Essn ON Dependent(Essn)
+
+vi.  CREATE CLUSTERED INDEX Pno ON Project(Pnumber, Dnum)
 ```
