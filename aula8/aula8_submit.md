@@ -69,5 +69,5 @@ iv.  CREATE UNIQUE INDEX Ssn ON WORKS_ON(Essn, Pno)
 
 v.   CREATE CLUSTERED INDEX Essn ON Dependent(Essn)
 
-vi.  CREATE CLUSTERED INDEX Pno ON Project(Pnumber, Dnum)
+vi.  CREATE CLUSTERED INDEX Pnumber ON Project(Pnumber, Dnum)
 ```
