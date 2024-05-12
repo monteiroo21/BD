@@ -60,13 +60,17 @@ Ocupação das páginas: 68,76%
 ### e)
 
 ```
-... Write here your answer ...
+CREATE INDEX ixAt1 ON mytemp(at1);
+CREATE INDEX ixAt2 ON mytemp(at2);
+CREATE INDEX ixAt3 ON mytemp(at3);
+
+Com todos os índices criados, o tempo de execução aumenta.
 ```
 
 ## ​8.3
 
 ```
-i.   CREATE INDEX ixSsn ON EMPLOYEE(Ssn)
+i.   (PRIMARY KEY)
 
 ii.  CREATE INDEX ixName ON EMPLOYEE(Fname, Lname)
 
@@ -74,7 +78,7 @@ iii. CREATE INDEX ixDno ON EMPLOYEE(Dno)
 
 iv.  CREATE INDEX ixSsn ON WORKS_ON(Essn, Pno)
 
-v.   CREATE INDEX ixEssn ON Dependent(Essn)
+v.   (PRIMARY KEY)
 
-vi.  CREATE INDEX ixPnumber ON Project(Pnumber, Dnum)
+vi.  CREATE INDEX ixPnumber ON Project(Dnum)
 ```
