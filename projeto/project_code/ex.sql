@@ -6,7 +6,7 @@ GO
 CREATE TABLE MusicalGenre
 (
     id INT NOT NULL,
-    [name] VARCHAR NOT NULL,
+    [name] VARCHAR(50) NOT NULL,
 
     PRIMARY KEY(id),
     UNIQUE([name])
@@ -15,7 +15,7 @@ CREATE TABLE MusicalGenre
 CREATE TABLE Music
 (
     music_id INT NOT NULL,
-    title VARCHAR NOT NULL,
+    title VARCHAR(80) NOT NULL,
     [year] INT,
     musGenre_id INT,
 
@@ -26,8 +26,8 @@ CREATE TABLE Music
 CREATE TABLE Editor
 (
     identifier INT NOT NULL,
-    [name] VARCHAR NOT NULL,
-    [location] VARCHAR,
+    [name] VARCHAR(50) NOT NULL,
+    [location] VARCHAR(50),
 
     PRIMARY KEY(identifier),
     UNIQUE([location])
@@ -37,11 +37,11 @@ CREATE TABLE Score
 (
     register_num INT NOT NULL,
     [edition] INT,
-    price MONEY,
+    price DECIMAL(10, 2),
     [availability] INT,
     difficultyGrade INT,
     musicId INT NOT NULL,
-    editorId INT,
+    editorId INT NOT NULL,
 
     PRIMARY KEY(register_num),
     FOREIGN KEY(musicId) REFERENCES Music(music_id),
@@ -50,10 +50,10 @@ CREATE TABLE Score
 
 CREATE TABLE Instrumentation
 (
-    instrument VARCHAR NOT NULL,
+    instrument VARCHAR(60) NOT NULL,
     quantity INT,
-    family VARCHAR,
-    [role] VARCHAR,
+    family VARCHAR(50),
+    [role] VARCHAR(50),
     scoreNum INT NOT NULL,
 
     PRIMARY KEY(instrument),
@@ -63,7 +63,7 @@ CREATE TABLE Instrumentation
 CREATE TABLE Warehouse
 (
     id INT NOT NULL,
-    [name] VARCHAR,
+    [name] VARCHAR(80),
     storage INT,
     editorId INT NOT NULL,
 
@@ -74,10 +74,10 @@ CREATE TABLE Warehouse
 CREATE TABLE Customer
 (
     numCC INT NOT NULL,
-    email_address VARCHAR,
+    email_address VARCHAR(80),
     numBankAccount INT NOT NULL,
     cellNumber INT,
-    [name] VARCHAR NOT NULL,
+    [name] VARCHAR(60) NOT NULL,
 
     PRIMARY KEY(numCC),
     UNIQUE(numBankAccount)
@@ -86,7 +86,7 @@ CREATE TABLE Customer
 CREATE TABLE [Transaction]
 (
     transaction_id INT NOT NULL,
-    [value] MONEY NOT NULL,
+    [value] DECIMAL(10, 2) NOT NULL,
     [date] DATE,
     customer_CC INT NOT NULL,
 
@@ -97,9 +97,9 @@ CREATE TABLE [Transaction]
 CREATE TABLE Writer
 (
     id INT NOT NULL,
-    Fname VARCHAR NOT NULL,
-    Lname VARCHAR,
-    genre CHAR,
+    Fname VARCHAR(60) NOT NULL,
+    Lname VARCHAR(60),
+    genre VARCHAR(1),
     birthYear DATE,
     deathYear DATE,
     musGenre_id INT,
@@ -138,7 +138,7 @@ CREATE TABLE arranges
 (
     score_register INT NOT NULL,
     arranger_id INT NOT NULL,
-    [type] VARCHAR,
+    [type] VARCHAR(60),
 
     PRIMARY KEY(score_register, arranger_id),
     FOREIGN KEY(score_register) REFERENCES Score(register_num),
@@ -167,7 +167,7 @@ CREATE TABLE purchases
 
 CREATE TABLE warehouse_location
 (
-    warehouse_location VARCHAR NOT NULL,
+    warehouse_location VARCHAR(80) NOT NULL,
     warehouse_id INT NOT NULL,
 
     PRIMARY KEY(warehouse_location, warehouse_id),
@@ -214,15 +214,20 @@ INSERT INTO MusicalGenre (id, [name]) VALUES
     (26, 'Symphonic');
 
 
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (1, 'Moonlight Sonata', 1801, 1),
+    (2, 'Fur Elise', 1810, 1),
+    (3, 'Symphony No. 9', 1824, 1);
+
 -- Classical
 INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
     (4, 'Symphony No. 5', 1808, 1),
     (5, 'Four Seasons', 1725, 1),
     (6, 'Canon in D', 1680, 1),
     (7, 'Swan Lake', 1876, 1),
-    (8, 'Magic Flute', 1791, 1),
-    (44, 'Symphony No. 9', 1824, 1);
+    (8, 'Magic Flute', 1791, 1);
 
+    
 -- Jazz
 INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
     (9, 'So What', 1959, 2),
@@ -342,49 +347,49 @@ INSERT INTO [Transaction] (transaction_id, [value], [date], customer_CC) VALUES
 
 
 INSERT INTO Writer (id, Fname, Lname, genre, birthYear, deathYear, musGenre_id) VALUES
-    (1, 'Ludwig', 'van Beethoven', 'C', '1770-12-17', '1827-03-26', 1),
-    (2, 'Wolfgang', 'Amadeus Mozart', 'C', '1756-01-27', '1791-12-05', 1),
-    (3, 'Johann', 'Sebastian Bach', 'C', '1685-03-31', '1750-07-28', 1),
-    (4, 'Frédéric', 'Chopin', 'C', '1810-03-01', '1849-10-17', 1),
-    (5, 'Claude', 'Debussy', 'C', '1862-08-22', '1918-03-25', 1),
-    (6, 'Igor', 'Stravinsky', 'C', '1882-06-17', '1971-04-06', 1),
-    (7, 'John', 'Williams', 'C', '1932-02-08', NULL, 5),
-    (8, 'Duke', 'Ellington', 'J', '1899-04-29', '1974-05-24', 2),
-    (9, 'Miles', 'Davis', 'J', '1926-05-26', '1991-09-28', 2),
-    (10, 'John', 'Coltrane', 'J', '1926-09-23', '1967-07-17', 2),
-    (11, 'Charlie', 'Parker', 'J', '1920-08-29', '1955-03-12', 2),
-    (12, 'Dave', 'Brubeck', 'J', '1920-12-06', '2012-12-05', 2),
-    (13, 'Michael', 'Jackson', 'P', '1958-08-29', '2009-06-25', 3),
-    (14, 'Madonna', 'Ciccone', 'P', '1958-08-16', NULL, 3),
-    (15, 'Prince', NULL, 'P', '1958-06-07', '2016-04-21', 3),
-    (16, 'Whitney', 'Houston', 'P', '1963-08-09', '2012-02-11', 3),
-    (17, 'Lady', 'Gaga', 'P', '1986-03-28', NULL, 3),
-    (18, 'Elvis', 'Presley', 'R', '1935-01-08', '1977-08-16', 4),
-    (19, 'Jimi', 'Hendrix', 'R', '1942-11-27', '1970-09-18', 4),
-    (20, 'Freddie', 'Mercury', 'R', '1946-09-05', '1991-11-24', 4),
-    (21, 'Robert', 'Plant', 'R', '1948-08-20', NULL, 4),
-    (22, 'John', 'Lennon', 'R', '1940-10-09', '1980-12-08', 4),
-    (23, 'Ludwig', 'van Beethoven', 'O', '1770-12-17', '1827-03-26', 5),
-    (24, 'Maurice', 'Ravel', 'O', '1875-03-07', '1937-12-28', 5),
-    (25, 'Pyotr', 'Tchaikovsky', 'O', '1840-05-07', '1893-11-06', 5),
-    (26, 'Igor', 'Stravinsky', 'O', '1882-06-17', '1971-04-06', 5),
-    (27, 'Georges', 'Bizet', 'O', '1838-10-25', '1875-06-03', 5),
-    (28, 'John', 'Williams', 'O', '1932-02-08', NULL, 5),
-    (29, 'Johann', 'Sebastian Bach', 'C', '1685-03-31', '1750-07-28', 5),
-    (30, 'Wolfgang', 'Amadeus Mozart', 'C', '1756-01-27', '1791-12-05', 5),
-    (31, 'Ludwig', 'van Beethoven', 'C', '1770-12-17', '1827-03-26', 5),
-    (32, 'Johannes', 'Brahms', 'C', '1833-05-07', '1897-04-03', 5),
-    (33, 'Antonín', 'Dvořák', 'C', '1841-09-08', '1904-05-01', 5),
-    (34, 'Carl', 'Orff', 'C', '1895-07-10', '1982-03-29', 5),
-    (35, 'George', 'Gershwin', 'C', '1898-09-26', '1937-07-11', 5),
-    (36, 'Aaron', 'Copland', 'C', '1900-11-14', '1990-12-02', 5),
-    (37, 'Sergei', 'Prokofiev', 'C', '1891-04-23', '1953-03-05', 5),
-    (38, 'Gustav', 'Mahler', 'C', '1860-07-07', '1911-05-18', 5),
-    (39, 'Richard', 'Strauss', 'C', '1864-06-11', '1949-09-08', 5),
-    (40, 'Giacomo', 'Puccini', 'C', '1858-12-22', '1924-11-29', 5),
-    (41, 'Gioachino', 'Rossini', 'C', '1792-02-29', '1868-11-13', 5),
-    (42, 'Giacomo', 'Puccini', 'C', '1858-12-22', '1924-11-29', 5),
-    (43, 'Ludwig', 'van Beethoven', 'C', '1770-12-17', '1827-03-26', 5);
+    (1, 'Ludwig', 'van Beethoven', 'M', '1770-12-17', '1827-03-26', 1),
+    (2, 'Wolfgang', 'Amadeus Mozart', 'M', '1756-01-27', '1791-12-05', 1),
+    (3, 'Johann', 'Sebastian Bach', 'M', '1685-03-31', '1750-07-28', 1),
+    (4, 'Frédéric', 'Chopin', 'M', '1810-03-01', '1849-10-17', 1),
+    (5, 'Claude', 'Debussy', 'M', '1862-08-22', '1918-03-25', 1),
+    (6, 'Igor', 'Stravinsky', 'M', '1882-06-17', '1971-04-06', 1),
+    (7, 'John', 'Williams', 'M', '1932-02-08', NULL, 5),
+    (8, 'Duke', 'Ellington', 'M', '1899-04-29', '1974-05-24', 2),
+    (9, 'Miles', 'Davis', 'M', '1926-05-26', '1991-09-28', 2),
+    (10, 'John', 'Coltrane', 'M', '1926-09-23', '1967-07-17', 2),
+    (11, 'Charlie', 'Parker', 'M', '1920-08-29', '1955-03-12', 2),
+    (12, 'Dave', 'Brubeck', 'M', '1920-12-06', '2012-12-05', 2),
+    (13, 'Michael', 'Jackson', 'M', '1958-08-29', '2009-06-25', 3),
+    (14, 'Madonna', 'Ciccone', 'M', '1958-08-16', NULL, 3),
+    (15, 'Prince', NULL, 'M', '1958-06-07', '2016-04-21', 3),
+    (16, 'Whitney', 'Houston', 'M', '1963-08-09', '2012-02-11', 3),
+    (17, 'Lady', 'Gaga', 'M', '1986-03-28', NULL, 3),
+    (18, 'Elvis', 'Presley', 'M', '1935-01-08', '1977-08-16', 4),
+    (19, 'Jimi', 'Hendrix', 'M', '1942-11-27', '1970-09-18', 4),
+    (20, 'Freddie', 'Mercury', 'M', '1946-09-05', '1991-11-24', 4),
+    (21, 'Robert', 'Plant', 'M', '1948-08-20', NULL, 4),
+    (22, 'John', 'Lennon', 'M', '1940-10-09', '1980-12-08', 4),
+    (23, 'Ludwig', 'van Beethoven', 'M', '1770-12-17', '1827-03-26', 5),
+    (24, 'Maurice', 'Ravel', 'M', '1875-03-07', '1937-12-28', 5),
+    (25, 'Pyotr', 'Tchaikovsky', 'M', '1840-05-07', '1893-11-06', 5),
+    (26, 'Igor', 'Stravinsky', 'M', '1882-06-17', '1971-04-06', 5),
+    (27, 'Georges', 'Bizet', 'M', '1838-10-25', '1875-06-03', 5),
+    (28, 'John', 'Williams', 'M', '1932-02-08', NULL, 5),
+    (29, 'Johann', 'Sebastian Bach', 'M', '1685-03-31', '1750-07-28', 5),
+    (30, 'Wolfgang', 'Amadeus Mozart', 'M', '1756-01-27', '1791-12-05', 5),
+    (31, 'Ludwig', 'van Beethoven', 'M', '1770-12-17', '1827-03-26', 5),
+    (32, 'Johannes', 'Brahms', 'M', '1833-05-07', '1897-04-03', 5),
+    (33, 'Antonín', 'Dvořák', 'M', '1841-09-08', '1904-05-01', 5),
+    (34, 'Carl', 'Orff', 'M', '1895-07-10', '1982-03-29', 5),
+    (35, 'George', 'Gershwin', 'M', '1898-09-26', '1937-07-11', 5),
+    (36, 'Aaron', 'Copland', 'M', '1900-11-14', '1990-12-02', 5),
+    (37, 'Sergei', 'Prokofiev', 'M', '1891-04-23', '1953-03-05', 5),
+    (38, 'Gustav', 'Mahler', 'M', '1860-07-07', '1911-05-18', 5),
+    (39, 'Richard', 'Strauss', 'M', '1864-06-11', '1949-09-08', 5),
+    (40, 'Giacomo', 'Puccini', 'M', '1858-12-22', '1924-11-29', 5),
+    (41, 'Gioachino', 'Rossini', 'M', '1792-02-29', '1868-11-13', 5),
+    (42, 'Giacomo', 'Puccini', 'M', '1858-12-22', '1924-11-29', 5),
+    (43, 'Ludwig', 'van Beethoven', 'M', '1770-12-17', '1827-03-26', 5);
 
 
 INSERT INTO Composer (id) VALUES
@@ -403,7 +408,7 @@ INSERT INTO writes (music_id, composer_id) VALUES
     (6, 3),
     (7, 4),
     (8, 5),
-    (44, 6);
+    (27, 6);
 
 
 INSERT INTO Arranger (id) VALUES
