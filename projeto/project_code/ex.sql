@@ -188,66 +188,284 @@ CREATE TABLE constitutes
 INSERT INTO MusicalGenre (id, [name]) VALUES
     (1, 'Classical'),
     (2, 'Jazz'),
-    (3, 'Rock'),
-    (4, 'Pop'),
-    (5, 'Metal'),
-    (6, 'Blues'),
-    (7, 'Folk'),
-    (8, 'Country'),
-    (9, 'Reggae'),
-    (10, 'Hip-Hop'),
-    (11, 'Electronic'),
-    (12, 'Rap'),
-    (13, 'R&B'),
-    (14, 'Soul'),
-    (15, 'Punk'),
-    (16, 'Indie'),
-    (17, 'Alternative'),
-    (18, 'Gospel'),
-    (19, 'New Age'),
-    (20, 'World'),
-    (21, 'Latin'),
-    (22, 'Dance'),
-    (23, 'Techno'),
-    (24, 'House'),
-    (25, 'Trance'),
-    (26, 'Dubstep'),
-    (27, 'Drum and Bass'),
-    (28, 'Garage'),
-    (29, 'Grime'),
-    (30, 'Breakbeat'),
-    (31, 'Hardcore'),
-    (32, 'Ambient'),
-    (33, 'Chillout'),
-    (34, 'Downtempo'),
-    (35, 'Trip-Hop'),
-    (36, 'Jungle'),
-    (37, 'Electro'),
-    (38, 'Industrial'),
-    (39, 'Noise'),
-    (40, 'Experimental'),
-    (41, 'Acoustic'),
-    (42, 'Instrumental'),
-    (43, 'Vocal'),
-    (44, 'Orchestral'),
-    (45, 'Chamber'),
-    (46, 'Symphonic'),
-    (47, 'Concerto'),
-    (48, 'Sonata'),
-    (49, 'Suite'),
-    (50, 'Opera'),
-    (51, 'Operetta'),
-    (52, 'Musical'),
-    (53, 'Ballet'),
-    (54, 'Film'),
-    (55, 'TV'),
-    (56, 'Video Game'),
-    (57, 'Anime'),
-    (58, 'Manga'),
-    (59, 'Comic'),
-    (60, 'Cartoon'),
-    (61, 'Children'),
-    (62, 'Holiday'),
-    (63, 'Christmas'),
-    (64, 'Easter'),
-    (65, 'Halloween');
+    (3, 'Pop'),
+    (4, 'Rock'),
+    (5, 'Orchestra'),
+    (6, 'Band'),
+    (7, 'Big Band'),
+    (8, 'Chamber'),
+    (9, 'Choral'),
+    (10, 'Concert Band'),
+    (11, 'Marching Band'),
+    (12, 'Jazz Band'),
+    (13, 'Wind Band'),
+    (14, 'Brass Band'),
+    (15, 'String Orchestra'),
+    (16, 'Symphony Orchestra'),
+    (17, 'String Quartet'),
+    (18, 'Wind Quintet'),
+    (19, 'Brass Quintet'),
+    (20, 'Percussion Ensemble'),
+    (21, 'Choir'),
+    (22, 'Children''s Choir'),
+    (23, 'Mixed Choir'),
+    (24, 'Blues'),
+    (25, 'Electronic'),
+    (26, 'Symphonic');
+
+
+-- Classical
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (4, 'Symphony No. 5', 1808, 1),
+    (5, 'Four Seasons', 1725, 1),
+    (6, 'Canon in D', 1680, 1),
+    (7, 'Swan Lake', 1876, 1),
+    (8, 'Magic Flute', 1791, 1),
+    (44, 'Symphony No. 9', 1824, 1);
+
+-- Jazz
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (9, 'So What', 1959, 2),
+    (10, 'Giant Steps', 1960, 2),
+    (11, 'A Love Supreme', 1965, 2),
+    (12, 'Freddie Freeloader', 1959, 2),
+    (13, 'Blue Rondo à la Turk', 1959, 2);
+
+-- Pop
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (14, 'Thriller', 1982, 3),
+    (15, 'Like a Virgin', 1984, 3),
+    (16, 'Billie Jean', 1982, 3),
+    (17, 'I Wanna Dance with Somebody', 1987, 3),
+    (18, 'Poker Face', 2008, 3);
+
+-- Rock
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (19, 'Back In Black', 1980, 4),
+    (20, 'Smoke on the Water', 1972, 4),
+    (21, 'Hotel California', 1977, 4),
+    (22, 'Stairway to Heaven', 1971, 4),
+    (23, 'Imagine', 1971, 4);
+
+-- Orchestra
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (24, 'Ode to Joy', 1824, 5),
+    (25, 'Bolero', 1928, 5),
+    (26, 'The Nutcracker Suite', 1892, 5),
+    (27, 'Rite of Spring', 1913, 5),
+    (28, 'Carmen Suite', 1875, 5);
+
+-- Additional genres with unique and overlapping titles
+-- Jazz Band
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (29, 'Birdland', 1977, 12),
+    (30, 'Moanin', 1959, 12),
+    (31, 'The Chicken', 1980, 12),
+    (32, 'Sing, Sing, Sing', 1936, 12),
+    (33, 'A Night in Tunisia', 1942, 12);
+
+-- Choir
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (34, 'Carmina Burana', 1936, 21),
+    (35, 'Messiah', 1741, 21),
+    (36, 'Requiem', 1791, 21),
+    (37, 'The Creation', 1798, 21),
+    (38, 'A Ceremony of Carols', 1942, 21);
+
+-- Symphonic
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (39, 'New World Symphony', 1893, 26),
+    (40, 'Symphony of the Air', 1954, 26),
+    (41, 'Enigma Variations', 1899, 26),
+    (42, 'Symphony No. 7', 1813, 26),
+    (43, 'Symphony No. 9', 1824, 1);
+
+
+INSERT INTO Editor (identifier, [name], [location]) VALUES
+    (1, 'Schirmer', 'New York'),
+    (2, 'Hal Leonard', 'Milwaukee'),
+    (3, 'Boosey & Hawkes', 'London'),
+    (4, 'Ricordi', 'Milan'),
+    (5, 'Durand', 'Paris'),
+    (6, 'Peters', 'Leipzig'),
+    (7, 'Universal Edition', 'Vienna');
+
+
+INSERT INTO Score (register_num, [edition], price, [availability], difficultyGrade, musicId, editorId) VALUES
+    (101, 1, 20.00, 5, 3, 1, 1),
+    (102, 2, 15.50, 3, 2, 2, 2),
+    (103, 1, 25.00, 4, 4, 3, 3),
+    (104, 1, 30.00, 2, 5, 4, 4),
+    (105, 1, 18.50, 5, 1, 5, 5),
+    (106, 1, 22.00, 3, 3, 6, 6),
+    (107, 1, 19.99, 4, 2, 7, 7);
+
+
+INSERT INTO Instrumentation (instrument, quantity, family, [role], scoreNum) VALUES
+    ('Violin', 1, 'Strings', 'Solo', 101),
+    ('Piano', 1, 'Keyboard', 'Accompaniment', 102),
+    ('Guitar', 1, 'Strings', 'Rhythm', 103),
+    ('Flute', 1, 'Woodwind', 'Lead', 104),
+    ('Drums', 1, 'Percussion', 'Rhythm', 105),
+    ('Trumpet', 1, 'Brass', 'Lead', 106),
+    ('Cello', 1, 'Strings', 'Bass', 107);
+
+
+INSERT INTO Warehouse (id, [name], storage, editorId) VALUES
+    (1, 'Main Depot', 1000, 1),
+    (2, 'North Facility', 800, 2),
+    (3, 'South Warehouse', 750, 3),
+    (4, 'East Storage', 500, 4),
+    (5, 'West Distribution Center', 450, 5),
+    (6, 'Central Logistics Hub', 700, 6),
+    (7, 'Overseas Shipping Yard', 650, 7);
+
+
+INSERT INTO Customer (numCC, email_address, numBankAccount, cellNumber, [name]) VALUES
+    (1001, 'alice@example.com', 101001, 910000000, 'Alice Smith'),
+    (1002, 'bob@example.com', 101002, 920000000, 'Bob Johnson'),
+    (1003, 'carol@example.com', 101003, 930000000, 'Carol Williams'),
+    (1004, 'dave@example.com', 101004, 940000000, 'Dave Jones'),
+    (1005, 'eve@example.com', 101005, 950000000, 'Eve Brown'),
+    (1006, 'frank@example.com', 101006, 960000000, 'Frank Davis'),
+    (1007, 'grace@example.com', 101007, 970000000, 'Grace Wilson');
+
+
+INSERT INTO [Transaction] (transaction_id, [value], [date], customer_CC) VALUES
+    (1, 100.00, '2024-01-15', 1001),
+    (2, 150.00, '2024-01-16', 1002),
+    (3, 75.00, '2024-01-17', 1003),
+    (4, 200.00, '2024-01-18', 1004),
+    (5, 120.00, '2024-01-19', 1005),
+    (6, 180.00, '2024-01-20', 1006),
+    (7, 130.00, '2024-01-21', 1007);
+
+
+INSERT INTO Writer (id, Fname, Lname, genre, birthYear, deathYear, musGenre_id) VALUES
+    (1, 'Ludwig', 'van Beethoven', 'C', '1770-12-17', '1827-03-26', 1),
+    (2, 'Wolfgang', 'Amadeus Mozart', 'C', '1756-01-27', '1791-12-05', 1),
+    (3, 'Johann', 'Sebastian Bach', 'C', '1685-03-31', '1750-07-28', 1),
+    (4, 'Frédéric', 'Chopin', 'C', '1810-03-01', '1849-10-17', 1),
+    (5, 'Claude', 'Debussy', 'C', '1862-08-22', '1918-03-25', 1),
+    (6, 'Igor', 'Stravinsky', 'C', '1882-06-17', '1971-04-06', 1),
+    (7, 'John', 'Williams', 'C', '1932-02-08', NULL, 5),
+    (8, 'Duke', 'Ellington', 'J', '1899-04-29', '1974-05-24', 2),
+    (9, 'Miles', 'Davis', 'J', '1926-05-26', '1991-09-28', 2),
+    (10, 'John', 'Coltrane', 'J', '1926-09-23', '1967-07-17', 2),
+    (11, 'Charlie', 'Parker', 'J', '1920-08-29', '1955-03-12', 2),
+    (12, 'Dave', 'Brubeck', 'J', '1920-12-06', '2012-12-05', 2),
+    (13, 'Michael', 'Jackson', 'P', '1958-08-29', '2009-06-25', 3),
+    (14, 'Madonna', 'Ciccone', 'P', '1958-08-16', NULL, 3),
+    (15, 'Prince', NULL, 'P', '1958-06-07', '2016-04-21', 3),
+    (16, 'Whitney', 'Houston', 'P', '1963-08-09', '2012-02-11', 3),
+    (17, 'Lady', 'Gaga', 'P', '1986-03-28', NULL, 3),
+    (18, 'Elvis', 'Presley', 'R', '1935-01-08', '1977-08-16', 4),
+    (19, 'Jimi', 'Hendrix', 'R', '1942-11-27', '1970-09-18', 4),
+    (20, 'Freddie', 'Mercury', 'R', '1946-09-05', '1991-11-24', 4),
+    (21, 'Robert', 'Plant', 'R', '1948-08-20', NULL, 4),
+    (22, 'John', 'Lennon', 'R', '1940-10-09', '1980-12-08', 4),
+    (23, 'Ludwig', 'van Beethoven', 'O', '1770-12-17', '1827-03-26', 5),
+    (24, 'Maurice', 'Ravel', 'O', '1875-03-07', '1937-12-28', 5),
+    (25, 'Pyotr', 'Tchaikovsky', 'O', '1840-05-07', '1893-11-06', 5),
+    (26, 'Igor', 'Stravinsky', 'O', '1882-06-17', '1971-04-06', 5),
+    (27, 'Georges', 'Bizet', 'O', '1838-10-25', '1875-06-03', 5),
+    (28, 'John', 'Williams', 'O', '1932-02-08', NULL, 5),
+    (29, 'Johann', 'Sebastian Bach', 'C', '1685-03-31', '1750-07-28', 5),
+    (30, 'Wolfgang', 'Amadeus Mozart', 'C', '1756-01-27', '1791-12-05', 5),
+    (31, 'Ludwig', 'van Beethoven', 'C', '1770-12-17', '1827-03-26', 5),
+    (32, 'Johannes', 'Brahms', 'C', '1833-05-07', '1897-04-03', 5),
+    (33, 'Antonín', 'Dvořák', 'C', '1841-09-08', '1904-05-01', 5),
+    (34, 'Carl', 'Orff', 'C', '1895-07-10', '1982-03-29', 5),
+    (35, 'George', 'Gershwin', 'C', '1898-09-26', '1937-07-11', 5),
+    (36, 'Aaron', 'Copland', 'C', '1900-11-14', '1990-12-02', 5),
+    (37, 'Sergei', 'Prokofiev', 'C', '1891-04-23', '1953-03-05', 5),
+    (38, 'Gustav', 'Mahler', 'C', '1860-07-07', '1911-05-18', 5),
+    (39, 'Richard', 'Strauss', 'C', '1864-06-11', '1949-09-08', 5),
+    (40, 'Giacomo', 'Puccini', 'C', '1858-12-22', '1924-11-29', 5),
+    (41, 'Gioachino', 'Rossini', 'C', '1792-02-29', '1868-11-13', 5),
+    (42, 'Giacomo', 'Puccini', 'C', '1858-12-22', '1924-11-29', 5),
+    (43, 'Ludwig', 'van Beethoven', 'C', '1770-12-17', '1827-03-26', 5);
+
+
+INSERT INTO Composer (id) VALUES
+    (1),
+    (2),
+    (3),
+    (4),
+    (5),
+    (6),
+    (7);
+
+
+INSERT INTO writes (music_id, composer_id) VALUES
+    (4, 1),
+    (5, 2),
+    (6, 3),
+    (7, 4),
+    (8, 5),
+    (44, 6);
+
+
+INSERT INTO Arranger (id) VALUES
+    (1),
+    (2),
+    (3),
+    (4),
+    (5),
+    (6),
+    (7);
+
+
+INSERT INTO arranges (score_register, arranger_id, [type]) VALUES
+    (101, 1, 'Full'),
+    (102, 2, 'Partial'),
+    (103, 3, 'Adaptation'),
+    (104, 4, 'Harmonization'),
+    (105, 5, 'Orchestration'),
+    (106, 6, 'Reduction'),
+    (107, 7, 'Transcription');
+
+
+
+INSERT INTO stores (warehouse_id, score_register) VALUES
+    (1, 101),
+    (2, 102),
+    (3, 103),
+    (4, 104),
+    (5, 105),
+    (6, 106),
+    (7, 107);
+
+
+INSERT INTO purchases (costumerCC, score_register) VALUES
+    (1001, 101),
+    (1002, 102),
+    (1003, 103),
+    (1004, 104),
+    (1005, 105),
+    (1006, 106),
+    (1007, 107);
+
+
+
+-- Adding unique warehouse locations
+INSERT INTO warehouse_location (warehouse_location, warehouse_id) VALUES
+    ('101 Main St, New York, NY', 1),
+    ('202 Second St, Milwaukee, WI', 2),
+    ('303 Third St, London, UK', 3),
+    ('404 Fourth St, Milan, IT', 4),
+    ('505 Fifth St, Paris, FR', 5),
+    ('606 Sixth St, Leipzig, DE', 6),
+    ('707 Seventh St, Vienna, AT', 7);
+
+
+
+-- Linking transactions and scores
+INSERT INTO constitutes (score_register, transaction_id) VALUES
+    (101, 1),
+    (102, 2),
+    (103, 3),
+    (104, 4),
+    (105, 5),
+    (106, 6),
+    (107, 7);
