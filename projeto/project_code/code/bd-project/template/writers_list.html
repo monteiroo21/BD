@@ -1,6 +1,6 @@
 {% for customer in customers %}
-<div class="contact-list-item" hx-swap="innerHTML" hx-target="#content">
-    <div class="contact-list-item-details" hx-get="/customers/{{ customer.id }}">
+<div class="writers-list-item" hx-swap="innerHTML" hx-target="#content">
+    <div class="writers-list-item-details" hx-get="/customers/{{ customer.id }}">
         <div class="contact-name">{{ customer.contact_name }}</div>
         <div class="company-name">{{ customer.company_name }}</div>
     </div>

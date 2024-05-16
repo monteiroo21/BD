@@ -99,8 +99,8 @@
 <body>
     <div class="container">
         <div class="left-column">
-            <div class="writer-list" hx-get="/">
-
+            <div class="writer-list" hx-get="/writer-list">
+                {% include 'writers_list.html' %}
             </div>
         </div>
         <div id="content" class="right-column"></div>

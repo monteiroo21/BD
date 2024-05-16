@@ -13,7 +13,7 @@ Distributed for learning purposes.
   - Pyodbc
   - [htmx](https://htmx.org) (included in index.html)
 
-Dependencies can be managed using [Poetry](https://python-poetry.org/). 
+Dependencies can be managed using [Poetry](https://python-poetry.org/).
 To install Poetry, follow the [installation guide](https://python-poetry.org/docs/#installing-with-the-official-installer).
 Make sure you add Poetry to your path (section 3 of the guide).
 
