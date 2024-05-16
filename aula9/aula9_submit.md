@@ -120,7 +120,18 @@ SELECT * FROM getFunctionaries(2)
 ### *h)*
 
 ```
-... Write here your answer ...
+DROP FUNCTION IF EXISTS dbo.employeeDeptHighAverage
+GO
+CREATE FUNCTION dbo.employeeDeptHighAverage ( @dno INT ) RETURNS TABLE
+AS 
+ 	RETURN ( SELECT Pname, Pnumber, Plocation, Dnum
+					FROM Project
+					WHERE Project.Dnum = @dno
+	);
+
+GO
+
+SELECT * FROM dbo.employeeDeptHighAverage(3)
 ```
 
 ### *i)*
