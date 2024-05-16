@@ -87,13 +87,34 @@ PRINT @oldSsn
 ### *f)*
 
 ```
-... Write here your answer ...
+CREATE FUNCTION getProjects ( @ssn INT ) RETURNS TABLE
+AS 
+	RETURN ( SELECT Pname, Plocation
+					FROM Project
+					JOIN Works_on ON Project.Pnumber = Works_on.Pno
+					JOIN Employee ON Works_on.Essn = Employee.Ssn
+					WHERE Employee.Ssn = @ssn);
+
+GO
+SELECT * FROM getProjects(321233765)
 ```
 
 ### *g)*
 
 ```
-... Write here your answer ...
+CREATE FUNCTION getFunctionaries ( @dno INT ) RETURNS TABLE
+AS 
+	RETURN ( SELECT *
+					FROM Employee
+					JOIN Department ON Employee.Dno = Department.Dnumber
+					WHERE Department.Dnumber = @dno
+					AND Employee.Salary > (SELECT AVG(Salary)
+													FROM Employee
+													WHERE Employee.Dno = @dno)
+	);
+
+GO
+SELECT * FROM getFunctionaries(2)
 ```
 
 ### *h)*
