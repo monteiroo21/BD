@@ -124,22 +124,55 @@ DROP FUNCTION IF EXISTS dbo.employeeDeptHighAverage
 GO
 CREATE FUNCTION dbo.employeeDeptHighAverage (@dno INT)
 RETURNS @budgetInfo TABLE (
-		Pname		VARCHAR,
-		Pnumber		INT,
-		Plocation	VARCHAR,
-		Dnum		INT,
-		Budget		DECIMAL(5,2),
-		TotalBudget	DECIMAL(5,2)
+    Pname        VARCHAR(255),
+    Pnumber      INT,
+    Plocation    VARCHAR(255),
+    Dnum         INT,
+    Budget       DECIMAL(10,2),
+    TotalBudget  DECIMAL(10,2)
 )
 AS
 BEGIN
-	DECLARE @Pname VARCHAR, @Pnumber INT, @Plocation VARCHAR, @Dnum INT, @Budget DECIMAL(5,2), @TotalBudget DECIMAL(5,2);
+    DECLARE @Pname VARCHAR(255), @Pnumber INT, @Plocation VARCHAR(255), @Dnum INT, @Budget DECIMAL(10,2), @TotalBudget DECIMAL(10,2) = 0;
 
-	DECLARE budgetCursor CURSOR FOR
+    DECLARE budgetCursor CURSOR FOR
+        SELECT Pname, Pnumber, Plocation, Dnum
+            FROM Project
+            WHERE Dnum = @dno;
 
-;
+    OPEN budgetCursor;
+
+    FETCH NEXT FROM budgetCursor INTO @Pname, @Pnumber, @Plocation, @Dnum;
+    
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        SELECT @Budget = SUM((Salary / 160.0) * Hours * 4) 
+            FROM Works_on
+            JOIN Employee ON Works_on.Essn = Employee.Ssn
+            WHERE Works_on.Pno = @Pnumber;
+
+        SET @TotalBudget = @TotalBudget + ISNULL(@Budget, 0);
+
+        INSERT INTO @budgetInfo(Pname, Pnumber, Plocation, Dnum, Budget, TotalBudget)
+        VALUES (@Pname, @Pnumber, @Plocation, @Dnum, ISNULL(@Budget, 0), @TotalBudget);
+
+        FETCH NEXT FROM budgetCursor INTO @Pname, @Pnumber, @Plocation, @Dnum;
+    END;
+
+    CLOSE budgetCursor;
+    DEALLOCATE budgetCursor;
+
+    RETURN;
+END;
+GO
 
 SELECT * FROM dbo.employeeDeptHighAverage(3);
+```
+
+### *h)* 
+
+```
+... Write here your answer ...
 ```
 
 ### *i)*
