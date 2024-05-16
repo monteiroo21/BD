@@ -166,8 +166,9 @@ SELECT * FROM dbo.employeeDeptHighAverage(3);
 ### *h)*
 
 ```
-IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
-                 WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
+IF (EXISTS (SELECT * 
+				FROM INFORMATION_SCHEMA.TABLES 
+                WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
 BEGIN
     CREATE TABLE dbo.department_deleted (
         Dname VARCHAR(255),
@@ -178,15 +179,15 @@ BEGIN
 END
 GO
 
--- Create the AFTER DELETE trigger
-CREATE TRIGGER trg_AfterDeleteDepartment
+ALTER TRIGGER trg_AfterDeleteDepartment
 ON dbo.DEPARTMENT
 AFTER DELETE
 AS
 BEGIN
-    -- Insert the deleted department details into department_deleted
+  
     INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
-    SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date FROM deleted;
+    SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date
+		FROM deleted;
 END;
 GO
 ```
@@ -194,9 +195,9 @@ GO
 ### *h)* 
 
 ```
--- Check if the department_deleted table exists and create it if it doesn't
-IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
-                 WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
+IF (EXISTS (SELECT * 
+				FROM INFORMATION_SCHEMA.TABLES 
+                WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
 BEGIN
     CREATE TABLE dbo.department_deleted (
         Dname VARCHAR(255),
@@ -207,19 +208,18 @@ BEGIN
 END
 GO
 
--- Create the INSTEAD OF DELETE trigger
 CREATE TRIGGER trg_InsteadOfDeleteDepartment
 ON dbo.DEPARTMENT
 INSTEAD OF DELETE
 AS
 BEGIN
-    -- Insert the to-be-deleted department details into department_deleted
     INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
-    SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date FROM deleted;
+    SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date 
+		FROM deleted;
     
-    -- Now delete the department from the original table
-    DELETE FROM dbo.DEPARTMENT
-    WHERE Dnumber IN (SELECT Dnumber FROM deleted);
+    DELETE 
+		FROM dbo.DEPARTMENT
+		WHERE Dnumber IN (SELECT Dnumber FROM deleted);
 END;
 GO
 ```
