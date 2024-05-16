@@ -81,12 +81,6 @@ PRINT @oldSsn
 ### *e)*
 
 ```
-... Write here your answer ...
-```
-
-### *f)*
-
-```
 CREATE FUNCTION getProjects ( @ssn INT ) RETURNS TABLE
 AS 
 	RETURN ( SELECT Pname, Plocation
@@ -99,7 +93,7 @@ GO
 SELECT * FROM getProjects(321233765)
 ```
 
-### *g)*
+### *f)*
 
 ```
 CREATE FUNCTION getFunctionaries ( @dno INT ) RETURNS TABLE
@@ -117,7 +111,7 @@ GO
 SELECT * FROM getFunctionaries(2)
 ```
 
-### *h)*
+### *g)*
 
 ```
 DROP FUNCTION IF EXISTS dbo.employeeDeptHighAverage
@@ -169,7 +163,7 @@ GO
 SELECT * FROM dbo.employeeDeptHighAverage(3);
 ```
 
-### *h)* 
+### *h)*
 
 ```
 IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
@@ -193,6 +187,39 @@ BEGIN
     -- Insert the deleted department details into department_deleted
     INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
     SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date FROM deleted;
+END;
+GO
+```
+
+### *h)* 
+
+```
+-- Check if the department_deleted table exists and create it if it doesn't
+IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
+BEGIN
+    CREATE TABLE dbo.department_deleted (
+        Dname VARCHAR(255),
+        Dnumber INT PRIMARY KEY,
+        Mgr_ssn CHAR(9),
+        Mgr_start_date DATE
+    );
+END
+GO
+
+-- Create the INSTEAD OF DELETE trigger
+CREATE TRIGGER trg_InsteadOfDeleteDepartment
+ON dbo.DEPARTMENT
+INSTEAD OF DELETE
+AS
+BEGIN
+    -- Insert the to-be-deleted department details into department_deleted
+    INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
+    SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date FROM deleted;
+    
+    -- Now delete the department from the original table
+    DELETE FROM dbo.DEPARTMENT
+    WHERE Dnumber IN (SELECT Dnumber FROM deleted);
 END;
 GO
 ```
