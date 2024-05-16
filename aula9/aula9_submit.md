@@ -172,7 +172,29 @@ SELECT * FROM dbo.employeeDeptHighAverage(3);
 ### *h)* 
 
 ```
-... Write here your answer ...
+IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
+BEGIN
+    CREATE TABLE dbo.department_deleted (
+        Dname VARCHAR(255),
+        Dnumber INT PRIMARY KEY,
+        Mgr_ssn CHAR(9),
+        Mgr_start_date DATE
+    );
+END
+GO
+
+-- Create the AFTER DELETE trigger
+CREATE TRIGGER trg_AfterDeleteDepartment
+ON dbo.DEPARTMENT
+AFTER DELETE
+AS
+BEGIN
+    -- Insert the deleted department details into department_deleted
+    INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
+    SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date FROM deleted;
+END;
+GO
 ```
 
 ### *i)*
