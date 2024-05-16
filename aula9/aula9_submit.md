@@ -122,16 +122,24 @@ SELECT * FROM getFunctionaries(2)
 ```
 DROP FUNCTION IF EXISTS dbo.employeeDeptHighAverage
 GO
-CREATE FUNCTION dbo.employeeDeptHighAverage ( @dno INT ) RETURNS TABLE
-AS 
- 	RETURN ( SELECT Pname, Pnumber, Plocation, Dnum
-					FROM Project
-					WHERE Project.Dnum = @dno
-	);
+CREATE FUNCTION dbo.employeeDeptHighAverage (@dno INT)
+RETURNS @budgetInfo TABLE (
+		Pname		VARCHAR,
+		Pnumber		INT,
+		Plocation	VARCHAR,
+		Dnum		INT,
+		Budget		DECIMAL(5,2),
+		TotalBudget	DECIMAL(5,2)
+)
+AS
+BEGIN
+	DECLARE @Pname VARCHAR, @Pnumber INT, @Plocation VARCHAR, @Dnum INT, @Budget DECIMAL(5,2), @TotalBudget DECIMAL(5,2);
 
-GO
+	DECLARE budgetCursor CURSOR FOR
 
-SELECT * FROM dbo.employeeDeptHighAverage(3)
+;
+
+SELECT * FROM dbo.employeeDeptHighAverage(3);
 ```
 
 ### *i)*
