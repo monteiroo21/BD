@@ -126,25 +126,147 @@ END
 ### *e)*
 
 ```
-... Write here your answer ...
+CREATE FUNCTION getProjects ( @ssn INT ) RETURNS TABLE
+AS 
+	RETURN ( SELECT Pname, Plocation
+					FROM Project
+					JOIN Works_on ON Project.Pnumber = Works_on.Pno
+					JOIN Employee ON Works_on.Essn = Employee.Ssn
+					WHERE Employee.Ssn = @ssn);
+
+GO
+SELECT * FROM getProjects(321233765)
 ```
 
 ### *f)*
 
 ```
-... Write here your answer ...
+CREATE FUNCTION getFunctionaries ( @dno INT ) RETURNS TABLE
+AS 
+	RETURN ( SELECT *
+					FROM Employee
+					JOIN Department ON Employee.Dno = Department.Dnumber
+					WHERE Department.Dnumber = @dno
+					AND Employee.Salary > (SELECT AVG(Salary)
+													FROM Employee
+													WHERE Employee.Dno = @dno)
+	);
+
+GO
+SELECT * FROM getFunctionaries(2)
 ```
 
 ### *g)*
 
 ```
-... Write here your answer ...
+DROP FUNCTION IF EXISTS dbo.employeeDeptHighAverage
+GO
+CREATE FUNCTION dbo.employeeDeptHighAverage (@dno INT)
+RETURNS @budgetInfo TABLE (
+    Pname        VARCHAR(255),
+    Pnumber      INT,
+    Plocation    VARCHAR(255),
+    Dnum         INT,
+    Budget       DECIMAL(10,2),
+    TotalBudget  DECIMAL(10,2)
+)
+AS
+BEGIN
+    DECLARE @Pname VARCHAR(255), @Pnumber INT, @Plocation VARCHAR(255), @Dnum INT, @Budget DECIMAL(10,2), @TotalBudget DECIMAL(10,2) = 0;
+
+    DECLARE budgetCursor CURSOR FOR
+        SELECT Pname, Pnumber, Plocation, Dnum
+            FROM Project
+            WHERE Dnum = @dno;
+
+    OPEN budgetCursor;
+
+    FETCH NEXT FROM budgetCursor INTO @Pname, @Pnumber, @Plocation, @Dnum;
+    
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        SELECT @Budget = SUM((Salary / 160.0) * Hours * 4) 
+            FROM Works_on
+            JOIN Employee ON Works_on.Essn = Employee.Ssn
+            WHERE Works_on.Pno = @Pnumber;
+
+        SET @TotalBudget = @TotalBudget + ISNULL(@Budget, 0);
+
+        INSERT INTO @budgetInfo(Pname, Pnumber, Plocation, Dnum, Budget, TotalBudget)
+        VALUES (@Pname, @Pnumber, @Plocation, @Dnum, ISNULL(@Budget, 0), @TotalBudget);
+
+        FETCH NEXT FROM budgetCursor INTO @Pname, @Pnumber, @Plocation, @Dnum;
+    END;
+
+    CLOSE budgetCursor;
+    DEALLOCATE budgetCursor;
+
+    RETURN;
+END;
+GO
+
+SELECT * FROM dbo.employeeDeptHighAverage(3);
 ```
 
 ### *h)*
 
 ```
-... Write here your answer ...
+IF (EXISTS (SELECT * 
+				FROM INFORMATION_SCHEMA.TABLES 
+                WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
+BEGIN
+    CREATE TABLE dbo.department_deleted (
+        Dname VARCHAR(255),
+        Dnumber INT PRIMARY KEY,
+        Mgr_ssn CHAR(9),
+        Mgr_start_date DATE
+    );
+END
+GO
+
+ALTER TRIGGER trg_AfterDeleteDepartment
+ON dbo.DEPARTMENT
+AFTER DELETE
+AS
+BEGIN
+  
+    INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
+    SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date
+		FROM deleted;
+END;
+GO
+```
+
+### *h)* 
+
+```
+IF (EXISTS (SELECT * 
+				FROM INFORMATION_SCHEMA.TABLES 
+                WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
+BEGIN
+    CREATE TABLE dbo.department_deleted (
+        Dname VARCHAR(255),
+        Dnumber INT PRIMARY KEY,
+        Mgr_ssn CHAR(9),
+        Mgr_start_date DATE
+    );
+END
+GO
+
+CREATE TRIGGER trg_InsteadOfDeleteDepartment
+ON dbo.DEPARTMENT
+INSTEAD OF DELETE
+AS
+BEGIN
+    INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
+    SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date 
+		FROM deleted;
+    
+    DELETE 
+		FROM dbo.DEPARTMENT
+		WHERE Dnumber IN (SELECT Dnumber FROM deleted);
+END;
+GO
 ```
 
 ### *i)*
