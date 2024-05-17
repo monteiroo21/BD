@@ -70,7 +70,7 @@ PRINT @oldSsn
 
 ```
 GO
-CREATE TRIGGER Exc ON DEPARTMENT
+CREATE TRIGGER Exc ON Department
 AFTER INSERT, UPDATE
 AS
 BEGIN
@@ -101,25 +101,56 @@ INSERT INTO Department VALUES ('Tecnologia', 11, 21312332, '2012-08-02');
 ### *d)*
 
 ```
-... Write here your answer ...                          Ver mais tarde!!!!!!!
-GO 
-ALTER TRIGGER Exd ON Employee
+GO
+CREATE TRIGGER Exd ON Employee
 AFTER INSERT, UPDATE
 AS
 BEGIN
- DECLARE @SalaryEmployee INT
- DECLARE @SalaryMan INT
- DECLARE @EmpSsn INT
+    SET NOCOUNT ON;
 
- SELECT @EmpSsn = I.Ssn, @SalaryEmployee = I.Salary, @SalaryMan = E.Super_ssn 
- FROM inserted AS I
- JOIN Employee AS E ON I.Super_ssn = E.Ssn
+    UPDATE E
+    SET E.Salary = M.Salary - 1
+    FROM Employee AS E
+    JOIN inserted AS I ON E.Ssn = I.Ssn
+    JOIN Employee AS M ON M.Ssn = I.Super_ssn
+    WHERE E.Salary > M.Salary;
 
- IF (@SalaryEmployee > @SalaryMan)
-  BEGIN
-   UPDATE Employee SET Salary = @SalaryMan - 1 WHERE Ssn = @EmpSsn
-  END
-END
+    IF EXISTS (
+        SELECT 1
+        FROM Employee AS E
+        JOIN Department AS D ON E.Dno = D.Dnumber
+        JOIN Employee AS M ON D.Mgr_ssn = M.Ssn
+        WHERE E.Salary > M.Salary
+    )
+    BEGIN
+        UPDATE E
+        SET E.Salary = M.Salary - 1
+        FROM Employee AS E
+        JOIN Department AS D ON E.Dno = D.Dnumber
+        JOIN Employee AS M ON D.Mgr_ssn = M.Ssn
+        WHERE E.Salary > M.Salary;
+    END
+END;
+GO
+
+
+--------
+GO
+USE COMPANY;
+GO
+
+SELECT E.Fname, E.Lname, E.Salary
+FROM Employee E
+JOIN Department D ON E.Ssn = D.Mgr_ssn
+WHERE D.Dnumber = 1;
+
+INSERT INTO Employee
+VALUES ('Test1', 'T', 'Employee', 999999998, '1990-01-01', 'Test Address', 'F', 1300, 21312332, 1);
+
+SELECT Fname, Lname, Salary
+FROM Employee
+WHERE Ssn = 999999998;
+
 
 ```
 
@@ -128,11 +159,11 @@ END
 ```
 CREATE FUNCTION getProjects ( @ssn INT ) RETURNS TABLE
 AS 
-	RETURN ( SELECT Pname, Plocation
-					FROM Project
-					JOIN Works_on ON Project.Pnumber = Works_on.Pno
-					JOIN Employee ON Works_on.Essn = Employee.Ssn
-					WHERE Employee.Ssn = @ssn);
+ RETURN ( SELECT Pname, Plocation
+     FROM Project
+     JOIN Works_on ON Project.Pnumber = Works_on.Pno
+     JOIN Employee ON Works_on.Essn = Employee.Ssn
+     WHERE Employee.Ssn = @ssn);
 
 GO
 SELECT * FROM getProjects(321233765)
@@ -143,14 +174,14 @@ SELECT * FROM getProjects(321233765)
 ```
 CREATE FUNCTION getFunctionaries ( @dno INT ) RETURNS TABLE
 AS 
-	RETURN ( SELECT *
-					FROM Employee
-					JOIN Department ON Employee.Dno = Department.Dnumber
-					WHERE Department.Dnumber = @dno
-					AND Employee.Salary > (SELECT AVG(Salary)
-													FROM Employee
-													WHERE Employee.Dno = @dno)
-	);
+ RETURN ( SELECT *
+     FROM Employee
+     JOIN Department ON Employee.Dno = Department.Dnumber
+     WHERE Department.Dnumber = @dno
+     AND Employee.Salary > (SELECT AVG(Salary)
+             FROM Employee
+             WHERE Employee.Dno = @dno)
+ );
 
 GO
 SELECT * FROM getFunctionaries(2)
@@ -212,7 +243,7 @@ SELECT * FROM dbo.employeeDeptHighAverage(3);
 
 ```
 IF (EXISTS (SELECT * 
-				FROM INFORMATION_SCHEMA.TABLES 
+    FROM INFORMATION_SCHEMA.TABLES 
                 WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
 BEGIN
     CREATE TABLE dbo.department_deleted (
@@ -232,16 +263,16 @@ BEGIN
   
     INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
     SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date
-		FROM deleted;
+  FROM deleted;
 END;
 GO
 ```
 
-### *h)* 
+### *h)*
 
 ```
 IF (EXISTS (SELECT * 
-				FROM INFORMATION_SCHEMA.TABLES 
+    FROM INFORMATION_SCHEMA.TABLES 
                 WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'department_deleted'))
 BEGIN
     CREATE TABLE dbo.department_deleted (
@@ -260,11 +291,11 @@ AS
 BEGIN
     INSERT INTO dbo.department_deleted (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
     SELECT Dname, Dnumber, Mgr_ssn, Mgr_start_date 
-		FROM deleted;
+  FROM deleted;
     
     DELETE 
-		FROM dbo.DEPARTMENT
-		WHERE Dnumber IN (SELECT Dnumber FROM deleted);
+  FROM dbo.DEPARTMENT
+  WHERE Dnumber IN (SELECT Dnumber FROM deleted);
 END;
 GO
 ```
