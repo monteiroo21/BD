@@ -69,13 +69,58 @@ PRINT @oldSsn
 ### *c)*
 
 ```
-... Write here your answer ...
+GO
+CREATE TRIGGER Exc ON DEPARTMENT
+AFTER INSERT, UPDATE
+AS
+BEGIN
+ SET NOCOUNT ON;
+
+ IF EXISTS (SELECT Mgr_ssn FROM Department WHERE Mgr_ssn IS NOT NULL 
+ GROUP BY Mgr_ssn HAVING COUNT(Mgr_ssn) > 1)
+ BEGIN
+  RAISERROR ('Error: Employee is already manager of another department.', 16, 1);
+  ROLLBACK TRANSACTION;
+ END
+END;
+
+
+-------
+
+GO
+USE COMPANY;
+GO
+
+Select * from Department;
+Select * from Employee;
+
+INSERT INTO Department VALUES ('Tecnologia', 11, 21312332, '2012-08-02');
+
 ```
 
 ### *d)*
 
 ```
-... Write here your answer ...
+... Write here your answer ...                          Ver mais tarde!!!!!!!
+GO 
+ALTER TRIGGER Exd ON Employee
+AFTER INSERT, UPDATE
+AS
+BEGIN
+ DECLARE @SalaryEmployee INT
+ DECLARE @SalaryMan INT
+ DECLARE @EmpSsn INT
+
+ SELECT @EmpSsn = I.Ssn, @SalaryEmployee = I.Salary, @SalaryMan = E.Super_ssn 
+ FROM inserted AS I
+ JOIN Employee AS E ON I.Super_ssn = E.Ssn
+
+ IF (@SalaryEmployee > @SalaryMan)
+  BEGIN
+   UPDATE Employee SET Salary = @SalaryMan - 1 WHERE Ssn = @EmpSsn
+  END
+END
+
 ```
 
 ### *e)*
