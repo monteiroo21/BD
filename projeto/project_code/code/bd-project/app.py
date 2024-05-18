@@ -1,21 +1,21 @@
 from flask import Flask, make_response, render_template, render_template_string, request
 
-from bd_project import writers
-
+from bd_project import music
+from bd_project.music import Music
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def base():
-    writers_list = writers.list_all()
-    return render_template("index.html", writers=writers_list)
+    musics = music.list_all()
+    return render_template("index.html")
 
 
-@app.route("/writer-list", methods=["GET"])
-def writer_list():
-    writers_list = writers.list_all()
-    return render_template("writer_list.html", writers=writers_list)
+@app.route("/music-list", methods=["GET"])
+def music_list():
+    musics = music.list_all()
+    return render_template("music_list.html", musics=musics)
     
 
 if __name__ == "__main__":
