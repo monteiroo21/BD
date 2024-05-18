@@ -16,5 +16,5 @@ class Music (NamedTuple):
 def list_all() -> list[Music]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT * FROM Music")
+            cursor.execute("SELECT music_id, title, [year], musGenre_id FROM Music")
             return [Music(*row) for row in cursor.fetchall()]

@@ -9,7 +9,7 @@ app = Flask(__name__)
 @app.route("/")
 def base():
     musics = music.list_all()
-    return render_template("index.html")
+    return render_template("index.html", musics=musics)
 
 
 @app.route("/music-list", methods=["GET"])
