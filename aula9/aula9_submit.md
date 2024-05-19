@@ -303,5 +303,12 @@ GO
 ### *i)*
 
 ```
-... Write here your answer ...
+Mais valias:
+    Stored Procedures: Extensibilidade, performance, segurança e integridade de dados e reutilização de código
+
+    UDFs: Extensibilidade, reutilização de código e simplicidade
+
+Diferenças:
+    - Valores de retorno: Stored Procedures podem retornar zero, um ou múltiplos resultados, e também parâmetros de saída. UDFs devem retornar exatamente um valor e não podem usar parâmetros de saída.
+    - Consultas SQL: UDFs podem ser incorporadas dentro de consultas SQL, enquanto Stored Procedures não podem.
 ```
