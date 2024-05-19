@@ -8,13 +8,20 @@ app = Flask(__name__)
 
 @app.route("/")
 def base():
-    musics = music.list_all()
+    musics = music.list_allMusic()
     return render_template("index.html", musics=musics)
 
 
 @app.route("/music-list", methods=["GET"])
 def music_list():
-    musics = music.list_all()
+    musics = music.list_allMusic()
+    return render_template("music_list.html", musics=musics)
+
+
+@app.route("/music-search", methods=["GET"])
+def music_search():
+    query = request.args.get('query', '')
+    musics = music.search_music(query)
     return render_template("music_list.html", musics=musics)
     
 
