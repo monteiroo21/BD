@@ -282,9 +282,8 @@ INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
     (39, 'New World Symphony', 1893, 26),
     (40, 'Symphony of the Air', 1954, 26),
     (41, 'Enigma Variations', 1899, 26),
-    (42, 'Symphony No. 7', 1813, 26),
-    (43, 'Symphony No. 9', 1824, 1);
-
+    (42, 'Symphony No. 7', 1813, 26);
+    
 
 INSERT INTO Editor (identifier, [name], [location]) VALUES
     (1, 'Schirmer', 'New York'),
