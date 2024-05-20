@@ -21,5 +21,15 @@ def list_Composers() -> list[Composer]:
 			JOIN Writer ON Composer.id=Writer.id
 			JOIN MusicalGenre ON Writer.musGenre_id=MusicalGenre.id""")
             return [Composer(*row) for row in cursor.fetchall()]
+        
+
+def search_composer(query: str) -> list[Composer]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""SELECT Composer.id, Fname, Lname, birthYear, deathYear, MusicalGenre.name FROM Composer
+            JOIN Writer ON Composer.id=Writer.id
+            JOIN MusicalGenre ON Writer.musGenre_id=MusicalGenre.id
+            WHERE Fname LIKE ? OR Lname LIKE ?""", ('%' + query + '%', '%' + query + '%'))
+            return [Composer(*row) for row in cursor.fetchall()]
 
         

@@ -31,6 +31,13 @@ def music_search():
 def composer_list():
     composers = composer.list_Composers()
     return render_template("composer_list.html", composers=composers)
+
+
+@app.route("/composer-search", methods=["GET"])
+def composer_search():
+    query = request.args.get('query', '')
+    composers = composer.search_composer(query)
+    return render_template("composer_list.html", composers=composers)
     
 
 if __name__ == "__main__":
