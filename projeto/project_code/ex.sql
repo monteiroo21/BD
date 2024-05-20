@@ -211,7 +211,12 @@ INSERT INTO MusicalGenre (id, [name]) VALUES
     (23, 'Mixed Choir'),
     (24, 'Blues'),
     (25, 'Electronic'),
-    (26, 'Symphonic');
+    (26, 'Symphonic'),
+    (27, 'Romantic'),
+    (28, 'Medieval'),
+    (29, 'Baroque'),
+    (30, 'Renaissance'),
+    (31, 'Contemporary');
 
 
 INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
@@ -222,9 +227,9 @@ INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
 -- Classical
 INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
     (4, 'Symphony No. 5', 1808, 1),
-    (5, 'Four Seasons', 1725, 1),
-    (6, 'Canon in D', 1680, 1),
-    (7, 'Swan Lake', 1876, 1),
+    (5, 'Four Seasons', 1725, 29),
+    (6, 'Canon in D', 1680, 29),
+    (7, 'Swan Lake', 1876, 27),
     (8, 'Magic Flute', 1791, 1);
 
     
@@ -254,11 +259,10 @@ INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
 
 -- Orchestra
 INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
-    (24, 'Ode to Joy', 1824, 5),
-    (25, 'Bolero', 1928, 5),
-    (26, 'The Nutcracker Suite', 1892, 5),
-    (27, 'Rite of Spring', 1913, 5),
-    (28, 'Carmen Suite', 1875, 5);
+    (25, 'Bolero', 1928, 31),
+    (26, 'The Nutcracker Suite', 1892, 27),
+    (27, 'Rite of Spring', 1913, 31),
+    (28, 'Carmen Suite', 1875, 27);
 
 -- Additional genres with unique and overlapping titles
 -- Jazz Band
@@ -279,11 +283,45 @@ INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
 
 -- Symphonic
 INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
-    (39, 'New World Symphony', 1893, 26),
-    (40, 'Symphony of the Air', 1954, 26),
-    (41, 'Enigma Variations', 1899, 26),
-    (42, 'Symphony No. 7', 1813, 26);
-    
+    (39, 'New World Symphony', 1893, 27),
+    (40, 'Symphony of the Air', 1954, 31),
+    (41, 'Enigma Variations', 1899, 27),
+    (42, 'Symphony No. 7', 1813, 1);
+
+-- Baroque
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (43, 'Canon in D major', 1690, 29),
+    (44, 'Messiah', 1741, 29),
+    (45, 'Brandenburg Concerto No. 3', 1721, 29),
+    (46, 'Water Music', 1717, 29);
+
+-- Medieval
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (47, 'Palästinalied', 1228, 28),
+    (48, 'Cantiga 166', 1270, 28),
+    (49, 'Sumer is icumen in', 1260, 28),
+    (50, 'Le homme armé', 1450, 28);
+
+--Renaissence
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (51, 'Missa Papae Marcelli', 1562, 30),
+    (52, 'Fair Phyllis', 1599, 30),
+    (53, 'Flow My Tears', 1600, 30),
+    (54, 'Ave Maria', 1599, 30);
+
+-- Romantic
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES
+    (55, 'Symphonie Fantastique', 1830, 27),
+    (56, 'Piano Concerto No. 1', 1830, 27),
+    (57, 'The Flying Dutchman', 1843, 27),
+    (58, 'Peer Gynt Suite', 1875, 27);
+
+-- Contemporary
+INSERT INTO Music (music_id, title, [year], musGenre_id) VALUES  
+    (59, 'Symphony No. 5', 1902, 31),
+    (60, 'The Firebird', 1910, 31),
+    (61, 'West Side Story', 1957, 31),
+    (62, 'The Planets', 1918, 31);
 
 INSERT INTO Editor (identifier, [name], [location]) VALUES
     (1, 'Schirmer', 'New York'),
@@ -375,8 +413,8 @@ INSERT INTO Writer (id, Fname, Lname, genre, birthYear, deathYear, musGenre_id) 
     (27, 'Georges', 'Bizet', 'M', '1838-10-25', '1875-06-03', 5),
     (28, 'John', 'Williams', 'M', '1932-02-08', NULL, 5),
     (29, 'Johann', 'Sebastian Bach', 'M', '1685-03-31', '1750-07-28', 5),
-    (30, 'Wolfgang', 'Amadeus Mozart', 'M', '1756-01-27', '1791-12-05', 5),
-    (31, 'Ludwig', 'van Beethoven', 'M', '1770-12-17', '1827-03-26', 5),
+    (30, 'Gustav', 'Holst', 'M', '1874-09-21', '1934-05-25', 31),
+    (31, 'Leonard', 'Bernstein', 'M', '1918-08-25', '1990-10-14', 31),
     (32, 'Johannes', 'Brahms', 'M', '1833-05-07', '1897-04-03', 5),
     (33, 'Antonín', 'Dvořák', 'M', '1841-09-08', '1904-05-01', 5),
     (34, 'Carl', 'Orff', 'M', '1895-07-10', '1982-03-29', 5),
@@ -398,7 +436,10 @@ INSERT INTO Composer (id) VALUES
     (4),
     (5),
     (6),
-    (7);
+    (7),
+    (30),
+    (31),
+    (38);
 
 
 INSERT INTO writes (music_id, composer_id) VALUES
@@ -407,7 +448,11 @@ INSERT INTO writes (music_id, composer_id) VALUES
     (6, 3),
     (7, 4),
     (8, 5),
-    (27, 6);
+    (27, 6),
+    (59, 38),
+    (60, 6),
+    (61, 31),
+    (62, 30);
 
 
 INSERT INTO Arranger (id) VALUES
