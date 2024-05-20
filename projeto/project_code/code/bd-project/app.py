@@ -3,9 +3,11 @@ from flask import Flask, make_response, render_template, render_template_string,
 from bd_project import music
 from bd_project import composer
 from bd_project import editor
+from bd_project import warehouse
 from bd_project.music import Music
 from bd_project.composer import Composer
 from bd_project.editor import Editor
+from bd_project.warehouse import Warehouse
 
 app = Flask(__name__)
 
@@ -51,6 +53,17 @@ def editor_search():
     query = request.args.get('query', '')
     editors = editor.search_editor(query)
     return render_template("editor_list.html", editors=editors)
+
+@app.route("/warehouse-list", methods=["GET"])
+def warehouse_list():
+    warehouses = warehouse.list_warehouse()
+    return render_template("warehouse_list.html", warehouses=warehouses)
+
+@app.route("/warehouse-search", methods=["GET"])
+def warehouse_search():
+    query = request.args.get('query', '')
+    warehouses = warehouse.search_warehouse(query)
+    return render_template("warehouse_list.html", warehouses=warehouses)
     
 
 if __name__ == "__main__":
