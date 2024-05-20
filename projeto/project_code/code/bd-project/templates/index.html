@@ -7,7 +7,7 @@
     <title>Music List</title>
     <script src="https://unpkg.com/htmx.org@1.8.4"></script>
     <style>
-        body {
+        /* body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
@@ -86,22 +86,171 @@
 
         button.update-btn:hover {
             background-color: #218838;
+        } */
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        #tab-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #tab-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #tab-container button:hover {
+            background-color: #0056b3;
+        }
+
+        #tab-container button.active {
+            background-color: #0056b3;
+        }
+
+        #search-form {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        #search-form input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 300px;
+            transition: border-color 0.3s ease;
+        }
+
+        #search-form input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        #search-form button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #search-form button:hover {
+            background-color: #0056b3;
+        }
+
+        #music-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: calc(33.333% - 40px);
+            box-sizing: border-box;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
+
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        button.update-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button.update-btn:hover {
+            background-color: #218838;
         }
     </style>
 </head>
 
 <body>
-    <h1>Music List</h1>
-
-    <form id="search-form" hx-get="/music-search" hx-target="#music-container" hx-trigger="submit">
-        <input type="text" name="query" placeholder="Search for music ...">
-        <button type="submit">Search</button>
-    </form>
-
-    <div id="music-container" hx-get="/music-list" hx-trigger="load">
-        <!-- Music list will be loaded here -->
+    <div>
+        <h1>MusicScore</h1>
+        <div id="tab-container">
+            <button id="musics-tab" class="active">Musics</button>
+            <button id="writers-tab">Writers</button>
+        </div>
     </div>
-    <button hx-get="/music-list" hx-target="#music-container" hx-swap="innerHTML">Update Music List</button>
+
+    <div style="margin-bottom: 40px;">
+        <hr style="margin-top: 10px; margin-bottom: 5px;">
+        <h1 style="margin-left: 100px;">Music List</h1>
+
+        <form id="search-form" hx-get="/music-search" hx-target="#music-container" hx-trigger="submit"
+            style="margin-left: 80px;">
+            <input type="text" name="query" placeholder="Search for music ...">
+            <button type="submit">Search</button>
+            <button hx-get="/music-list" hx-target="#music-container" hx-swap="innerHTML">Update Music List</button>
+        </form>
+
+        <div id="music-container" hx-get="/music-list" hx-trigger="load">
+            <!-- Music list will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('musics-tab').addEventListener('click', function () {
+            this.classList.add('active');
+            document.getElementById('writers-tab').classList.remove('active');
+            // Add your logic to show music list
+        });
+
+        document.getElementById('writers-tab').addEventListener('click', function () {
+            this.classList.add('active');
+            document.getElementById('musics-tab').classList.remove('active');
+            // Add your logic to show writers list
+        });
+    </script>
 </body>
 
 </html>
