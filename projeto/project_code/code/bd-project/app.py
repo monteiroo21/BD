@@ -59,7 +59,14 @@ def editor_search():
 @app.route("/score-list", methods=["GET"])
 def score_list():
     scores = score.list_allScores()
-    return render_template("scores_list.html", scores=score)
+    return render_template("scores_list.html", scores=scores)
+
+
+@app.route("/score-search", methods=["GET"])
+def score_search():
+    query = request.args.get('query', '')
+    scores = score.search_score(query)
+    return render_template("scores_list.html", scores=scores)
     
 
 if __name__ == "__main__":
