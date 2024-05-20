@@ -1,6 +1,7 @@
 from flask import Flask, make_response, render_template, render_template_string, request
 
 from bd_project import music
+from bd_project import composer
 from bd_project.music import Music
 
 app = Flask(__name__)
