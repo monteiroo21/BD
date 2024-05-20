@@ -89,7 +89,7 @@
             width: 100%;
         }
 
-        #music-container, #composer-container {
+        #music-container, #composer-container, #editor-container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
@@ -145,7 +145,8 @@
         <h1>MusicScore</h1>
         <div id="tab-container">
             <button id="musics-tab" class="active">Musics</button>
-            <button id="composer-tab">Composer</button>
+            <button id="composer-tab">Composers</button>
+            <button id="editor-tab">Editors</button>
         </div>
     </div>
 
@@ -162,7 +163,13 @@
         <form id="search-composer" style="display: none;" hx-get="/composer-search" hx-target="#composer-container" hx-trigger="submit" style="margin-left: 80px;">
             <input type="text" name="query" placeholder="Search for composer ...">
             <button type="submit">Search</button>
-            <button hx-get="/composer-list" hx-target="#composer-container" hx-swap="innerHTML">Update Music List</button>
+            <button hx-get="/composer-list" hx-target="#composer-container" hx-swap="innerHTML">Update Composer List</button>
+        </form>
+        
+        <form id="search-editor" style="display: none;" hx-get="/editor-search" hx-target="#editor-container" hx-trigger="submit" style="margin-left: 80px;">
+            <input type="text" name="query" placeholder="Search for editor ...">
+            <button type="submit">Search</button>
+            <button hx-get="/editor-list" hx-target="#editor-container" hx-swap="innerHTML">Update Editor List</button>
         </form>
 
         <div id="music-container" hx-get="/music-list" hx-trigger="load">
@@ -172,27 +179,51 @@
         <div id="composer-container" style="display: none;" hx-get="/composer-list" hx-trigger="load">
             <!-- Composer list will be loaded here -->
         </div>
+
+        <div id="editor-container" style="display: none;" hx-get="/editor-list" hx-trigger="load">
+            <!-- Editor list will be loaded here -->
+        </div>
     </div>
 
     <script>
         document.getElementById('musics-tab').addEventListener('click', function () {
             this.classList.add('active');
             document.getElementById('composer-tab').classList.remove('active');
+            document.getElementById('editor-tab').classList.remove('active');
             document.getElementById('music-container').style.display = 'flex';
             document.getElementById('composer-container').style.display = 'none';
+            document.getElementById('editor-container').style.display = 'none';
             document.getElementById('search-music').style.display = 'flex';
             document.getElementById('search-composer').style.display = 'none';
+            document.getElementById('search-editor').style.display = 'none';
             document.getElementById('list-title').textContent = 'Music List';
         });
 
         document.getElementById('composer-tab').addEventListener('click', function () {
             this.classList.add('active');
             document.getElementById('musics-tab').classList.remove('active');
+            document.getElementById('editor-tab').classList.remove('active');
             document.getElementById('music-container').style.display = 'none';
             document.getElementById('composer-container').style.display = 'flex';
+            document.getElementById('editor-container').style.display = 'none';
             document.getElementById('search-music').style.display = 'none';
             document.getElementById('search-composer').style.display = 'flex';
+            document.getElementById('search-editor').style.display = 'none';
             document.getElementById('list-title').textContent = 'Composer List';
+            
+        });
+
+        document.getElementById('editor-tab').addEventListener('click', function () {
+            this.classList.add('active');
+            document.getElementById('musics-tab').classList.remove('active');
+            document.getElementById('composer-tab').classList.remove('active');
+            document.getElementById('music-container').style.display = 'none';
+            document.getElementById('composer-container').style.display = 'none';
+            document.getElementById('editor-container').style.display = 'flex';
+            document.getElementById('search-music').style.display = 'none';
+            document.getElementById('search-composer').style.display = 'none';
+            document.getElementById('search-editor').style.display = 'flex';
+            document.getElementById('list-title').textContent = 'Editor List';
             
         });
     </script>
