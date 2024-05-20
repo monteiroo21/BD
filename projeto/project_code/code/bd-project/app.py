@@ -69,10 +69,12 @@ def score_search():
     scores = score.search_score(query)
     return render_template("scores_list.html", scores=scores)
 
+
 @app.route("/warehouse-list", methods=["GET"])
 def warehouse_list():
     warehouses = warehouse.list_warehouse()
     return render_template("warehouse_list.html", warehouses=warehouses)
+
 
 @app.route("/warehouse-search", methods=["GET"])
 def warehouse_search():
