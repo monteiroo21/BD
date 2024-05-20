@@ -47,41 +47,6 @@
             background-color: #0056b3;
         }
 
-        #search-form {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-        }
-
-        #search-form input {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 300px;
-            transition: border-color 0.3s ease;
-        }
-
-        #search-form input:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-
-        #search-form button {
-            padding: 10px 20px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #search-form button:hover {
-            background-color: #0056b3;
-        }
-
         #content-container {
             display: flex;
             flex-direction: column;
@@ -89,7 +54,8 @@
             width: 100%;
         }
 
-        #music-container, #composer-container {
+        #music-container,
+        #composer-container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
@@ -122,6 +88,46 @@
             color: #555;
         }
 
+        #search-music,
+        #search-composer {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        #search-music input,
+        #search-composer input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 300px;
+            transition: border-color 0.3s ease;
+        }
+
+        #search-music input:focus,
+        #search-composer input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        #search-music button,
+        #search-composer button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #search-music button:hover,
+        #search-composer button:hover {
+            background-color: #0056b3;
+        }
+
         button.update-btn {
             margin-top: 20px;
             padding: 10px 20px;
@@ -150,19 +156,22 @@
     </div>
 
     <div id="content-container">
-        <hr style="margin-top: 10px; margin-bottom: 5px;">
+        <hr style="margin-top: 20px; margin-bottom: 5px; width: 80%;">
         <h1 id="list-title">Music List</h1>
 
-        <form id="search-music" hx-get="/music-search" hx-target="#music-container" hx-trigger="submit" style="margin-left: 80px;">
+        <form id="search-music" hx-get="/music-search" hx-target="#music-container" hx-trigger="submit"
+            style="margin-left: 80px;">
             <input type="text" name="query" placeholder="Search for music ...">
             <button type="submit">Search</button>
             <button hx-get="/music-list" hx-target="#music-container" hx-swap="innerHTML">Update Music List</button>
         </form>
 
-        <form id="search-composer" style="display: none;" hx-get="/composer-search" hx-target="#composer-container" hx-trigger="submit" style="margin-left: 80px;">
+        <form id="search-composer" style="display: none;" hx-get="/composer-search" hx-target="#composer-container"
+            hx-trigger="submit" style="margin-left: 80px;">
             <input type="text" name="query" placeholder="Search for composer ...">
             <button type="submit">Search</button>
-            <button hx-get="/composer-list" hx-target="#composer-container" hx-swap="innerHTML">Update Music List</button>
+            <button hx-get="/composer-list" hx-target="#composer-container" hx-swap="innerHTML">Update Music
+                List</button>
         </form>
 
         <div id="music-container" hx-get="/music-list" hx-trigger="load">
@@ -193,7 +202,7 @@
             document.getElementById('search-music').style.display = 'none';
             document.getElementById('search-composer').style.display = 'flex';
             document.getElementById('list-title').textContent = 'Composer List';
-            
+
         });
     </script>
 </body>
