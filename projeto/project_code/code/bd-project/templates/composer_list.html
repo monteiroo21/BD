@@ -1,0 +1,9 @@
+{% for composer in composers %}
+<div class="card">
+    <h2>{{ composer.Fname }}  {{ composer.Lname }}</h2>
+    <p>ID: {{ composer.id }}</p>
+    <p>Genre ID: {{ composer.mus_genre }}</p>
+    <p>Birth: {{ composer.birth_year }}</p>
+    <p>Death: {{ composer.death_year }}</p>
+</div>
+{% endfor %}
