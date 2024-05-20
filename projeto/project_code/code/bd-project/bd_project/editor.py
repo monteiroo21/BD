@@ -7,7 +7,7 @@ from pyodbc import IntegrityError
 from bd_project.session import create_connection
 
 class Editor (NamedTuple):
-    namr: str
+    name: str
     identifier: int
     location: str
 
