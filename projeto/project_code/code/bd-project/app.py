@@ -9,7 +9,6 @@ from bd_project.music import Music
 from bd_project.composer import Composer
 from bd_project.editor import Editor
 from bd_project.score import Score
-
 from bd_project.warehouse import Warehouse
 
 app = Flask(__name__)
