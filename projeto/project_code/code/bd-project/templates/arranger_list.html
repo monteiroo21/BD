@@ -1,8 +1,7 @@
 {% for arranger in arrangers %}
 <div class="card">
-    <h2>{{ arranger.fname }}  {{ arranger.lname }}</h2>
-    <p>ID: {{ arranger.identifier }}</p>
-    <p>Genre ID: {{ arranger.name }}</p>
+    <h2>{{ arranger.fname }} {{ arranger.lname }}</h2>
+    <p>Genre: {{ arranger.name }}</p>
     <p>Birth: {{ arranger.birthYear }}</p>
     <p>Death: {{ arranger.deathYear }}</p>
 </div>
