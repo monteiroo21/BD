@@ -17,7 +17,6 @@
             align-items: center;
         }
 
-
         .container {
             display: flex;
             height: 100vh;
@@ -200,7 +199,7 @@
             <input type="text" name="query" placeholder="Search for music ...">
             <button type="submit">Search</button>
             <button hx-get="/music-list" hx-target="#music-container" hx-swap="innerHTML">Update Music List</button>
-            <button class="top-button" hx-get="music" hx-swap="innerHTML" hx-target="#content">New</button>
+            <a href="{{ url_for('new_music_create') }}" class="btn btn-success">New</a>
         </form>
 
         <form id="search-composer" style="display: none;" hx-get="/composer-search" hx-target="#composer-container"
@@ -209,6 +208,7 @@
             <button type="submit">Search</button>
             <button hx-get="/composer-list" hx-target="#composer-container" hx-swap="innerHTML">Update Composer
                 List</button>
+            <button class="top-button" hx-get="composer" hx-swap="innerHTML" hx-target="#content">New</button>
         </form>
 
         <form id="search-editor" style="display: none;" hx-get="/editor-search" hx-target="#editor-container"
@@ -216,6 +216,7 @@
             <input type="text" name="query" placeholder="Search for editor ...">
             <button type="submit">Search</button>
             <button hx-get="/editor-list" hx-target="#editor-container" hx-swap="innerHTML">Update Editor List</button>
+            <button class="top-button" hx-get="editor" hx-swap="innerHTML" hx-target="#content">New</button>
         </form>
 
         <form id="search-score" style="display: none;" hx-get="/score-search" hx-target="#score-container"
@@ -223,6 +224,7 @@
             <input type="text" name="query" placeholder="Search for score ...">
             <button type="submit">Search</button>
             <button hx-get="/score-list" hx-target="#score-container" hx-swap="innerHTML">Update Score List</button>
+            <button class="top-button" hx-get="score" hx-swap="innerHTML" hx-target="#content">New</button>
         </form>
 
         <form id="search-warehouse" style="display: none;" hx-get="/warehouse-search" hx-target="#warehouse-container"
@@ -231,6 +233,7 @@
             <button type="submit">Search</button>
             <button hx-get="/warehouse-list" hx-target="#warehouse-container" hx-swap="innerHTML">Update Warehouse
                 List</button>
+            <button class="top-button" hx-get="warehouse" hx-swap="innerHTML" hx-target="#content">New</button>
         </form>
 
         <form id="search-arranger" style="display: none;" hx-get="/arranger-search" hx-target="#arranger-container"
@@ -239,6 +242,7 @@
             <button type="submit">Search</button>
             <button hx-get="/arranger-list" hx-target="#arranger-container" hx-swap="innerHTML">Update Arranger
                 List</button>
+            <button class="top-button" hx-get="arranger" hx-swap="innerHTML" hx-target="#content">New</button>
         </form>
 
         <div id="music-container" hx-get="/music-list" hx-trigger="load">
