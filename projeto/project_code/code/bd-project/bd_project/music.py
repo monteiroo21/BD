@@ -105,14 +105,11 @@ def create_music(music: Music):
             if genre_id is None:
                 raise ValueError(f"Genre '{music.genre_name}' does not exist")
             genre_id = genre_id[0]
+            cursor.execute("""
+                EXEC insert_music @title=?, @year=?, @musGenre_id=?
+                        """, (music.title, music.year, genre_id))
+            conn.commit()
 
-            try:
-                cursor.execute("""
-                    EXEC insert_music @title=?, @year=?, @musGenre_id=?
-                               """, (music.title, music.year, genre_id))
-                conn.commit()
-            except IntegrityError as e:
-                raise ValueError("Music already exists") from e
 
 def list_genres() -> list[str]:
     with create_connection() as conn:
