@@ -5,11 +5,13 @@ from bd_project import composer
 from bd_project import editor
 from bd_project import score
 from bd_project import warehouse
+from bd_project import arranger
 from bd_project.music import Music
 from bd_project.composer import Composer
 from bd_project.editor import Editor
 from bd_project.score import Score
 from bd_project.warehouse import Warehouse
+from bd_project.arranger import Arranger
 
 app = Flask(__name__)
 
@@ -81,6 +83,18 @@ def warehouse_search():
     query = request.args.get('query', '')
     warehouses = warehouse.search_warehouse(query)
     return render_template("warehouse_list.html", warehouses=warehouses)
+
+@app.route("/arranger-list", methods=["GET"])
+def arranger_list():
+    arrangers = arranger.list_arranger()
+    return render_template("arranger_list.html", arrangers=arrangers)
+
+
+@app.route("/arranger-search", methods=["GET"])
+def arranger_search():
+    query = request.args.get('query', '')
+    arrangers = arranger.search_arranger(query)
+    return render_template("arranger_list.html", arrangers=arrangers)
     
 
 if __name__ == "__main__":
