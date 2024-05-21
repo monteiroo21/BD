@@ -39,3 +39,48 @@ def search_music(query: str) -> list[Music]:
                 JOIN Writer AS wr ON c.id = wr.id
                 WHERE m.title LIKE ?""", ('%' + query + '%',))
             return [Music(*row) for row in cursor.fetchall()]
+        
+
+def create(music: Music):
+    id_str = "".join(random.choices(string.ascii_uppercase + string.digits, k=4))
+
+    with create_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+                INSERT INTO Writer (Fname, Lname)
+                VALUES (?, ?);
+                INSERT INTO Composer (id)
+                VALUES (?);
+                IF NOT EXISTS (SELECT 1 FROM MusicalGenre WHERE name = ?)
+                BEGIN
+                    INSERT INTO MusicalGenre (name)
+                    VALUES (?);
+                END
+                SELECT id FROM MusicalGenre WHERE name = ?;
+                INSERT INTO Music (music_id, title, [year], musGenre_id)
+                VALUES (?, ?, ?, id);
+                INSERT INTO writes (music_id, composer_id)
+                VALUES (?, ?);
+            """,
+            id_str,
+            music.music_id,
+            music.title,
+            music.year,
+            music.genre_name,
+            music.composer_fname,
+            music.composer_lname,
+        )
+
+        cursor.commit()
+
+
+def delete(c_id: str):
+    with create_connection() as conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("DELETE Customers WHERE CustomerID = ?;", c_id)
+            cursor.commit()
+        except IntegrityError as ex:
+            if ex.args[0] == "23000":
+                raise Exception(f"Customer {c_id} cannot be deleted. Probably has orders.") from ex

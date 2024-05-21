@@ -34,6 +34,16 @@ def music_search():
     musics = music.search_music(query)
     return render_template("music_list.html", musics=musics)
 
+@app.route("/music-create", methods=["POST"])
+def new_music_create():
+    new_details = Music(**request.form)
+    music.create(new_details)
+
+    response = make_response(render_template_string(f"Customer {new_details.title} created successfully!"))
+    response.headers["HX-Trigger"] = "refreshContactList"
+
+    return response
+
 
 @app.route("/composer-list", methods=["GET"])
 def composer_list():
