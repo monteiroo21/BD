@@ -18,7 +18,7 @@ CREATE TABLE Music
 (
     music_id INT NOT NULL,
     title VARCHAR(80) NOT NULL,
-    [year] INT,
+    [year] INT					CHECK([year] > 0 and [year] < 2025),
     musGenre_id INT,
 
     PRIMARY KEY(music_id),
@@ -41,7 +41,7 @@ CREATE TABLE Score
     [edition] INT,
     price DECIMAL(10, 2),
     [availability] INT,
-    difficultyGrade INT,
+    difficultyGrade INT		CHECK(difficultyGrade > 0 and difficultyGrade < 6),
     musicId INT NOT NULL,
     editorId INT NOT NULL,
 
@@ -75,10 +75,10 @@ CREATE TABLE Warehouse
 
 CREATE TABLE Customer
 (
-    numCC INT NOT NULL,
+    numCC INT NOT NULL			CHECK(len(numCC) = 8),
     email_address VARCHAR(80),
     numBankAccount INT NOT NULL,
-    cellNumber INT,
+    cellNumber INT				CHECK(len(cellNumber) = 9),
     [name] VARCHAR(60) NOT NULL,
 
     PRIMARY KEY(numCC),
@@ -101,11 +101,12 @@ CREATE TABLE Writer
     id INT NOT NULL,
     Fname VARCHAR(60) NOT NULL,
     Lname VARCHAR(60),
-    genre VARCHAR(1),
-    birthYear INT,
-    deathYear INT,
+    genre VARCHAR(1)	CHECK(genre = 'F' or genre = 'M'),
+    birthYear INT		CHECK(birthYear > 0 and birthYear < 2025),
+    deathYear INT		CHECK(deathYear > 0 and deathYear < 2025),
     musGenre_id INT,
 
+	CHECK(deathYear > birthYear),
     PRIMARY KEY(id),
     FOREIGN KEY(musGenre_id) REFERENCES MusicalGenre(id)
 );
@@ -366,23 +367,23 @@ INSERT INTO Warehouse (id, [name], storage, editorId) VALUES
 
 
 INSERT INTO Customer (numCC, email_address, numBankAccount, cellNumber, [name]) VALUES
-    (1001, 'alice@example.com', 101001, 910000000, 'Alice Smith'),
-    (1002, 'bob@example.com', 101002, 920000000, 'Bob Johnson'),
-    (1003, 'carol@example.com', 101003, 930000000, 'Carol Williams'),
-    (1004, 'dave@example.com', 101004, 940000000, 'Dave Jones'),
-    (1005, 'eve@example.com', 101005, 950000000, 'Eve Brown'),
-    (1006, 'frank@example.com', 101006, 960000000, 'Frank Davis'),
-    (1007, 'grace@example.com', 101007, 970000000, 'Grace Wilson');
+    (10010000, 'alice@example.com', 101001, 910000000, 'Alice Smith'),
+    (10020000, 'bob@example.com', 101002, 920000000, 'Bob Johnson'),
+    (10030000, 'carol@example.com', 101003, 930000000, 'Carol Williams'),
+    (10040000, 'dave@example.com', 101004, 940000000, 'Dave Jones'),
+    (10050000, 'eve@example.com', 101005, 950000000, 'Eve Brown'),
+    (10060000, 'frank@example.com', 101006, 960000000, 'Frank Davis'),
+    (10070000, 'grace@example.com', 101007, 970000000, 'Grace Wilson');
 
 
 INSERT INTO [Transaction] (transaction_id, [value], [date], customer_CC) VALUES
-    (1, 100.00, '2024-01-15', 1001),
-    (2, 150.00, '2024-01-16', 1002),
-    (3, 75.00, '2024-01-17', 1003),
-    (4, 200.00, '2024-01-18', 1004),
-    (5, 120.00, '2024-01-19', 1005),
-    (6, 180.00, '2024-01-20', 1006),
-    (7, 130.00, '2024-01-21', 1007);
+    (1, 100.00, '2024-01-15', 10010000),
+    (2, 150.00, '2024-01-16', 10020000),
+    (3, 75.00, '2024-01-17', 10030000),
+    (4, 200.00, '2024-01-18', 10040000),
+    (5, 120.00, '2024-01-19', 10050000),
+    (6, 180.00, '2024-01-20', 10060000),
+    (7, 130.00, '2024-01-21', 10070000);
 
 
 INSERT INTO Writer (id, Fname, Lname, genre, birthYear, deathYear, musGenre_id) VALUES
@@ -399,19 +400,17 @@ INSERT INTO Writer (id, Fname, Lname, genre, birthYear, deathYear, musGenre_id) 
     (11, 'Charlie', 'Parker', 'M', '1920', '1955', 2),
     (12, 'Dave', 'Brubeck', 'M', '1920', '2012', 2),
     (13, 'Michael', 'Jackson', 'M', '1958', '2009', 3),
-    (14, 'Madonna', 'Ciccone', 'M', '1958', NULL, 3),
+    (14, 'Madonna', 'Ciccone', 'F', '1958', NULL, 3),
     (15, 'Prince', NULL, 'M', '1958', '2016', 3),
-    (16, 'Whitney', 'Houston', 'M', '1963', '2012', 3),
-    (17, 'Lady', 'Gaga', 'M', '1986', NULL, 3),
+    (16, 'Whitney', 'Houston', 'F', '1963', '2012', 3),
+    (17, 'Lady', 'Gaga', 'F', '1986', NULL, 3),
     (18, 'Elvis', 'Presley', 'M', '1935', '1977', 4),
     (19, 'Jimi', 'Hendrix', 'M', '1942', '1970', 4),
     (20, 'Freddie', 'Mercury', 'M', '1946', '1991', 4),
     (21, 'Robert', 'Plant', 'M', '1948', NULL, 4),
     (22, 'John', 'Lennon', 'M', '1940', '1980', 4),
-    (23, 'Ludwig', 'van Beethoven', 'M', '1770', '1827', 5),
     (24, 'Maurice', 'Ravel', 'M', '1875', '1937', 5),
     (25, 'Pyotr', 'Tchaikovsky', 'M', '1840', '1893', 5),
-    (26, 'Igor', 'Stravinsky', 'M', '1882', '1971', 5),
     (27, 'Georges', 'Bizet', 'M', '1838', '1875', 5),
     (28, 'John', 'Williams', 'M', '1932', NULL, 5),
     (29, 'Johann', 'Sebastian Bach', 'M', '1685', '1750', 5),
@@ -426,9 +425,7 @@ INSERT INTO Writer (id, Fname, Lname, genre, birthYear, deathYear, musGenre_id) 
     (38, 'Gustav', 'Mahler', 'M', '1860', '1911', 5),
     (39, 'Richard', 'Strauss', 'M', '1864', '1949', 5),
     (40, 'Giacomo', 'Puccini', 'M', '1858', '1924', 5),
-    (41, 'Gioachino', 'Rossini', 'M', '1792', '1868', 5),
-    (42, 'Giacomo', 'Puccini', 'M', '1858', '1924', 5),
-    (43, 'Ludwig', 'van Beethoven', 'M', '1770', '1827', 5);
+    (41, 'Gioachino', 'Rossini', 'M', '1792', '1868', 5)
 
 
 INSERT INTO Composer (id) VALUES
@@ -489,13 +486,13 @@ INSERT INTO stores (warehouse_id, score_register) VALUES
 
 
 INSERT INTO purchases (costumerCC, score_register) VALUES
-    (1001, 101),
-    (1002, 102),
-    (1003, 103),
-    (1004, 104),
-    (1005, 105),
-    (1006, 106),
-    (1007, 107);
+    (10010000, 101),
+    (10020000, 102),
+    (10030000, 103),
+    (10040000, 104),
+    (10050000, 105),
+    (10060000, 106),
+    (10070000, 107);
 
 
 
