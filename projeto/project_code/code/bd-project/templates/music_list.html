@@ -1,6 +1,13 @@
 {% for music in musics %}
 <div class="card">
-    <h2>{{ music.title }}</h2>
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>{{ music.title }}</h2>
+        <form method="post" action="{{ url_for('delete_music', music_id=music.music_id) }}" class="ml-auto">
+            <button type="submit" class="btn btn-danger btn-sm delete-button">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+    </div>
     <p>Year: {{ music.year }}</p>
     <p>Genre: {{ music.genre_name }}</p>
     <p>Composer: {{ music.composer_fname }} {{music.composer_lname}}</p>

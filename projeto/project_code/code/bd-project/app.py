@@ -181,6 +181,16 @@ def new_music_create():
     return render_template("music_create.html", genres=genres)
 
 
+@app.route("/music-delete/<int:music_id>", methods=["POST"])
+def delete_music(music_id):
+    try:
+        music.delete_music(music_id)
+        flash("Music deleted successfully!")
+    except Exception as e:
+        flash(f"Failed to delete music: {e}")
+    return redirect(url_for('base'))
+
+
 @app.route("/composer-list", methods=["GET"])
 def composer_list():
     composers = composer.list_Composers()

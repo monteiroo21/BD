@@ -116,3 +116,14 @@ def list_genres() -> list[str]:
         with conn.cursor() as cursor:
             cursor.execute("SELECT [name] FROM MusicalGenre")
             return [row[0] for row in cursor.fetchall()]
+        
+def delete_music(music_id: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            try:
+                cursor.execute("DELETE FROM writes WHERE music_id = ?", (music_id,))
+                cursor.execute("DELETE FROM Music WHERE music_id = ?", (music_id,))
+                conn.commit()
+                print(f"Music with ID {music_id} deleted successfully.")
+            except IntegrityError as e:
+                print(f"Failed to delete music with ID {music_id}: {e}")
