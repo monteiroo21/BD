@@ -233,7 +233,7 @@
             <button type="submit">Search</button>
             <button hx-get="/warehouse-list" hx-target="#warehouse-container" hx-swap="innerHTML">Update Warehouse
                 List</button>
-            <button class="top-button" hx-get="warehouse" hx-swap="innerHTML" hx-target="#content">New</button>
+            <a href="{{ url_for('new_warehouse_create') }}" class="btn btn-success">New</a>
         </form>
 
         <form id="search-arranger" style="display: none;" hx-get="/arranger-search" hx-target="#arranger-container"
