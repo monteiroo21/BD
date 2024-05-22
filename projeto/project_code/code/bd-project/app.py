@@ -269,6 +269,24 @@ def warehouse_search():
     warehouses = warehouse.search_warehouse(query)
     return render_template("warehouse_list.html", warehouses=warehouses)
 
+@app.route("/warehouse-create", methods=["GET", "POST"])
+def new_warehouse_create():
+    if request.method == "POST":
+        name = request.form.get("name")
+        storage = request.form.get("storage")
+        editor_name = request.form.get("editor_name")
+        new_details = Warehouse(name, 0, storage, editor_name)
+
+        try:
+            warehouse.create_warehouse(new_details)
+            flash("Warehouse created successfully!")
+            return redirect(url_for('base'))  # Redirecionar para a página principal
+        except ValueError as e:
+            return render_template("warehouse_create.html", editors=warehouse.list_editors(), error=str(e))
+        
+    editors = warehouse.list_editors()
+    return render_template("warehouse_create.html", editors=editors)
+
 @app.route("/arranger-list", methods=["GET"])
 def arranger_list():
     arrangers = arranger.list_arranger()

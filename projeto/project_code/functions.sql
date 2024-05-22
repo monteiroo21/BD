@@ -169,3 +169,35 @@ BEGIN
     END
 END;
 GO
+
+CREATE OR ALTER PROCEDURE add_warehouse
+    @warehouse_name VARCHAR(80),
+    @storage INT,
+    @editorId INT
+AS
+BEGIN
+    -- Check if the editor exists
+    IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @editorId)
+    BEGIN
+        RAISERROR ('Editor does not exist', 16, 1);
+        RETURN;
+    END
+
+    -- Check if the warehouse with the same name and editor already exists
+    IF EXISTS (SELECT 1 FROM Warehouse WHERE name = @warehouse_name AND editorId = @editorId)
+    BEGIN
+        RAISERROR ('Warehouse with this name already exists for the given editor', 16, 1);
+        RETURN;
+    END
+
+    -- Declare variable for new warehouse ID
+    DECLARE @new_warehouse_id INT;
+    SELECT @new_warehouse_id = COALESCE(MAX(id), 0) + 1 FROM Warehouse;
+
+    -- Insert into Warehouse table
+    INSERT INTO Warehouse (id, name, storage, editorId)
+    VALUES (@new_warehouse_id, @warehouse_name, @storage, @editorId);
+
+    PRINT 'Warehouse added successfully.';
+END;
+GO
