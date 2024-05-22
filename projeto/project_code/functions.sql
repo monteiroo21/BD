@@ -105,7 +105,10 @@ CREATE OR ALTER PROCEDURE add_arranger
 AS
 BEGIN
     -- Check if the writer already exists
-    IF NOT EXISTS (SELECT 1 FROM Writer WHERE Fname = @Fname AND Lname = @Lname)
+    DECLARE @existing_writer_id INT;
+    SELECT @existing_writer_id = id FROM Writer WHERE Fname = @Fname AND Lname = @Lname;
+
+    IF @existing_writer_id IS NULL
     BEGIN
         -- Generate new writer ID
         DECLARE @new_writer_id INT;
@@ -115,7 +118,7 @@ BEGIN
         INSERT INTO Writer (id, Fname, Lname, genre, birthYear, deathYear, musGenre_id)
         VALUES (@new_writer_id, @Fname, @Lname, @genre, @birthYear, @deathYear, @musGenre_id);
 
-        -- Insert into Composer table
+        -- Insert into Arranger table
         INSERT INTO Arranger (id)
         VALUES (@new_writer_id);
 
@@ -123,10 +126,23 @@ BEGIN
     END
     ELSE
     BEGIN
-        PRINT 'Arranger already exists.';
+        -- Check if the writer is already a arranger
+        IF NOT EXISTS (SELECT 1 FROM Arranger WHERE id = @existing_writer_id)
+        BEGIN
+            -- Insert into Composer table
+            INSERT INTO Arranger (id)
+            VALUES (@existing_writer_id);
+
+            PRINT 'Existing writer added as arranger successfully.';
+        END
+        ELSE
+        BEGIN
+            PRINT 'Arranger already exists.';
+        END
     END
 END;
 GO
+
 
 CREATE OR ALTER PROCEDURE add_editor
     @name VARCHAR(50),
