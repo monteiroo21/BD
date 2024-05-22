@@ -175,7 +175,8 @@ def new_music_create():
             flash("Music created successfully!")
             return redirect(url_for('base'))  # Redirecionar para a página principal
         except ValueError as e:
-            return render_template("music_create.html", genres=music.list_genres(), error=str(e))
+            flash(f"Error: {e}")
+            return redirect(url_for('base'))
         
     genres = music.list_genres()
     return render_template("music_create.html", genres=genres)
