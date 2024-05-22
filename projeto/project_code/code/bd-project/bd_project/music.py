@@ -106,8 +106,8 @@ def create_music(music: Music):
                 raise ValueError(f"Genre '{music.genre_name}' does not exist")
             genre_id = genre_id[0]
             cursor.execute("""
-                EXEC insert_music @title=?, @year=?, @musGenre_id=?
-                        """, (music.title, music.year, genre_id))
+                EXEC insert_music @title=?, @year=?, @musGenre_id=?, @fname=?, @lname=?
+                        """, (music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
             conn.commit()
 
 

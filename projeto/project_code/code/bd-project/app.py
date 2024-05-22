@@ -161,7 +161,9 @@ def new_music_create():
         title = request.form.get("title")
         year = request.form.get("year")
         genre_name = request.form.get("genre_name")
-        new_details = Music(0, title, int(year), genre_name, '', '')
+        fname = request.form.get("fname")
+        lname = request.form.get("lname")
+        new_details = Music(0, title, int(year), genre_name, fname, lname)
 
         try:
             music.create_music(new_details)
