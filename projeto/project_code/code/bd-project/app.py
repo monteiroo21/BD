@@ -258,6 +258,28 @@ def arranger_search():
     query = request.args.get('query', '')
     arrangers = arranger.search_arranger(query)
     return render_template("arranger_list.html", arrangers=arrangers)
+
+@app.route("/arranger-create", methods=["GET", "POST"])
+def new_arranger_create():
+    if request.method == "POST":
+        fname = request.form.get("fname")
+        lname = request.form.get("lname")
+        genre = request.form.get("genre")
+        birthYear = request.form.get("birthYear")
+        deathYear = request.form.get("deathYear")
+        genre_name = request.form.get("genre_name")
+
+        new_details = Arranger(0, fname, lname, genre, birthYear, deathYear, genre_name)
+
+        try:
+            arranger.create_arranger(new_details)
+            flash("Arranger created successfully!")
+            return redirect(url_for('base'))  # Redirecionar para a página principal
+        except ValueError as e:
+            return render_template("arranger_create.html", genres=arranger.list_genres(), error=str(e))
+        
+    genres = arranger.list_genres()
+    return render_template("arranger_create.html", genres=genres)
     
 
 if __name__ == "__main__":

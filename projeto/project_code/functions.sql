@@ -78,3 +78,36 @@ BEGIN
     END
 END;
 GO
+
+CREATE OR ALTER PROCEDURE add_arranger
+    @Fname VARCHAR(60),
+    @Lname VARCHAR(60),
+    @genre CHAR(1),
+    @birthYear INT,
+    @deathYear INT,
+    @musGenre_id INT
+AS
+BEGIN
+    -- Check if the writer already exists
+    IF NOT EXISTS (SELECT 1 FROM Writer WHERE Fname = @Fname AND Lname = @Lname)
+    BEGIN
+        -- Generate new writer ID
+        DECLARE @new_writer_id INT;
+        SELECT @new_writer_id = COALESCE(MAX(id), 0) + 1 FROM Writer;
+
+        -- Insert into Writer table
+        INSERT INTO Writer (id, Fname, Lname, genre, birthYear, deathYear, musGenre_id)
+        VALUES (@new_writer_id, @Fname, @Lname, @genre, @birthYear, @deathYear, @musGenre_id);
+
+        -- Insert into Composer table
+        INSERT INTO Arranger (id)
+        VALUES (@new_writer_id);
+
+        PRINT 'Arranger added successfully.';
+    END
+    ELSE
+    BEGIN
+        PRINT 'Arranger already exists.';
+    END
+END;
+GO

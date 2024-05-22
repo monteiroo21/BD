@@ -208,7 +208,7 @@
             <button type="submit">Search</button>
             <button hx-get="/composer-list" hx-target="#composer-container" hx-swap="innerHTML">Update Composer
                 List</button>
-                <a href="{{ url_for('new_composer_create') }}" class="btn btn-success">New</a>
+            <a href="{{ url_for('new_composer_create') }}" class="btn btn-success">New</a>
         </form>
 
         <form id="search-editor" style="display: none;" hx-get="/editor-search" hx-target="#editor-container"
@@ -242,7 +242,7 @@
             <button type="submit">Search</button>
             <button hx-get="/arranger-list" hx-target="#arranger-container" hx-swap="innerHTML">Update Arranger
                 List</button>
-            <button class="top-button" hx-get="arranger" hx-swap="innerHTML" hx-target="#content">New</button>
+            <a href="{{ url_for('new_arranger_create') }}" class="btn btn-success">New</a>
         </form>
 
         <div id="music-container" hx-get="/music-list" hx-trigger="load">

@@ -102,8 +102,8 @@ CREATE TABLE Writer
     Fname VARCHAR(60) NOT NULL,
     Lname VARCHAR(60),
     genre VARCHAR(1)	CHECK(genre = 'F' or genre = 'M'),
-    birthYear INT		CHECK(birthYear > 0 and birthYear < 2025),
-    deathYear INT		CHECK(deathYear > 0 and deathYear < 2025),
+    birthYear INT NOT NULL		CHECK(birthYear > 0 and birthYear < 2025),
+    deathYear INT		        CHECK(deathYear > 0 and deathYear < 2025),
     musGenre_id INT,
 
 	CHECK(deathYear > birthYear),
