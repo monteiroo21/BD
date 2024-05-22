@@ -111,3 +111,29 @@ BEGIN
     END
 END;
 GO
+
+CREATE OR ALTER PROCEDURE add_editor
+    @name VARCHAR(50),
+	@location VARCHAR(50)
+
+AS
+BEGIN
+    -- Check if the writer already exists
+    IF NOT EXISTS (SELECT 1 FROM Editor WHERE name = @name)
+    BEGIN
+        -- Generate new writer ID
+        DECLARE @new_editor_id INT;
+        SELECT @new_editor_id = COALESCE(MAX(identifier), 0) + 1 FROM Editor;
+
+        -- Insert into Writer table
+        INSERT INTO Editor (identifier, [name], [location]) 
+        VALUES (@new_editor_id, @name, @location);
+
+        PRINT 'Editor added successfully.';
+    END
+    ELSE
+    BEGIN
+        PRINT 'Editor already exists.';
+    END
+END;
+GO

@@ -221,6 +221,23 @@ def editor_search():
     editors = editor.search_editor(query)
     return render_template("editor_list.html", editors=editors)
 
+@app.route("/editor-create", methods=["GET", "POST"])
+def new_editor_create():
+    if request.method == "POST":
+        name = request.form.get("name")
+        location = request.form.get("location")
+
+        new_details = Editor(name, 0, location)
+
+        try:
+            editor.create_editor(new_details)
+            flash("Editor created successfully!")
+            return redirect(url_for('base'))  # Redirecionar para a página principal
+        except ValueError as e:
+            return render_template("editor_create.html", error=str(e))
+        
+    return render_template("editor_create.html")
+
 
 @app.route("/score-list", methods=["GET"])
 def score_list():

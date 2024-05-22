@@ -28,3 +28,11 @@ def search_editor(query: str) -> list[Editor]:
                             FROM Editor
                 WHERE name LIKE ?""", ('%' + query + '%',))
             return [Editor(*row) for row in cursor.fetchall()]
+        
+def create_editor(editor: Editor):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                EXEC add_editor @name=?, @location=?
+                        """, (editor.name, editor.location))
+            conn.commit()

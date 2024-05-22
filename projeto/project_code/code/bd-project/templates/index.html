@@ -216,7 +216,7 @@
             <input type="text" name="query" placeholder="Search for editor ...">
             <button type="submit">Search</button>
             <button hx-get="/editor-list" hx-target="#editor-container" hx-swap="innerHTML">Update Editor List</button>
-            <button class="top-button" hx-get="editor" hx-swap="innerHTML" hx-target="#content">New</button>
+            <a href="{{ url_for('new_editor_create') }}" class="btn btn-success">New</a>
         </form>
 
         <form id="search-score" style="display: none;" hx-get="/score-search" hx-target="#score-container"

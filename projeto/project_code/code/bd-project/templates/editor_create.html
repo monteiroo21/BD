@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Editor</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        window.onload = function () {
+            var error = "{{ error }}";
+            if (error) {
+                alert(error);
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Create New Editor</h1>
+        <form method="post" action="/editor-create">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" class="form-control" id="location" name="location" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+        <a href="{{ url_for('base') }}" class="btn btn-secondary mt-2">Back to Editor List</a>
+    </div>
+</body>
+
+</html>
