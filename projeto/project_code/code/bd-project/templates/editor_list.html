@@ -1,6 +1,13 @@
 {% for editor in editors %}
 <div class="card">
-    <h2>{{ editor.name }}</h2>
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">{{ editor.name }}</h2>
+        <form method="post" action="{{ url_for('delete_editor_route', editor_id=editor.identifier) }}" class="ml-auto">
+            <button type="submit" class="btn btn-danger btn-sm delete-button">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+    </div>
     <p>Location: {{ editor.location }}</p>
 </div>
 {% endfor %}

@@ -51,3 +51,20 @@ def list_editors() -> list[str]:
         with conn.cursor() as cursor:
             cursor.execute("SELECT [name] FROM Editor")
             return [row[0] for row in cursor.fetchall()]
+        
+def delete_warehouse(warehouse_id: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Check if the warehouse exists
+            cursor.execute("SELECT id FROM Warehouse WHERE id = ?", (warehouse_id,))
+            if cursor.fetchone() is None:
+                raise ValueError(f"Warehouse with ID '{warehouse_id}' does not exist")
+
+            # Delete the warehouse entry from the Warehouse table
+            try:
+                cursor.execute("DELETE FROM Warehouse WHERE id = ?", (warehouse_id,))
+                conn.commit()
+                print(f"Warehouse with ID {warehouse_id} deleted successfully.")
+            except IntegrityError as e:
+                conn.rollback()
+                raise RuntimeError(f"Failed to delete warehouse with ID {warehouse_id}: {e}")

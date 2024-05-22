@@ -64,3 +64,20 @@ def list_musics() -> list[str]:
         with conn.cursor() as cursor:
             cursor.execute("SELECT title FROM Music")
             return [row[0] for row in cursor.fetchall()]
+        
+def delete_score(register_num: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Check if the score exists
+            cursor.execute("SELECT register_num FROM Score WHERE register_num = ?", (register_num,))
+            if cursor.fetchone() is None:
+                raise ValueError(f"Score with register number '{register_num}' does not exist")
+
+            # Delete the score entry from the Score table
+            try:
+                cursor.execute("DELETE FROM Score WHERE register_num = ?", (register_num,))
+                conn.commit()
+                print(f"Score with register number {register_num} deleted successfully.")
+            except IntegrityError as e:
+                conn.rollback()
+                raise RuntimeError(f"Failed to delete score with register number {register_num}: {e}")

@@ -265,6 +265,17 @@ def new_editor_create():
         
     return render_template("editor_create.html")
 
+@app.route("/editor-delete/<int:editor_id>", methods=["POST"])
+def delete_editor_route(editor_id):
+    try:
+        editor.delete_editor(editor_id)
+        flash("Editor deleted successfully!")
+    except ValueError as e:
+        flash(str(e))
+    except RuntimeError as e:
+        flash(str(e))
+    return redirect(url_for('base'))
+
 
 @app.route("/score-list", methods=["GET"])
 def score_list():
@@ -300,6 +311,17 @@ def new_score_create():
     musics = score.list_musics()
     return render_template("score_create.html", editors=editors, musics=musics)
 
+@app.route("/score-delete/<int:register_num>", methods=["POST"])
+def delete_score_route(register_num):
+    try:
+        score.delete_score(register_num)
+        flash("Score deleted successfully!")
+    except ValueError as e:
+        flash(str(e))
+    except RuntimeError as e:
+        flash(str(e))
+    return redirect(url_for('base'))
+
 
 @app.route("/warehouse-list", methods=["GET"])
 def warehouse_list():
@@ -330,6 +352,17 @@ def new_warehouse_create():
         
     editors = warehouse.list_editors()
     return render_template("warehouse_create.html", editors=editors)
+
+@app.route("/warehouse-delete/<int:warehouse_id>", methods=["POST"])
+def delete_warehouse_route(warehouse_id):
+    try:
+        warehouse.delete_warehouse(warehouse_id)
+        flash("Warehouse deleted successfully!")
+    except ValueError as e:
+        flash(str(e))
+    except RuntimeError as e:
+        flash(str(e))
+    return redirect(url_for('base'))
 
 @app.route("/arranger-list", methods=["GET"])
 def arranger_list():

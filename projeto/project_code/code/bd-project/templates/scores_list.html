@@ -1,6 +1,13 @@
 {% for score in scores %}
 <div class="card">
-    <h2>{{ score.music }}</h2>
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">{{ score.music }}</h2>
+        <form method="post" action="{{ url_for('delete_score_route', register_num=score.register_num) }}" class="ml-auto">
+            <button type="submit" class="btn btn-danger btn-sm delete-button">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+    </div>
     <p>Edition: {{ score.edition }}</p>
     <p>Availability: {{ score.availability }}</p>
     <p>Difficulty Grade: {{ score.difficultyGrade }}</p>
