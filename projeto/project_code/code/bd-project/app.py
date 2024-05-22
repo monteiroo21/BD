@@ -226,6 +226,17 @@ def new_composer_create():
     genres = composer.list_genres()
     return render_template("composer_create.html", genres=genres)
 
+@app.route("/composer-delete/<int:composer_id>", methods=["POST"])
+def delete_composer_route(composer_id):
+    try:
+        composer.delete_composer(composer_id)
+        flash("Composer deleted successfully!")
+    except ValueError as e:
+        flash(str(e))
+    except RuntimeError as e:
+        flash(str(e))
+    return redirect(url_for('base'))
+
 @app.route("/editor-list", methods=["GET"])
 def editor_list():
     editors = editor.list_editor()

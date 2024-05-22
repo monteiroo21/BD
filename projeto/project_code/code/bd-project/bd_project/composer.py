@@ -53,5 +53,22 @@ def list_genres() -> list[str]:
         with conn.cursor() as cursor:
             cursor.execute("SELECT [name] FROM MusicalGenre")
             return [row[0] for row in cursor.fetchall()]
+        
+def delete_composer(composer_id: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Check if the composer exists
+            cursor.execute("SELECT id FROM Composer WHERE id = ?", (composer_id,))
+            if cursor.fetchone() is None:
+                raise ValueError(f"Composer with ID '{composer_id}' does not exist")
+
+            # Delete the composer entry from the Composer table
+            try:
+                cursor.execute("DELETE FROM Composer WHERE id = ?", (composer_id,))
+                conn.commit()
+                print(f"Composer with ID {composer_id} deleted successfully.")
+            except IntegrityError as e:
+                conn.rollback()
+                raise RuntimeError(f"Failed to delete composer with ID {composer_id}: {e}")
 
         
