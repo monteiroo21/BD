@@ -208,7 +208,7 @@
             <button type="submit">Search</button>
             <button hx-get="/composer-list" hx-target="#composer-container" hx-swap="innerHTML">Update Composer
                 List</button>
-            <button class="top-button" hx-get="composer" hx-swap="innerHTML" hx-target="#content">New</button>
+                <a href="{{ url_for('new_composer_create') }}" class="btn btn-success">New</a>
         </form>
 
         <form id="search-editor" style="display: none;" hx-get="/editor-search" hx-target="#editor-container"

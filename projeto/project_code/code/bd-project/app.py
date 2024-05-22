@@ -188,6 +188,28 @@ def composer_search():
     composers = composer.search_composer(query)
     return render_template("composer_list.html", composers=composers)
 
+@app.route("/composer-create", methods=["GET", "POST"])
+def new_composer_create():
+    if request.method == "POST":
+        fname = request.form.get("fname")
+        lname = request.form.get("lname")
+        genre = request.form.get("genre")
+        birthYear = request.form.get("birthYear")
+        deathYear = request.form.get("deathYear")
+        genre_name = request.form.get("genre_name")
+
+        new_details = Composer(0, fname, lname, genre, birthYear, deathYear, genre_name)
+
+        try:
+            composer.create_composer(new_details)
+            flash("Composer created successfully!")
+            return redirect(url_for('base'))  # Redirecionar para a página principal
+        except ValueError as e:
+            return render_template("composer_create.html", genres=composer.list_genres(), error=str(e))
+        
+    genres = composer.list_genres()
+    return render_template("composer_create.html", genres=genres)
+
 @app.route("/editor-list", methods=["GET"])
 def editor_list():
     editors = editor.list_editor()

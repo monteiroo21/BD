@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Composer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        window.onload = function () {
+            var error = "{{ error }}";
+            if (error) {
+                alert(error);
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Create New Composer</h1>
+        <form method="post" action="/composer-create">
+            <div class="form-group">
+                <label for="fname">First Name:</label>
+                <input type="text" class="form-control" id="fname" name="fname" required>
+            </div>
+            <div class="form-group">
+                <label for="lname">Last Name:</label>
+                <input type="text" class="form-control" id="lname" name="lname" required>
+            </div>
+            <div class="form-group">
+                <label for="genre">Genre:</label>
+                <input type="text" class="form-control" id="genre" name="genre" required>
+            </div>
+            <div class="form-group">
+                <label for="birthYear">Birth Year:</label>
+                <input type="number" class="form-control" id="birthYear" name="birthYear" required>
+            </div>
+            <div class="form-group">
+                <label for="deathYear">Death Year:</label>
+                <input type="number" class="form-control" id="deathYear" name="deathYear">
+            </div>
+            <div class="form-group">
+                <label for="genre_name">Musical Genre:</label>
+                <select class="form-control" id="genre_name" name="genre_name" required>
+                    {% for genre in genres %}
+                    <option value="{{ genre }}">{{ genre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+        <a href="{{ url_for('base') }}" class="btn btn-secondary mt-2">Back to Composer List</a>
+    </div>
+</body>
+
+</html>
