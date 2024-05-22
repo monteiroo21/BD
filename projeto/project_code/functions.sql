@@ -170,6 +170,7 @@ BEGIN
 END;
 GO
 
+
 CREATE OR ALTER PROCEDURE add_warehouse
     @warehouse_name VARCHAR(80),
     @storage INT,
@@ -199,5 +200,40 @@ BEGIN
     VALUES (@new_warehouse_id, @warehouse_name, @storage, @editorId);
 
     PRINT 'Warehouse added successfully.';
+END;
+GO
+
+CREATE OR ALTER PROCEDURE add_score
+    @edition INT,
+    @price DECIMAL(10, 2),
+    @availability INT,
+    @difficultyGrade INT,
+    @musicId INT,
+    @editorId INT
+AS
+BEGIN
+    -- Check if the music exists
+    IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @musicId)
+    BEGIN
+        RAISERROR ('Music does not exist', 16, 1);
+        RETURN;
+    END
+
+    -- Check if the editor exists
+    IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @editorId)
+    BEGIN
+        RAISERROR ('Editor does not exist', 16, 1);
+        RETURN;
+    END
+
+    -- Declare variable for new score register number
+    DECLARE @new_register_num INT;
+    SELECT @new_register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
+
+    -- Insert into Score table
+    INSERT INTO Score (register_num, edition, price, availability, difficultyGrade, musicId, editorId)
+    VALUES (@new_register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
+
+    PRINT 'Score added successfully.';
 END;
 GO

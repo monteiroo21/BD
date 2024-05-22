@@ -224,7 +224,7 @@
             <input type="text" name="query" placeholder="Search for score ...">
             <button type="submit">Search</button>
             <button hx-get="/score-list" hx-target="#score-container" hx-swap="innerHTML">Update Score List</button>
-            <button class="top-button" hx-get="score" hx-swap="innerHTML" hx-target="#content">New</button>
+            <a href="{{ url_for('new_score_create') }}" class="btn btn-success">New</a>
         </form>
 
         <form id="search-warehouse" style="display: none;" hx-get="/warehouse-search" hx-target="#warehouse-container"

@@ -256,6 +256,28 @@ def score_search():
     scores = score.search_score(query)
     return render_template("scores_list.html", scores=scores)
 
+@app.route("/score-create", methods=["GET", "POST"])
+def new_score_create():
+    if request.method == "POST":
+        edition = request.form.get("edition")
+        price = request.form.get("price")
+        availability = request.form.get("availability")
+        difficultyGrade = request.form.get("difficultyGrade")
+        editor_name = request.form.get("editor_name")
+        music = request.form.get("music")
+        new_details = Score(0, edition, price, availability, difficultyGrade, music, editor_name)
+
+        try:
+            score.create_score(new_details)
+            flash("Score created successfully!")
+            return redirect(url_for('base'))  # Redirecionar para a página principal
+        except ValueError as e:
+            return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), error=str(e))
+        
+    editors = score.list_editors()
+    musics = score.list_musics()
+    return render_template("score_create.html", editors=editors, musics=musics)
+
 
 @app.route("/warehouse-list", methods=["GET"])
 def warehouse_list():
