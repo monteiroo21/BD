@@ -173,6 +173,23 @@
         button.update-btn:hover {
             background-color: #218838;
         }
+
+        .new-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #28a745;
+            /* Verde */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .new-btn:hover {
+            background-color: #218838;
+            /* Tom mais escuro de verde */
+        }
     </style>
 </head>
 
@@ -200,7 +217,7 @@
             <input type="text" name="query" placeholder="Search for music ...">
             <button type="submit">Search</button>
             <button hx-get="/music-list" hx-target="#music-container" hx-swap="innerHTML">Update Music List</button>
-            <a href="{{ url_for('new_music_create') }}" class="btn btn-success">New</a>
+            <a href="{{ url_for('new_music_create') }}" class="new-btn">New</a>
         </form>
 
         <form id="search-composer" style="display: none;" hx-get="/composer-search" hx-target="#composer-container"
@@ -209,7 +226,7 @@
             <button type="submit">Search</button>
             <button hx-get="/composer-list" hx-target="#composer-container" hx-swap="innerHTML">Update Composer
                 List</button>
-            <a href="{{ url_for('new_composer_create') }}" class="btn btn-success">New</a>
+            <a href="{{ url_for('new_composer_create') }}" class="new-btn">New</a>
         </form>
 
         <form id="search-editor" style="display: none;" hx-get="/editor-search" hx-target="#editor-container"
@@ -217,7 +234,7 @@
             <input type="text" name="query" placeholder="Search for editor ...">
             <button type="submit">Search</button>
             <button hx-get="/editor-list" hx-target="#editor-container" hx-swap="innerHTML">Update Editor List</button>
-            <a href="{{ url_for('new_editor_create') }}" class="btn btn-success">New</a>
+            <a href="{{ url_for('new_editor_create') }}" class="new-btn">New</a>
         </form>
 
         <form id="search-score" style="display: none;" hx-get="/score-search" hx-target="#score-container"
@@ -225,7 +242,7 @@
             <input type="text" name="query" placeholder="Search for score ...">
             <button type="submit">Search</button>
             <button hx-get="/score-list" hx-target="#score-container" hx-swap="innerHTML">Update Score List</button>
-            <a href="{{ url_for('new_score_create') }}" class="btn btn-success">New</a>
+            <a href="{{ url_for('new_score_create') }}" class="new-btn">New</a>
         </form>
 
         <form id="search-warehouse" style="display: none;" hx-get="/warehouse-search" hx-target="#warehouse-container"
@@ -234,7 +251,7 @@
             <button type="submit">Search</button>
             <button hx-get="/warehouse-list" hx-target="#warehouse-container" hx-swap="innerHTML">Update Warehouse
                 List</button>
-            <a href="{{ url_for('new_warehouse_create') }}" class="btn btn-success">New</a>
+            <a href="{{ url_for('new_warehouse_create') }}" class="new-btn">New</a>
         </form>
 
         <form id="search-arranger" style="display: none;" hx-get="/arranger-search" hx-target="#arranger-container"
@@ -243,7 +260,7 @@
             <button type="submit">Search</button>
             <button hx-get="/arranger-list" hx-target="#arranger-container" hx-swap="innerHTML">Update Arranger
                 List</button>
-            <a href="{{ url_for('new_arranger_create') }}" class="btn btn-success">New</a>
+            <a href="{{ url_for('new_arranger_create') }}" class="new-btn">New</a>
         </form>
 
         <div id="music-container" hx-get="/music-list" hx-trigger="load">
