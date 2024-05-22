@@ -56,3 +56,20 @@ def list_genres() -> list[str]:
         with conn.cursor() as cursor:
             cursor.execute("SELECT [name] FROM MusicalGenre")
             return [row[0] for row in cursor.fetchall()]
+        
+def delete_arranger(arranger_id: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Check if the arranger exists
+            cursor.execute("SELECT id FROM Arranger WHERE id = ?", (arranger_id,))
+            if cursor.fetchone() is None:
+                raise ValueError(f"Arranger with ID '{arranger_id}' does not exist")
+
+            # Delete the arranger entry from the Arranger table
+            try:
+                cursor.execute("DELETE FROM Arranger WHERE id = ?", (arranger_id,))
+                conn.commit()
+                print(f"Arranger with ID {arranger_id} deleted successfully.")
+            except IntegrityError as e:
+                conn.rollback()
+                raise RuntimeError(f"Failed to delete arranger with ID {arranger_id}: {e}")

@@ -364,6 +364,17 @@ def new_arranger_create():
         
     genres = arranger.list_genres()
     return render_template("arranger_create.html", genres=genres)
+
+@app.route("/arranger-delete/<int:arranger_id>", methods=["POST"])
+def delete_arranger_route(arranger_id):
+    try:
+        arranger.delete_arranger(arranger_id)
+        flash("Arranger deleted successfully!")
+    except ValueError as e:
+        flash(str(e))
+    except RuntimeError as e:
+        flash(str(e))
+    return redirect(url_for('base'))
     
 
 if __name__ == "__main__":
