@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Music Details</h1>
+        <div class="card">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>{{ music.title }}</h2>
+                <!-- Botão para voltar à lista de músicas -->
+                <a href="{{ url_for('music_list') }}" class="btn btn-primary btn-sm">Back to Music List</a>
+            </div>
+            <p>Year: {{ music.year }}</p>
+            <p>Genre: {{ music.genre_name }}</p>
+            <p>Composer: {{ music.composer_fname }} {{ music.composer_lname }}</p>
+            <!-- Se houver scores associados à música, exiba-os -->
+            {% if music.scores %}
+            <h3>Scores:</h3>
+            <ul>
+                {% for score in music.scores %}
+                <li>{{ score.edition }} - {{ score.editor_name }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No scores available for this music.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>
