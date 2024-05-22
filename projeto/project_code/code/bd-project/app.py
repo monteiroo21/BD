@@ -141,6 +141,11 @@ def base():
     musics = music.list_allMusic()
     return render_template("index.html", musics=musics)
 
+@app.route("/")
+def base1():
+    composers = composer.list_Composers()
+    return render_template("index.html", composers=composers)
+
 
 @app.route("/music-list", methods=["GET"])
 def music_list():
@@ -203,7 +208,7 @@ def new_composer_create():
         try:
             composer.create_composer(new_details)
             flash("Composer created successfully!")
-            return redirect(url_for('base'))  # Redirecionar para a página principal
+            return redirect(url_for('base1'))  # Redirecionar para a página principal
         except ValueError as e:
             return render_template("composer_create.html", genres=composer.list_genres(), error=str(e))
         

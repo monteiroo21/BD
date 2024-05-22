@@ -56,7 +56,10 @@ CREATE OR ALTER PROCEDURE add_composer
 AS
 BEGIN
     -- Check if the writer already exists
-    IF NOT EXISTS (SELECT 1 FROM Writer WHERE Fname = @Fname AND Lname = @Lname)
+    DECLARE @existing_writer_id INT;
+    SELECT @existing_writer_id = id FROM Writer WHERE Fname = @Fname AND Lname = @Lname;
+
+    IF @existing_writer_id IS NULL
     BEGIN
         -- Generate new writer ID
         DECLARE @new_writer_id INT;
@@ -74,10 +77,23 @@ BEGIN
     END
     ELSE
     BEGIN
-        PRINT 'Composer already exists.';
+        -- Check if the writer is already a composer
+        IF NOT EXISTS (SELECT 1 FROM Composer WHERE id = @existing_writer_id)
+        BEGIN
+            -- Insert into Composer table
+            INSERT INTO Composer (id)
+            VALUES (@existing_writer_id);
+
+            PRINT 'Existing writer added as composer successfully.';
+        END
+        ELSE
+        BEGIN
+            PRINT 'Composer already exists.';
+        END
     END
 END;
 GO
+
 
 CREATE OR ALTER PROCEDURE add_arranger
     @Fname VARCHAR(60),
