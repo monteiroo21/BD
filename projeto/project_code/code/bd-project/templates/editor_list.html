@@ -9,5 +9,10 @@
         </form>
     </div>
     <p>Location: {{ editor.location }}</p>
+    <form method="get" action="{{ url_for('edit_editor_route', editor_id=editor.identifier) }}" class="d-inline">
+        <button type="submit" class="btn btn-success btn-sm edit-button">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+    </form>
 </div>
 {% endfor %}

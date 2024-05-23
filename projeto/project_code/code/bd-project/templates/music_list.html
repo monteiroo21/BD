@@ -15,5 +15,10 @@
     <p>Year: {{ music.year }}</p>
     <p>Genre: {{ music.genre_name }}</p>
     <p>Composer: {{ music.composer_fname }} {{music.composer_lname}}</p>
+    <form method="get" action="{{ url_for('edit_music_route', music_id=music.music_id) }}" class="d-inline">
+        <button type="submit" class="btn btn-success btn-sm edit-button">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+    </form>
 </div>
 {% endfor %}

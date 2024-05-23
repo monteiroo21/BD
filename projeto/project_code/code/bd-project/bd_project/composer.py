@@ -70,5 +70,23 @@ def delete_composer(composer_id: int):
             except IntegrityError as e:
                 conn.rollback()
                 raise RuntimeError(f"Failed to delete composer with ID {composer_id}: {e}")
+            
+def edit_composer(composer: Composer):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Get the genre ID
+            cursor.execute("SELECT id FROM MusicalGenre WHERE name = ?", (composer.mus_genre,))
+            genre_id = cursor.fetchone()
+            if genre_id is None:
+                raise ValueError(f"Genre '{composer.mus_genre}' does not exist")
+            genre_id = genre_id[0]
+            
+            # Execute the stored procedure to edit the composer
+            cursor.execute("""
+                EXEC edit_composer @music_id=?, @title=?, @year=?, @musGenre_id=?, @fname=?, @lname=?
+            """, (music.music_id, music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
+            
+            # Commit the transaction
+            conn.commit()
 
         
