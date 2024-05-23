@@ -196,6 +196,38 @@ def delete_editor_route(editor_id):
     return redirect(url_for('base'))
 
 
+@app.route("/editor-edit/<int:editor_id>", methods=["GET", "POST"])
+def edit_editor_route(editor_id):
+    if request.method == "POST":
+        name = request.form.get("name")
+        location = request.form.get("location")
+
+        try:
+            # Fetch the current editor details using the editor_id
+            current_editor = editor.get_editor_by_id(editor_id)
+            
+            if current_editor is None:
+                flash("Editor not found", "error")
+                return redirect(url_for('base'))
+            
+            # Update editor details
+            editor.edit_editor(current_editor.name, name, location)
+            flash("Editor edited successfully!")
+            return redirect(url_for('base'))
+        except ValueError as e:
+            flash(f"Error: {e}")
+            return redirect(url_for('base'))
+    else:
+        # Fetch the current editor details for the GET request
+        current_editor = editor.get_editor_by_id(editor_id)
+
+        if current_editor is None:
+            flash("Editor not found", "error")
+            return redirect(url_for('base'))
+        
+        return render_template("editor_edit.html", editor=current_editor)
+
+
 @app.route("/score-list", methods=["GET"])
 def score_list():
     scores = score.list_allScores()

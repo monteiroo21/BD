@@ -53,3 +53,28 @@ def delete_editor(editor_id: int):
             except IntegrityError as e:
                 conn.rollback()
                 raise RuntimeError(f"Failed to delete editor with ID {editor_id}: {e}")
+            
+
+def edit_editor(old_name: str, new_name: str, location: str):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                EXEC edit_editor @old_name=?, @new_name=?, @location=?
+            """, (old_name, new_name, location))
+            conn.commit()
+
+def get_editor_by_id(editor_id: int) -> Editor:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT name, identifier, location
+                FROM Editor
+                WHERE identifier = ?
+            """, (editor_id,))
+            row = cursor.fetchone()
+            
+            if row is None:
+                return None
+            
+            name, identifier, location = row
+            return Editor(name, identifier, location)
