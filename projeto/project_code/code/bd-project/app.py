@@ -78,6 +78,38 @@ def delete_music(music_id):
         flash(f"Failed to delete music: {e}")
     return redirect(url_for('base'))
 
+@app.route("/music-edit/<int:music_id>", methods=["GET", "POST"])
+def edit_music_route(music_id):
+    if request.method == "POST":
+        title = request.form.get("title")
+        year = request.form.get("year")
+        genre_name = request.form.get("genre_name")
+        fname = request.form.get("fname")
+        lname = request.form.get("lname")
+        
+        # Create a Music object with the provided details, including the music_id
+        new_details = Music(music_id, title, int(year), genre_name, fname, lname)
+
+        try:
+            # Call the edit_music function to update the music record
+            music.edit_music(new_details)
+            flash("Music edited successfully!")
+            return redirect(url_for('base'))
+        except ValueError as e:
+            flash(f"Error: {e}")
+            return redirect(url_for('base'))
+    else:
+        # Fetch the current music details for the GET request
+        current_music = music.get_music_by_id(music_id)  # Assuming this function fetches the music details
+
+        if current_music is None:
+            flash("Music not found", "error")
+            return redirect(url_for('base'))
+        
+        # Fetch the list of genres for the dropdown menu in the form
+        genres = music.list_genres()
+        return render_template("music_edit.html", genres=genres, music=current_music)
+
 
 @app.route("/composer-list", methods=["GET"])
 def composer_list():

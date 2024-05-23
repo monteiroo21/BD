@@ -60,6 +60,43 @@ def create_music(music: Music):
                         """, (music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
             conn.commit()
 
+def get_music_by_id(music_id: int) -> Music:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT m.title, m.year, g.name AS genre_name, w.Fname, w.Lname
+                FROM Music m
+                JOIN MusicalGenre g ON m.musGenre_id = g.id
+                JOIN Writes wr ON m.music_id = wr.music_id
+                JOIN Writer w ON wr.composer_id = w.id
+                WHERE m.music_id = ?
+            """, (music_id,))
+            row = cursor.fetchone()
+            
+            if row is None:
+                return None
+            
+            title, year, genre_name, composer_fname, composer_lname = row
+            return Music(music_id, title, year, genre_name, composer_fname, composer_lname)
+
+def edit_music(music: Music):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Get the genre ID
+            cursor.execute("SELECT id FROM MusicalGenre WHERE name = ?", (music.genre_name,))
+            genre_id = cursor.fetchone()
+            if genre_id is None:
+                raise ValueError(f"Genre '{music.genre_name}' does not exist")
+            genre_id = genre_id[0]
+            
+            # Execute the stored procedure to edit the music
+            cursor.execute("""
+                EXEC edit_music @music_id=?, @title=?, @year=?, @musGenre_id=?, @fname=?, @lname=?
+            """, (music.music_id, music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
+            
+            # Commit the transaction
+            conn.commit()
+
 
 def list_genres() -> list[str]:
     with create_connection() as conn:
