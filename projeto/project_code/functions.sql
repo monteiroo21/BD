@@ -237,3 +237,59 @@ BEGIN
     PRINT 'Score added successfully.';
 END;
 GO
+
+
+CREATE OR ALTER PROCEDURE edit_music
+    @music_id INT,
+    @title VARCHAR(80),
+    @year INT,
+    @musGenre_id INT,
+    @fname VARCHAR(50),
+    @lname VARCHAR(50)
+AS
+BEGIN
+    -- Check if the music exists
+    IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @music_id)
+    BEGIN
+        RAISERROR ('Music does not exist', 16, 1);
+        RETURN;
+    END
+
+    -- Declare variable for composer ID
+    DECLARE @composer_id INT;
+
+    -- Check if the writer (composer) exists
+    SELECT @composer_id = id FROM Writer WHERE Fname = @fname AND Lname = @lname;
+
+    IF @composer_id IS NULL
+    BEGIN
+        RAISERROR ('Composer does not exist', 16, 1);
+        RETURN;
+    END
+
+    -- Update Music table
+    UPDATE Music
+    SET title = @title, [year] = @year, musGenre_id = @musGenre_id
+    WHERE music_id = @music_id;
+
+    -- Check if the composer is already in the Composer table
+    IF NOT EXISTS (SELECT 1 FROM Composer WHERE id = @composer_id)
+    BEGIN
+        INSERT INTO Composer (id)
+        VALUES (@composer_id);
+    END
+
+    -- Update Writes table
+    IF EXISTS (SELECT 1 FROM Writes WHERE music_id = @music_id)
+    BEGIN
+        UPDATE Writes
+        SET composer_id = @composer_id
+        WHERE music_id = @music_id;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO Writes (music_id, composer_id)
+        VALUES (@music_id, @composer_id);
+    END
+END;
+GO
