@@ -293,3 +293,49 @@ BEGIN
     END
 END;
 GO
+
+CREATE OR ALTER PROCEDURE edit_composer
+    @old_Fname VARCHAR(60),
+    @old_Lname VARCHAR(60),
+    @new_Fname VARCHAR(60),
+    @new_Lname VARCHAR(60),
+    @genre CHAR(1),
+    @birthYear INT,
+    @deathYear INT,
+    @musGenre_id INT
+AS
+BEGIN
+    -- Check if the composer exists
+    DECLARE @composer_id INT;
+    SELECT @composer_id = w.id 
+    FROM Writer w
+    JOIN Composer c ON w.id = c.id
+    WHERE w.Fname = @old_Fname AND w.Lname = @old_Lname;
+
+    IF @composer_id IS NOT NULL
+    BEGIN
+        -- Check if the new name already exists for a different composer
+        DECLARE @existing_new_composer_id INT;
+        SELECT @existing_new_composer_id = id 
+        FROM Writer 
+        WHERE Fname = @new_Fname AND Lname = @new_Lname AND id != @composer_id;
+
+        IF @existing_new_composer_id IS NOT NULL
+        BEGIN
+            PRINT 'A different composer with the new name already exists.';
+            RETURN;
+        END
+
+        -- Update the Writer table with new name and details
+        UPDATE Writer
+        SET Fname = @new_Fname, Lname = @new_Lname, genre = @genre, birthYear = @birthYear, deathYear = @deathYear, musGenre_id = @musGenre_id
+        WHERE id = @composer_id;
+
+        PRINT 'Composer details updated successfully.';
+    END
+    ELSE
+    BEGIN
+        PRINT 'Composer does not exist.';
+    END
+END;
+GO
