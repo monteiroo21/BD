@@ -57,10 +57,16 @@ def create_music(music: Music):
             if genre_id is None:
                 raise ValueError(f"Genre '{music.genre_name}' does not exist")
             genre_id = genre_id[0]
-            cursor.execute("""
-                EXEC insert_music @title=?, @year=?, @musGenre_id=?, @fname=?, @lname=?
-                        """, (music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
-            conn.commit()
+
+            try:
+                cursor.execute("""
+                    EXEC insert_music @title=?, @year=?, @musGenre_id=?, @fname=?, @lname=?
+                            """, (music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
+                conn.commit()
+            except Exception as e:
+                print(f"Failed to insert music: {e}")
+                conn.rollback()
+
 
 def get_music_by_id(music_id: int) -> Music:
     with create_connection() as conn:
