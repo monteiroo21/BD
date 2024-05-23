@@ -35,6 +35,7 @@ def list_allMusic() -> list[Music]:
                 """)
             return [Music(*row) for row in cursor.fetchall()]
 
+
 def search_music(query: str) -> list[Music]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -47,6 +48,7 @@ def search_music(query: str) -> list[Music]:
                 WHERE m.title LIKE ?""", ('%' + query + '%',))
             return [Music(*row) for row in cursor.fetchall()]
         
+
 def create_music(music: Music):
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -80,24 +82,58 @@ def delete_music(music_id: int):
                 print(f"Failed to delete music with ID {music_id}: {e}")
 
 
+# def detail_music(music_id: int) -> MusicDetails:
+#     with create_connection() as conn:
+#         with conn.cursor() as cursor:
+#             cursor.execute("""
+#                 SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname, s.edition, e.name
+#                 FROM Music AS m
+#                 JOIN MusicalGenre AS g ON m.musGenre_id = g.id
+#                 JOIN writes AS mw ON m.music_id = mw.music_id
+#                 JOIN Composer AS c ON mw.composer_id = c.id
+#                 JOIN Writer AS wr ON c.id = wr.id
+#                 LEFT JOIN Score AS s ON m.music_id = s.musicId
+#                 LEFT JOIN Editor AS e ON s.editorId = e.identifier
+#                 WHERE m.music_id = ?
+#             """, (music_id,))
+
+#             rows = cursor.fetchall()
+#             if not rows:
+#                 raise ValueError(f"Music with ID {music_id} not found")
+#             music_info = rows[0][:6]
+#             scores = [score[6:] for score in rows if score[6]]
+#             return MusicDetails(*music_info, scores)
+
+
 def detail_music(music_id: int) -> MusicDetails:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname, s.edition, e.name
+                SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname,
+                       s.register_num, s.edition, s.availability, s.difficultyGrade, s.price, e.name AS editor_name
                 FROM Music AS m
                 JOIN MusicalGenre AS g ON m.musGenre_id = g.id
                 JOIN writes AS mw ON m.music_id = mw.music_id
                 JOIN Composer AS c ON mw.composer_id = c.id
                 JOIN Writer AS wr ON c.id = wr.id
-                LEFT JOIN Score AS s ON m.music_id = s.music_id
-                LEFT JOIN Editor AS e ON s.editor_id = e.editor_id
+                LEFT JOIN Score AS s ON m.music_id = s.musicId
+                LEFT JOIN Editor AS e ON s.editorId = e.identifier
                 WHERE m.music_id = ?
             """, (music_id,))
+
             rows = cursor.fetchall()
             if not rows:
                 raise ValueError(f"Music with ID {music_id} not found")
-            # Primeira linha contém os detalhes básicos da música
-            music_info = rows[0][:6]  # Excluindo os dados dos scores
-            scores = [score[6:] for score in rows if score[6]]  # Ignorando os scores vazios
+
+            music_info = rows[0][:6]
+            scores = [{
+                "register_num": score[6],
+                "edition": score[7],
+                "availability": score[8],
+                "difficultyGrade": score[9],
+                "price": score[10],
+                "editor_name": score[11]
+            } for score in rows if score[6]]
+            
             return MusicDetails(*music_info, scores)
+

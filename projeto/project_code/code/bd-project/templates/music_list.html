@@ -7,8 +7,7 @@
                 <i class="fas fa-trash-alt"></i>
             </button>
         </form>
-        <a class="btn btn-primary btn-sm details-button" hx-get="{{ url_for('detail_music', music_id=music.music_id) }}"
-            hx-target="#music-details-{{ music.music_id }}" hx-trigger="click">
+        <a class="btn btn-primary btn-sm details-button" href="{{ url_for('detail_music', music_id=music.music_id) }}">
             Details
         </a>
 
