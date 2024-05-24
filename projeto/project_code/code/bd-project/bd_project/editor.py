@@ -29,13 +29,19 @@ def search_editor(query: str) -> list[Editor]:
                 WHERE name LIKE ?""", ('%' + query + '%',))
             return [Editor(*row) for row in cursor.fetchall()]
         
+
 def create_editor(editor: Editor):
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("""
-                EXEC add_editor @name=?, @location=?
-                        """, (editor.name, editor.location))
-            conn.commit()
+            try:
+                cursor.execute("""
+                    EXEC add_editor @name=?, @location=?
+                            """, (editor.name, editor.location))
+                conn.commit()
+            except Exception as e:
+                print(f"Failed to create editor: {e}")
+                conn.rollback()
+
 
 def delete_editor(editor_id: int):
     with create_connection() as conn:
@@ -62,6 +68,7 @@ def edit_editor(old_name: str, new_name: str, location: str):
                 EXEC edit_editor @old_name=?, @new_name=?, @location=?
             """, (old_name, new_name, location))
             conn.commit()
+
 
 def get_editor_by_id(editor_id: int) -> Editor:
     with create_connection() as conn:

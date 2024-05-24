@@ -34,6 +34,7 @@ def search_score(query: str) -> list[Score]:
                             WHERE m.title LIKE ?""", ('%' + query + '%',))
             return [Score(*row) for row in cursor.fetchall()]
         
+
 def create_score(score: Score):
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -42,15 +43,20 @@ def create_score(score: Score):
             if editor_id is None:
                 raise ValueError(f"Editor '{score.editor}' does not exist")
             editor_id = editor_id[0]
-            cursor.execute("SELECT music_id FROM Music WHERE title = ?", (score.music,))
-            music_id = cursor.fetchone()
-            if editor_id is None:
-                raise ValueError(f"Music '{score.music}' does not exist")
-            music_id = music_id[0]
-            cursor.execute("""
-                EXEC add_score @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?
-                        """, (score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id))
-            conn.commit()
+
+            try:
+                cursor.execute("SELECT music_id FROM Music WHERE title = ?", (score.music,))
+                music_id = cursor.fetchone()
+                if editor_id is None:
+                    raise ValueError(f"Music '{score.music}' does not exist")
+                music_id = music_id[0]
+                cursor.execute("""
+                    EXEC add_score @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?
+                            """, (score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id))
+                conn.commit()
+            except Exception as e:
+                print(f"Failed to create score: {e}")
+                conn.rollback()
 
 
 def list_editors() -> list[str]:
@@ -59,12 +65,14 @@ def list_editors() -> list[str]:
             cursor.execute("SELECT [name] FROM Editor")
             return [row[0] for row in cursor.fetchall()]
         
+
 def list_musics() -> list[str]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("SELECT title FROM Music")
             return [row[0] for row in cursor.fetchall()]
         
+
 def delete_score(register_num: int):
     with create_connection() as conn:
         with conn.cursor() as cursor:

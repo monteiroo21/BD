@@ -15,6 +15,7 @@ class Composer (NamedTuple):
     death_year: int
     mus_genre:  str
 
+
 def list_Composers() -> list[Composer]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -42,10 +43,15 @@ def create_composer(composer: Composer):
             if genre_id is None:
                 raise ValueError(f"Genre '{composer.mus_genre}' does not exist")
             genre_id = genre_id[0]
-            cursor.execute("""
-                EXEC add_composer @Fname=?, @Lname=?, @genre=?, @birthYear=?, @deathYear=?, @musGenre_id=?
-                        """, (composer.Fname, composer.Lname, composer.genre, composer.birth_year, composer.death_year, genre_id))
-            conn.commit()
+
+            try:
+                cursor.execute("""
+                    EXEC add_composer @Fname=?, @Lname=?, @genre=?, @birthYear=?, @deathYear=?, @musGenre_id=?
+                            """, (composer.Fname, composer.Lname, composer.genre, composer.birth_year, composer.death_year, genre_id))
+                conn.commit()
+            except Exception as e:
+                print(f"Failed to create composer: {e}")
+                conn.rollback()
 
 
 def list_genres() -> list[str]:
@@ -54,6 +60,7 @@ def list_genres() -> list[str]:
             cursor.execute("SELECT [name] FROM MusicalGenre")
             return [row[0] for row in cursor.fetchall()]
         
+
 def delete_composer(composer_id: int):
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -71,6 +78,7 @@ def delete_composer(composer_id: int):
                 conn.rollback()
                 raise RuntimeError(f"Failed to delete composer with ID {composer_id}: {e}")
             
+
 def edit_composer(composer: Composer):
     with create_connection() as conn:
         with conn.cursor() as cursor:

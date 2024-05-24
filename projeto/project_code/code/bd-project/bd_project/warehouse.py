@@ -32,6 +32,7 @@ def search_warehouse(query: str) -> list[Warehouse]:
                 WHERE w.name LIKE ?""", ('%' + query + '%',))
             return [Warehouse(*row) for row in cursor.fetchall()]
         
+
 def create_warehouse(warehouse: Warehouse):
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -40,10 +41,15 @@ def create_warehouse(warehouse: Warehouse):
             if editor_id is None:
                 raise ValueError(f"Editor '{warehouse.editor_name}' does not exist")
             editor_id = editor_id[0]
-            cursor.execute("""
-                EXEC add_warehouse @warehouse_name=?, @storage=?, @editorId=?
-                        """, (warehouse.name, warehouse.storage, editor_id))
-            conn.commit()
+
+            try:
+                cursor.execute("""
+                    EXEC add_warehouse @warehouse_name=?, @storage=?, @editorId=?
+                            """, (warehouse.name, warehouse.storage, editor_id))
+                conn.commit()
+            except Exception as e:
+                print(f"Failed to create warehouse: {e}")
+                conn.rollback()
 
 
 def list_editors() -> list[str]:
@@ -52,6 +58,7 @@ def list_editors() -> list[str]:
             cursor.execute("SELECT [name] FROM Editor")
             return [row[0] for row in cursor.fetchall()]
         
+
 def delete_warehouse(warehouse_id: int):
     with create_connection() as conn:
         with conn.cursor() as cursor:

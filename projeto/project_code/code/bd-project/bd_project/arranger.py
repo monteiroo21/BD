@@ -37,6 +37,7 @@ def search_arranger(query: str) -> list[Arranger]:
                 WHERE w.Fname LIKE ? OR w.Lname LIKE ?""", ('%' + query + '%', '%' + query + '%'))
             return [Arranger(*row) for row in cursor.fetchall()]
         
+
 def create_arranger(arranger: Arranger):
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -45,10 +46,15 @@ def create_arranger(arranger: Arranger):
             if genre_id is None:
                 raise ValueError(f"Genre '{arranger.name}' does not exist")
             genre_id = genre_id[0]
-            cursor.execute("""
-                EXEC add_arranger @Fname=?, @Lname=?, @genre=?, @birthYear=?, @deathYear=?, @musGenre_id=?
-                        """, (arranger.fname, arranger.lname, arranger.genre, arranger.birthYear, arranger.deathYear, genre_id))
-            conn.commit()
+            
+            try:
+                cursor.execute("""
+                    EXEC add_arranger @Fname=?, @Lname=?, @genre=?, @birthYear=?, @deathYear=?, @musGenre_id=?
+                            """, (arranger.fname, arranger.lname, arranger.genre, arranger.birthYear, arranger.deathYear, genre_id))
+                conn.commit()
+            except Exception as e:
+                print(f"Failed to create arranger: {e}")
+                conn.rollback()
 
 
 def list_genres() -> list[str]:
@@ -56,6 +62,7 @@ def list_genres() -> list[str]:
         with conn.cursor() as cursor:
             cursor.execute("SELECT [name] FROM MusicalGenre")
             return [row[0] for row in cursor.fetchall()]
+        
         
 def delete_arranger(arranger_id: int):
     with create_connection() as conn:
