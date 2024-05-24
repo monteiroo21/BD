@@ -460,6 +460,46 @@ def delete_arranger_route(arranger_id):
     except RuntimeError as e:
         flash(str(e))
     return redirect(url_for('base'))
+
+
+@app.route("/arranger-edit/<int:arranger_id>", methods=["GET", "POST"])
+def edit_arranger_route(arranger_id):
+    if request.method == "POST":
+        fname = request.form.get("fname")
+        lname = request.form.get("lname")
+        genre = request.form.get("genre")
+        birth_year = request.form.get("birthYear")
+        death_year = request.form.get("deathYear")
+        genre_name = request.form.get("genre_name")
+
+        # Fetch the current arranger details
+        current_arranger = arranger.get_arranger_by_id(arranger_id)
+        if current_arranger is None:
+            flash("Arranger not found", "error")
+            return redirect(url_for('base'))
+
+        # Create a Arranger object with the new details
+        new_details = Arranger(arranger_id, fname, lname, genre, birth_year, death_year, genre_name)
+
+        try:
+            # Call the edit_arranger function to update the arranger record
+            arranger.edit_arranger(new_details, current_arranger.fname, current_arranger.lname)
+            flash("Arranger edited successfully!")
+            return redirect(url_for('base'))
+        except ValueError as e:
+            flash(f"Error: {e}")
+            return redirect(url_for('base'))
+    else:
+        # Fetch the current arranger details for the GET request
+        current_arranger = arranger.get_arranger_by_id(arranger_id)
+
+        if current_arranger is None:
+            flash("Arranger not found", "error")
+            return redirect(url_for('base'))
+        
+        # Fetch the list of genres for the dropdown menu in the form
+        genres = arranger.list_genres()
+        return render_template("arranger_edit.html", genres=genres, arranger=current_arranger)
     
 
 if __name__ == "__main__":

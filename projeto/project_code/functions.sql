@@ -409,3 +409,49 @@ BEGIN
     PRINT 'Warehouse details updated successfully.';
 END;
 GO
+
+CREATE OR ALTER PROCEDURE edit_arranger
+    @old_Fname VARCHAR(60),
+    @old_Lname VARCHAR(60),
+    @new_Fname VARCHAR(60),
+    @new_Lname VARCHAR(60),
+    @genre CHAR(1),
+    @birthYear INT,
+    @deathYear INT,
+    @musGenre_id INT
+AS
+BEGIN
+    -- Check if the composer exists
+    DECLARE @arranger_id INT;
+    SELECT @arranger_id = w.id 
+    FROM Writer w
+    JOIN Arranger a ON w.id = a.id
+    WHERE w.Fname = @old_Fname AND w.Lname = @old_Lname;
+
+    IF @arranger_id IS NOT NULL
+    BEGIN
+        -- Check if the new name already exists for a different arranger
+        DECLARE @existing_new_arranger_id INT;
+        SELECT @existing_new_arranger_id = id 
+        FROM Writer 
+        WHERE Fname = @new_Fname AND Lname = @new_Lname AND id != @arranger_id;
+
+        IF @existing_new_arranger_id IS NOT NULL
+        BEGIN
+            PRINT 'A different arranger with the new name already exists.';
+            RETURN;
+        END
+
+        -- Update the Writer table with new name and details
+        UPDATE Writer
+        SET Fname = @new_Fname, Lname = @new_Lname, genre = @genre, birthYear = @birthYear, deathYear = @deathYear, musGenre_id = @musGenre_id
+        WHERE id = @arranger_id;
+
+        PRINT 'Arranger details updated successfully.';
+    END
+    ELSE
+    BEGIN
+        PRINT 'Arranger does not exist.';
+    END
+END;
+GO

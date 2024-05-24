@@ -63,6 +63,40 @@ def list_genres() -> list[str]:
             cursor.execute("SELECT [name] FROM MusicalGenre")
             return [row[0] for row in cursor.fetchall()]
         
+def edit_arranger(arranger: Arranger, old_fname: str, old_lname: str):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Get the genre ID
+            cursor.execute("SELECT id FROM MusicalGenre WHERE name = ?", (arranger.mus_genre,))
+            genre_id = cursor.fetchone()
+            if genre_id is None:
+                raise ValueError(f"Genre '{arranger.mus_genre}' does not exist")
+            genre_id = genre_id[0]
+            
+            # Execute the stored procedure to edit the arranger
+            cursor.execute("""
+                EXEC edit_arranger @old_Fname=?, @old_Lname=?, @new_Fname=?, @new_Lname=?, @genre=?, @birthYear=?, @deathYear=?, @musGenre_id=?
+            """, (old_fname, old_lname, arranger.fname, arranger.lname, arranger.genre, arranger.birthYear, arranger.deathYear, genre_id))
+            
+            # Commit the transaction
+            conn.commit()
+
+
+def get_arranger_by_id(arranger_id: int) -> Arranger:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+            SELECT w.id, w.Fname, w.Lname, w.genre, w.birthYear, w.deathYear, g.name AS mus_genre
+                FROM Writer w
+                JOIN Arranger a ON w.id = a.id
+                JOIN MusicalGenre g ON w.musGenre_id = g.id
+                WHERE w.id = ?
+            """, (arranger_id,))
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return Arranger(*row)
+        
         
 def delete_arranger(arranger_id: int):
     with create_connection() as conn:
