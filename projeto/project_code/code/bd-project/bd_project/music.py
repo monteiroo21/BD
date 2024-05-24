@@ -13,6 +13,15 @@ class Music(NamedTuple):
     composer_lname: str
 
 
+# class MusicDetails(NamedTuple):
+#     music_id: int
+#     title: str
+#     year: int
+#     genre_name: str
+#     composer_fname: str
+#     composer_lname: str
+#     scores: list[str]
+
 class MusicDetails(NamedTuple):
     music_id: int
     title: str
@@ -20,7 +29,7 @@ class MusicDetails(NamedTuple):
     genre_name: str
     composer_fname: str
     composer_lname: str
-    scores: list[str]
+    scores: dict[str, str]
 
 
 def list_allMusic() -> list[Music]:
@@ -87,6 +96,7 @@ def get_music_by_id(music_id: int) -> Music:
             title, year, genre_name, composer_fname, composer_lname = row
             return Music(music_id, title, year, genre_name, composer_fname, composer_lname)
 
+
 def edit_music(music: Music):
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -129,7 +139,8 @@ def delete_music(music_id: int):
 #     with create_connection() as conn:
 #         with conn.cursor() as cursor:
 #             cursor.execute("""
-#                 SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname, s.edition, e.name
+#                 SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname,
+#                        s.register_num, s.edition, s.availability, s.difficultyGrade, s.price, e.name AS editor_name
 #                 FROM Music AS m
 #                 JOIN MusicalGenre AS g ON m.musGenre_id = g.id
 #                 JOIN writes AS mw ON m.music_id = mw.music_id
@@ -143,8 +154,17 @@ def delete_music(music_id: int):
 #             rows = cursor.fetchall()
 #             if not rows:
 #                 raise ValueError(f"Music with ID {music_id} not found")
+
 #             music_info = rows[0][:6]
-#             scores = [score[6:] for score in rows if score[6]]
+#             scores = [{
+#                 "register_num": score[6],
+#                 "edition": score[7],
+#                 "availability": score[8],
+#                 "difficultyGrade": score[9],
+#                 "price": score[10],
+#                 "editor_name": score[11]
+#             } for score in rows if score[6]]
+            
 #             return MusicDetails(*music_info, scores)
 
 
@@ -153,7 +173,8 @@ def detail_music(music_id: int) -> MusicDetails:
         with conn.cursor() as cursor:
             cursor.execute("""
                 SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname,
-                       s.register_num, s.edition, s.availability, s.difficultyGrade, s.price, e.name AS editor_name
+                       s.register_num, s.edition, s.availability, s.difficultyGrade, s.price, e.name AS editor_name,
+                       arw.Fname AS arranger_fname, arw.Lname AS arranger_lname
                 FROM Music AS m
                 JOIN MusicalGenre AS g ON m.musGenre_id = g.id
                 JOIN writes AS mw ON m.music_id = mw.music_id
@@ -161,6 +182,9 @@ def detail_music(music_id: int) -> MusicDetails:
                 JOIN Writer AS wr ON c.id = wr.id
                 LEFT JOIN Score AS s ON m.music_id = s.musicId
                 LEFT JOIN Editor AS e ON s.editorId = e.identifier
+                LEFT JOIN arranges AS a ON s.register_num = a.score_register
+                LEFT JOIN Arranger AS ar ON a.arranger_id = ar.id
+                LEFT JOIN Writer AS arw ON ar.id = arw.id
                 WHERE m.music_id = ?
             """, (music_id,))
 
@@ -175,8 +199,8 @@ def detail_music(music_id: int) -> MusicDetails:
                 "availability": score[8],
                 "difficultyGrade": score[9],
                 "price": score[10],
-                "editor_name": score[11]
+                "editor_name": score[11],
+                "arranger_name": f"{score[12]} {score[13]}" if score[12] and score[13] else None
             } for score in rows if score[6]]
             
             return MusicDetails(*music_info, scores)
-
