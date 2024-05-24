@@ -340,7 +340,7 @@ BEGIN
 END;
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[edit_editor]
+CREATE OR ALTER PROCEDURE edit_editor
     @old_name VARCHAR(50),
     @new_name VARCHAR(50),
     @location VARCHAR(50)

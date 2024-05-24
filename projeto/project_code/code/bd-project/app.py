@@ -163,6 +163,45 @@ def delete_composer_route(composer_id):
         flash(str(e))
     return redirect(url_for('base'))
 
+@app.route("/composer-edit/<int:composer_id>", methods=["GET", "POST"])
+def edit_composer_route(composer_id):
+    if request.method == "POST":
+        fname = request.form.get("fname")
+        lname = request.form.get("lname")
+        genre = request.form.get("genre")
+        birth_year = request.form.get("birthYear")
+        death_year = request.form.get("deathYear")
+        genre_name = request.form.get("genre_name")
+
+        # Fetch the current composer details
+        current_composer = composer.get_composer_by_id(composer_id)
+        if current_composer is None:
+            flash("Composer not found", "error")
+            return redirect(url_for('base'))
+
+        # Create a Composer object with the new details
+        new_details = Composer(composer_id, fname, lname, genre, birth_year, death_year, genre_name)
+
+        try:
+            # Call the edit_composer function to update the composer record
+            composer.edit_composer(new_details, current_composer.Fname, current_composer.Lname)
+            flash("Composer edited successfully!")
+            return redirect(url_for('base'))
+        except ValueError as e:
+            flash(f"Error: {e}")
+            return redirect(url_for('base'))
+    else:
+        # Fetch the current composer details for the GET request
+        current_composer = composer.get_composer_by_id(composer_id)
+
+        if current_composer is None:
+            flash("Composer not found", "error")
+            return redirect(url_for('base'))
+        
+        # Fetch the list of genres for the dropdown menu in the form
+        genres = composer.list_genres()
+        return render_template("composer_edit.html", genres=genres, composer=current_composer)
+
 
 ####################################################################
 

@@ -79,7 +79,7 @@ def delete_composer(composer_id: int):
                 raise RuntimeError(f"Failed to delete composer with ID {composer_id}: {e}")
             
 
-def edit_composer(composer: Composer):
+def edit_composer(composer: Composer, old_fname: str, old_lname: str):
     with create_connection() as conn:
         with conn.cursor() as cursor:
             # Get the genre ID
@@ -91,10 +91,25 @@ def edit_composer(composer: Composer):
             
             # Execute the stored procedure to edit the composer
             cursor.execute("""
-                EXEC edit_composer @music_id=?, @title=?, @year=?, @musGenre_id=?, @fname=?, @lname=?
-            """, (music.music_id, music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
+                EXEC edit_composer @old_Fname=?, @old_Lname=?, @new_Fname=?, @new_Lname=?, @genre=?, @birthYear=?, @deathYear=?, @musGenre_id=?
+            """, (old_fname, old_lname, composer.Fname, composer.Lname, composer.genre, composer.birth_year, composer.death_year, genre_id))
             
             # Commit the transaction
             conn.commit()
+
+def get_composer_by_id(composer_id: int) -> Composer:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT w.id, w.Fname, w.Lname, w.genre, w.birthYear, w.deathYear, g.name AS mus_genre
+                FROM Writer w
+                JOIN Composer c ON w.id = c.id
+                JOIN MusicalGenre g ON w.musGenre_id = g.id
+                WHERE w.id = ?
+            """, (composer_id,))
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return Composer(*row)
 
         
