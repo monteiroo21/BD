@@ -346,18 +346,12 @@ def edit_warehouse_route(warehouse_id):
     if request.method == "POST":
         name = request.form.get("name")
         storage = request.form.get("storage")
-        editor_id = request.form.get("editor_id")
+        editor_name = request.form.get("editor_name")
+
+        new_details = Warehouse(name, warehouse_id, storage, editor_name)
 
         try:
-            # Fetch the current warehouse details using the warehouse_id
-            current_warehouse = warehouse.get_warehouse_by_id(warehouse_id)
-            
-            if current_warehouse is None:
-                flash("Warehouse not found", "error")
-                return redirect(url_for('base'))
-            
-            # Update warehouse details
-            warehouse.edit_warehouse(current_warehouse.identifier, name, storage, editor_id)
+            warehouse.edit_warehouse(new_details)
             flash("Warehouse edited successfully!")
             return redirect(url_for('base'))
         except ValueError as e:
