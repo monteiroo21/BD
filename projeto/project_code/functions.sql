@@ -339,3 +339,33 @@ BEGIN
     END
 END;
 GO
+
+CREATE OR ALTER PROCEDURE edit_warehouse
+    @warehouse_id INT,
+    @new_name VARCHAR(50),
+    @new_storage INT,
+    @new_editor_id INT
+AS
+BEGIN
+    -- Check if the warehouse exists
+    IF NOT EXISTS (SELECT 1 FROM Warehouse WHERE id = @warehouse_id)
+    BEGIN
+        PRINT 'Warehouse does not exist.';
+        RETURN;
+    END
+
+    -- Check if the new editor exists
+    IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @new_editor_id)
+    BEGIN
+        PRINT 'Editor does not exist.';
+        RETURN;
+    END
+
+    -- Update the Warehouse details
+    UPDATE Warehouse
+    SET name = @new_name, storage = @new_storage, editorId = @new_editor_id
+    WHERE id = @warehouse_id;
+
+    PRINT 'Warehouse details updated successfully.';
+END;
+GO

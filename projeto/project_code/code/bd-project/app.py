@@ -341,6 +341,40 @@ def delete_warehouse_route(warehouse_id):
     return redirect(url_for('base'))
 
 
+@app.route("/warehouse-edit/<int:warehouse_id>", methods=["GET", "POST"])
+def edit_warehouse_route(warehouse_id):
+    if request.method == "POST":
+        name = request.form.get("name")
+        storage = request.form.get("storage")
+        editor_id = request.form.get("editor_id")
+
+        try:
+            # Fetch the current warehouse details using the warehouse_id
+            current_warehouse = warehouse.get_warehouse_by_id(warehouse_id)
+            
+            if current_warehouse is None:
+                flash("Warehouse not found", "error")
+                return redirect(url_for('base'))
+            
+            # Update warehouse details
+            warehouse.edit_warehouse(current_warehouse.identifier, name, storage, editor_id)
+            flash("Warehouse edited successfully!")
+            return redirect(url_for('base'))
+        except ValueError as e:
+            flash(f"Error: {e}")
+            return redirect(url_for('base'))
+    else:
+        # Fetch the current warehouse details for the GET request
+        current_warehouse = warehouse.get_warehouse_by_id(warehouse_id)
+        editors = warehouse.list_editors()
+
+        if current_warehouse is None:
+            flash("Warehouse not found", "error")
+            return redirect(url_for('base'))
+        
+        return render_template("warehouse_edit.html", warehouse=current_warehouse, editors=editors)
+
+
 
 ####################################################################
 

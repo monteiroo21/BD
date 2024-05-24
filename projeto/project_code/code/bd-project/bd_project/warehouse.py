@@ -68,3 +68,30 @@ def delete_warehouse(warehouse_id: int):
             except IntegrityError as e:
                 conn.rollback()
                 raise RuntimeError(f"Failed to delete warehouse with ID {warehouse_id}: {e}")
+            
+
+def edit_warehouse(warehouse_id: int, new_name: str, new_storage: int, new_editor_name: str):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Fetch the editor ID for the new editor name
+            cursor.execute("SELECT identifier FROM Editor WHERE name = ?", (new_editor_name,))
+            editor_id = cursor.fetchone()
+            if editor_id is None:
+                raise ValueError(f"Editor '{new_editor_name}' does not exist")
+            editor_id = editor_id[0]
+
+            # Execute the stored procedure to update the warehouse
+            cursor.execute("""
+                EXEC edit_warehouse @warehouse_id=?, @new_name=?, @new_storage=?, @new_editor_id=?
+            """, (warehouse_id, new_name, new_storage, editor_id))
+            conn.commit()
+
+
+def get_warehouse_by_id(warehouse_id: int) -> Warehouse:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT w.name, w.id, w.storage, e.name FROM Warehouse AS w JOIN Editor AS e ON w.editorId = e.identifier WHERE w.id = ?", (warehouse_id,))
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return Warehouse(*row)
