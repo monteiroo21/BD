@@ -340,6 +340,46 @@ BEGIN
 END;
 GO
 
+CREATE OR ALTER PROCEDURE [dbo].[edit_editor]
+    @old_name VARCHAR(50),
+    @new_name VARCHAR(50),
+    @location VARCHAR(50)
+AS
+BEGIN
+    -- Check if the editor exists
+    DECLARE @editor_id INT;
+    SELECT @editor_id = identifier 
+    FROM Editor
+    WHERE [name] = @old_name;
+
+    IF @editor_id IS NOT NULL
+    BEGIN
+        -- Check if the new name already exists for a different editor
+        DECLARE @existing_new_editor_id INT;
+        SELECT @existing_new_editor_id = identifier 
+        FROM Editor 
+        WHERE [name] = @new_name AND identifier != @editor_id;
+
+        IF @existing_new_editor_id IS NOT NULL
+        BEGIN
+            PRINT 'A different editor with the new name already exists.';
+            RETURN;
+        END
+
+        -- Update the Editor table with new name and details
+        UPDATE Editor
+        SET [name] = @new_name, [location] = @location
+        WHERE identifier = @editor_id;
+
+        PRINT 'Editor details updated successfully.';
+    END
+    ELSE
+    BEGIN
+        PRINT 'Editor does not exist.';
+    END
+END
+GO
+
 CREATE OR ALTER PROCEDURE edit_warehouse
     @warehouse_id INT,
     @new_name VARCHAR(50),
