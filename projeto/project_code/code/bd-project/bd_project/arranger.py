@@ -63,6 +63,7 @@ def list_genres() -> list[str]:
             cursor.execute("SELECT [name] FROM MusicalGenre")
             return [row[0] for row in cursor.fetchall()]
         
+        
 def edit_arranger(arranger: Arranger, old_fname: str, old_lname: str):
     with create_connection() as conn:
         with conn.cursor() as cursor:

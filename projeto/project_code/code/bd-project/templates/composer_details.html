@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Composer Details</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .composer-details {
+            margin: 20px;
+        }
+
+        .composer-header {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .composer-info {
+            margin-top: 20px;
+        }
+
+        .musics-list {
+            margin-top: 20px;
+        }
+
+        .music-item {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container composer-details">
+        {% if composer %}
+        <div class="composer-header">
+            <h2>{{ composer.Fname }} {{ composer.Lname }}</h2>
+        </div>
+        <div class="composer-info">
+            <p><strong>Genre:</strong> {{ composer.genre }}</p>
+            <p><strong>Birth Year:</strong> {{ composer.birth_year }}</p>
+            <p><strong>Death Year:</strong> {{ composer.death_year }}</p>
+        </div>
+
+        {% if composer.musics %}
+        <div class="musics-list">
+            <h3>Musics:</h3>
+            <div class="w-100">
+                {% for title, genre in composer.musics.items() %}
+                <div class="music-item">
+                    <p><strong>Title:</strong> {{ title }}</p>
+                    <p><strong>Genre:</strong> {{ genre }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p>No musics found for this composer.</p>
+        {% endif %}
+        {% else %}
+        <p>Composer not found.</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>

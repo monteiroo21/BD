@@ -13,15 +13,6 @@ class Music(NamedTuple):
     composer_lname: str
 
 
-# class MusicDetails(NamedTuple):
-#     music_id: int
-#     title: str
-#     year: int
-#     genre_name: str
-#     composer_fname: str
-#     composer_lname: str
-#     scores: list[str]
-
 class MusicDetails(NamedTuple):
     music_id: int
     title: str
@@ -133,39 +124,6 @@ def delete_music(music_id: int):
                 print(f"Music with ID {music_id} deleted successfully.")
             except IntegrityError as e:
                 print(f"Failed to delete music with ID {music_id}: {e}")
-
-
-# def detail_music(music_id: int) -> MusicDetails:
-#     with create_connection() as conn:
-#         with conn.cursor() as cursor:
-#             cursor.execute("""
-#                 SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname,
-#                        s.register_num, s.edition, s.availability, s.difficultyGrade, s.price, e.name AS editor_name
-#                 FROM Music AS m
-#                 JOIN MusicalGenre AS g ON m.musGenre_id = g.id
-#                 JOIN writes AS mw ON m.music_id = mw.music_id
-#                 JOIN Composer AS c ON mw.composer_id = c.id
-#                 JOIN Writer AS wr ON c.id = wr.id
-#                 LEFT JOIN Score AS s ON m.music_id = s.musicId
-#                 LEFT JOIN Editor AS e ON s.editorId = e.identifier
-#                 WHERE m.music_id = ?
-#             """, (music_id,))
-
-#             rows = cursor.fetchall()
-#             if not rows:
-#                 raise ValueError(f"Music with ID {music_id} not found")
-
-#             music_info = rows[0][:6]
-#             scores = [{
-#                 "register_num": score[6],
-#                 "edition": score[7],
-#                 "availability": score[8],
-#                 "difficultyGrade": score[9],
-#                 "price": score[10],
-#                 "editor_name": score[11]
-#             } for score in rows if score[6]]
-            
-#             return MusicDetails(*music_info, scores)
 
 
 def detail_music(music_id: int) -> MusicDetails:
