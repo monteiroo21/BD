@@ -75,6 +75,7 @@ def delete_music(music_id):
         flash(f"Failed to delete music: {e}")
     return redirect(url_for('base'))
 
+
 @app.route("/music-edit/<int:music_id>", methods=["GET", "POST"])
 def edit_music_route(music_id):
     if request.method == "POST":
@@ -139,9 +140,10 @@ def new_composer_create():
         try:
             composer.create_composer(new_details)
             flash("Composer created successfully!")
-            return redirect(url_for('base1'))  # Redirecionar para a página principal
+            return redirect(url_for('base'))  # Redirecionar para a página principal
         except ValueError as e:
-            return render_template("composer_create.html", genres=composer.list_genres(), error=str(e))
+            print(f"Error: {e}")
+            return redirect(url_for('base'))
         
     genres = composer.list_genres()
     return render_template("composer_create.html", genres=genres)
@@ -556,7 +558,29 @@ def customer_search():
     query = request.args.get('query', '')
     customers = customer.search_customer(query)
     return render_template("customer_list.html", customers=customers)
+
+
+@app.route("/customer-create", methods=["GET", "POST"])
+def new_customer_create():
+    if request.method == "POST":
+        numCC = request.form.get("numCC")
+        email_address = request.form.get("email_address")
+        numBankAccount = request.form.get("numBankAccount")
+        cellNumber = request.form.get("cellNumber")
+        name = request.form.get("name")
+        new_details = Customer(numCC, email_address, numBankAccount, cellNumber, name)
+
+        try:
+            customer.create_customer(new_details)
+            flash("Customer created successfully!")
+            return redirect(url_for('base'))
+        except Exception as e:
+            print(f"Error: {e}")
+            return redirect(url_for('base'))
+        
+    return render_template("customer_create.html")
     
+
 
 if __name__ == "__main__":
     app.run(debug=True)

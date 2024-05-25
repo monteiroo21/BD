@@ -30,9 +30,17 @@ def search_customer(query: str) -> list[Customer]:
             return [Customer(*row) for row in cursor.fetchall()]
         
 
-def delete_customer(numCC: int):
+def create_customer(customer: Customer):
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("DELETE FROM Customer WHERE numCC = ?", (numCC,))
-            if cursor.rowcount == 0:
-                raise ValueError(f"Customer with numCC '{numCC}' does not exist")
+            try:
+                cursor.execute("""
+                    EXEC add_customer @numCC = ?, @email_address = ?, @numBankAccount = ?, @cellNumber = ?, @name = ?
+                    """, 
+                    customer.numCC, customer.email_address, customer.numBankAccount, customer.cellNumber, customer.name
+                )
+                conn.commit()
+                print("Customer added successfully.")
+            except IntegrityError as e:
+                print(f"An error occurred: {e}")
+            

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Customer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Create New Customer</h1>
+        <form method="post" action="/customer-create">
+            <div class="form-group">
+                <label for="numCC">Card Number (CC):</label>
+                <input type="number" class="form-control" id="numCC" name="numCC" required>
+            </div>
+            <div class="form-group">
+                <label for="email_address">Email Address:</label>
+                <input type="email" class="form-control" id="email_address" name="email_address" required>
+            </div>
+            <div class="form-group">
+                <label for="numBankAccount">Bank Account Number:</label>
+                <input type="number" class="form-control" id="numBankAccount" name="numBankAccount" required>
+            </div>
+            <div class="form-group">
+                <label for="cellNumber">Cell Number:</label>
+                <input type="number" class="form-control" id="cellNumber" name="cellNumber" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+        <a href="{{ url_for('base') }}" class="btn btn-secondary mt-2">Back to Customer List</a>
+    </div>
+</body>
+
+</html>

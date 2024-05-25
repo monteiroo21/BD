@@ -315,7 +315,8 @@
             <button type="submit">Search</button>
             <button hx-get="/score-list" hx-target="#score-container" hx-swap="innerHTML">Update Score List</button>
             <a href="{{ url_for('new_score_create') }}" class="new-btn">New</a>
-            <button type="button" class="sort-btn" hx-get="/score-list-sorted" hx-target="#score-container" hx-swap="innerHTML">Sort by Price</button>
+            <button type="button" class="sort-btn" hx-get="/score-list-sorted" hx-target="#score-container"
+                hx-swap="innerHTML">Sort by Price</button>
         </form>
 
         <form id="search-warehouse" style="display: none;" hx-get="/warehouse-search" hx-target="#warehouse-container"
@@ -342,6 +343,7 @@
             <button type="submit">Search</button>
             <button hx-get="/customer-list" hx-target="#customer-container" hx-swap="innerHTML">Update Customer
                 List</button>
+            <a href="{{ url_for('new_customer_create') }}" class="new-btn">New</a>
         </form>
 
         <div id="music-container" hx-get="/music-list" hx-trigger="load">

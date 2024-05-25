@@ -239,6 +239,53 @@ END;
 GO
 
 
+CREATE OR ALTER PROCEDURE add_customer
+    @numCC INT,
+    @email_address VARCHAR(80),
+    @numBankAccount INT,
+    @cellNumber INT,
+    @name VARCHAR(60)
+AS
+BEGIN
+    -- Verifica se o número do cartão de cidadão já existe
+    IF EXISTS (SELECT 1 FROM Customer WHERE numCC = @numCC)
+    BEGIN
+        RAISERROR ('Cliente com este número de cartão de cidadão já existe', 16, 1);
+        RETURN;
+    END
+
+    -- Verifica se o número da conta bancária já está associado a outro cliente
+    IF EXISTS (SELECT 1 FROM Customer WHERE numBankAccount = @numBankAccount)
+    BEGIN
+        RAISERROR ('Número da conta bancária já está associado a outro cliente', 16, 1);
+        RETURN;
+    END
+
+    -- Verifica se o número de celular tem exatamente 9 dígitos
+    IF LEN(CAST(@cellNumber AS VARCHAR(10))) != 9
+    BEGIN
+        RAISERROR ('Número de celular deve ter exatamente 9 dígitos', 16, 1);
+        RETURN;
+    END
+
+    -- Verifica se o número do cartão de cidadão tem exatamente 8 dígitos
+    IF LEN(CAST(@numCC AS VARCHAR(10))) != 8
+    BEGIN
+        RAISERROR ('Número do cartão de cidadão deve ter exatamente 8 dígitos', 16, 1);
+        RETURN;
+    END
+
+    -- Insere o novo cliente
+    INSERT INTO Customer (numCC, email_address, numBankAccount, cellNumber, [name])
+    VALUES (@numCC, @email_address, @numBankAccount, @cellNumber, @name);
+
+    PRINT 'Cliente adicionado com sucesso.';
+END;
+GO
+
+
+
+
 CREATE OR ALTER PROCEDURE edit_music
     @music_id INT,
     @title VARCHAR(80),
