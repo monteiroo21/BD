@@ -1,6 +1,6 @@
 from flask import Flask, flash, make_response, render_template, render_template_string, request, redirect, url_for
 
-from bd_project import music
+from bd_project import customer, music
 from bd_project import composer
 from bd_project import editor
 from bd_project import score
@@ -12,7 +12,7 @@ from bd_project.editor import Editor
 from bd_project.score import Score
 from bd_project.warehouse import Warehouse
 from bd_project.arranger import Arranger
-from bd_project.music import MusicDetails
+from bd_project.customer import Customer
 
 
 app = Flask(__name__)
@@ -23,11 +23,6 @@ app.secret_key = 'supersecretkey'
 def base():
     musics = music.list_allMusic()
     return render_template("index.html", musics=musics)
-
-@app.route("/")
-def base1():
-    composers = composer.list_Composers()
-    return render_template("index.html", composers=composers)
 
 
 @app.route("/music-list", methods=["GET"])
@@ -128,6 +123,7 @@ def composer_search():
     composers = composer.search_composer(query)
     return render_template("composer_list.html", composers=composers)
 
+
 @app.route("/composer-create", methods=["GET", "POST"])
 def new_composer_create():
     if request.method == "POST":
@@ -150,6 +146,7 @@ def new_composer_create():
     genres = composer.list_genres()
     return render_template("composer_create.html", genres=genres)
 
+
 @app.route("/composer-delete/<int:composer_id>", methods=["POST"])
 def delete_composer_route(composer_id):
     try:
@@ -160,6 +157,7 @@ def delete_composer_route(composer_id):
     except RuntimeError as e:
         flash(str(e))
     return redirect(url_for('base'))
+
 
 @app.route("/composer-edit/<int:composer_id>", methods=["GET", "POST"])
 def edit_composer_route(composer_id):
@@ -504,6 +502,21 @@ def edit_arranger_route(arranger_id):
         # Fetch the list of genres for the dropdown menu in the form
         genres = arranger.list_genres()
         return render_template("arranger_edit.html", genres=genres, arranger=current_arranger)
+    
+
+####################################################################
+
+@app.route("/customer-list", methods=["GET"])
+def customer_list():
+    customers = customer.list_customers()
+    return render_template("customer_list.html", customers=customers)
+
+
+@app.route("/customer-search", methods=["GET"])
+def customer_search():
+    query = request.args.get('query', '')
+    customers = customer.search_customer(query)
+    return render_template("customer_list.html", customers=customers)
     
 
 if __name__ == "__main__":
