@@ -67,10 +67,10 @@ def edit_arranger(arranger: Arranger, old_fname: str, old_lname: str):
     with create_connection() as conn:
         with conn.cursor() as cursor:
             # Get the genre ID
-            cursor.execute("SELECT id FROM MusicalGenre WHERE name = ?", (arranger.mus_genre,))
+            cursor.execute("SELECT id FROM MusicalGenre WHERE name = ?", (arranger.name,))
             genre_id = cursor.fetchone()
             if genre_id is None:
-                raise ValueError(f"Genre '{arranger.mus_genre}' does not exist")
+                raise ValueError(f"Genre '{arranger.name}' does not exist")
             genre_id = genre_id[0]
             
             # Execute the stored procedure to edit the arranger
