@@ -284,8 +284,6 @@ END;
 GO
 
 
-
-
 CREATE OR ALTER PROCEDURE edit_music
     @music_id INT,
     @title VARCHAR(80),
