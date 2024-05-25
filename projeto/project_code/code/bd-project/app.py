@@ -65,11 +65,6 @@ def new_music_create():
     return render_template("music_create.html", genres=genres)
 
 
-# @app.route("/music-details/<int:music_id>", methods=["GET"])
-# def detail_music(music_id):
-#     music_details = music.detail_music(music_id)
-#     return render_template("music_details.html", music_details=music_details)
-
 @app.route("/music-details/<int:music_id>", methods=["GET"])
 def detail_music(music_id):
     music_details = music.detail_music(music_id)
@@ -116,6 +111,9 @@ def edit_music_route(music_id):
         # Fetch the list of genres for the dropdown menu in the form
         genres = music.list_genres()
         return render_template("music_edit.html", genres=genres, music=current_music)
+    
+
+####################################################################
 
 
 @app.route("/composer-list", methods=["GET"])
@@ -201,6 +199,12 @@ def edit_composer_route(composer_id):
         # Fetch the list of genres for the dropdown menu in the form
         genres = composer.list_genres()
         return render_template("composer_edit.html", genres=genres, composer=current_composer)
+    
+
+@app.route("/composer-details/<int:composer_id>", methods=["GET"])
+def detail_composer(composer_id):
+    composer_details = composer.detail_composer(composer_id)
+    return render_template("composer_details.html", composer=composer_details)
 
 
 ####################################################################

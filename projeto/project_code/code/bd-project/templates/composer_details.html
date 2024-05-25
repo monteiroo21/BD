@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Details</title>
+    <title>Composer Details</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
@@ -36,7 +36,7 @@
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 100%;
+            width: 50%;
             box-sizing: border-box;
             transition: box-shadow 0.3s ease;
             margin-bottom: 20px;
@@ -86,47 +86,43 @@
         .delete-button:hover {
             background-color: #c82333;
         }
+
+        .composer-info {
+            margin-left: -530px;
+            /* Ajuste a margem para a esquerda */
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1 style="margin-top: 10px; margin-bottom: 30px;">Music Details</h1>
-        <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2 style="margin-right: 200px;">{{ music.title }}</h2>
-                <a href="{{ url_for('base') }}" class="btn btn-primary btn-sm ml-auto">Back to Music List</a>
-            </div>
-            <p>Year: {{ music.year }}</p>
-            <p>Genre: {{ music.genre_name }}</p>
-            <p>Composer: {{ music.composer_fname }} {{ music.composer_lname }}</p>
+        <h1 style="margin-top: 10px; margin-bottom: 30px;">Composer Details</h1>
+        {% if composer %}
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 style="margin-right: 200px;">{{ composer.Fname }} {{ composer.Lname }}</h2>
+            <a href="{{ url_for('base') }}" class="btn btn-primary btn-sm ml-auto">Back to Composer List</a>
         </div>
-        {% if music.scores %}
-        <h3>Scores:</h3>
+        <div class="composer-info">
+            <p><strong>Genre:</strong> {{ composer.genre }}</p>
+            <p><strong>Birth Year:</strong> {{ composer.birth_year }}</p>
+            <p><strong>Death Year:</strong> {{ composer.death_year }}</p>
+        </div>
+
+        {% if composer.musics %}
+        <h3 style="margin-top: 20px; margin-bottom: 15px;">Musics:</h3>
         <div class="w-100">
-            {% for score in music.scores %}
-            <div class="card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <p class="mb-0">Edition: {{ score.edition }}</p>
-                    <form method="post" action="{{ url_for('delete_score_route', register_num=score.register_num) }}"
-                        class="ml-auto">
-                        <button type="submit" class="btn btn-danger btn-sm delete-button">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </form>
-                </div>
-                <p>Availability: {{ score.availability }}</p>
-                <p>Difficulty Grade: {{ score.difficultyGrade }}</p>
-                <p>Price: {{ score.price }}$</p>
-                <p>Editor: {{ score.editor_name }}</p>
-                {% if score.arranger_name %}
-                <p>Arranger: {{ score.arranger_name }}</p>
-                {% endif %}
+            {% for title, genre in composer.musics.items() %}
+            <div class="card music-item">
+                <p><strong>Title:</strong> {{ title }}</p>
+                <p><strong>Genre:</strong> {{ genre }}</p>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <p>No scores available for this music.</p>
+        <p>No musics found for this composer.</p>
+        {% endif %}
+        {% else %}
+        <p>Composer not found.</p>
         {% endif %}
     </div>
 </body>

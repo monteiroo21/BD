@@ -16,6 +16,17 @@ class Composer (NamedTuple):
     mus_genre:  str
 
 
+class ComposerDetails(NamedTuple):
+    id: int
+    Fname:  str
+    Lname:  str
+    genre:  str
+    birth_year: int
+    death_year: int
+    mus_genre:  str
+    musics: dict[str, str]
+
+
 def list_Composers() -> list[Composer]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -52,6 +63,39 @@ def create_composer(composer: Composer):
             except Exception as e:
                 print(f"Failed to create composer: {e}")
                 conn.rollback()
+
+
+def detail_composer(composer_id: int) -> ComposerDetails:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Query para buscar informações detalhadas sobre o compositor
+            cursor.execute("""
+                SELECT w.id, w.Fname, w.Lname, w.genre, w.birthYear, w.deathYear, g.name AS mus_genre
+                FROM Writer w
+                JOIN Composer c ON w.id = c.id
+                JOIN MusicalGenre g ON w.musGenre_id = g.id
+                WHERE w.id = ?
+            """, (composer_id,))
+            
+            row = cursor.fetchone()
+            if row is None:
+                return None  # Se nenhuma linha for retornada, o compositor não existe
+
+            # Extrair informações básicas sobre o compositor
+            composer_info = row[:7]
+
+            # Query para buscar as músicas associadas ao compositor
+            cursor.execute("""
+                SELECT m.title, mg.name AS music_genre
+                FROM writes wr
+                JOIN Music m ON wr.music_id = m.music_id
+                JOIN MusicalGenre mg ON m.musGenre_id = mg.id
+                WHERE wr.composer_id = ?
+            """, (composer_id,))
+            
+            musics = {music[0]: music[1] for music in cursor.fetchall()}
+
+            return ComposerDetails(*composer_info, musics)
 
 
 def list_genres() -> list[str]:

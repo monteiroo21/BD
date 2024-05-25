@@ -7,6 +7,10 @@
                 <i class="fas fa-trash-alt"></i>
             </button>
         </form>
+        <a class="btn btn-primary btn-sm details-button"
+            href="{{ url_for('detail_composer', composer_id=composer.id) }}">
+            Details
+        </a>
     </div>
     <p>Genre: {{ composer.mus_genre }}</p>
     <p>Birth: {{ composer.birth_year }}</p>
