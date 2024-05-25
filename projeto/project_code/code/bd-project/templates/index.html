@@ -316,7 +316,7 @@
             <button type="submit">Search</button>
             <button hx-get="/score-list" hx-target="#score-container" hx-swap="innerHTML">Update Score List</button>
             <a href="{{ url_for('new_score_create') }}" class="new-btn">New</a>
-            <a href="{{ url_for('score_list_sorted') }}" class="sort-btn">Sort by Price</a>
+            <button type="button" class="sort-btn" hx-get="/score-list-sorted" hx-target="#score-container" hx-swap="innerHTML">Sort by Price</button>
         </form>
 
         <form id="search-warehouse" style="display: none;" hx-get="/warehouse-search" hx-target="#warehouse-container"
