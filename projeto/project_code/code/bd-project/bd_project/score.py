@@ -10,16 +10,20 @@ class Score (NamedTuple):
     difficultyGrade: int
     music: str
     editor: str
+    arranger: str
 
 
 def list_allScores() -> list[Score]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("""SELECT s.register_num, s.edition, s.price, s.availability, 
-                            s.difficultyGrade, m.title as music, e.name
+                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName
                             FROM Score s
                             JOIN Music m ON s.musicId = m.music_id
-							JOIN Editor e ON s.editorId = e.identifier""")
+							JOIN Editor e ON s.editorId = e.identifier
+							JOIN arranges ar ON s.register_num = ar.score_register
+							JOIN Arranger a ON ar.arranger_id = a.id
+							JOIN Writer w ON a.id = w.id""")
             return [Score(*row) for row in cursor.fetchall()]
         
 
@@ -27,10 +31,13 @@ def search_score(query: str) -> list[Score]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("""SELECT s.register_num, s.edition, s.price, s.availability, 
-                            s.difficultyGrade, m.title as music, e.name
+                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName
                             FROM Score s
                             JOIN Music m ON s.musicId = m.music_id
 							JOIN Editor e ON s.editorId = e.identifier
+							JOIN arranges ar ON s.register_num = ar.score_register
+							JOIN Arranger a ON ar.arranger_id = a.id
+							JOIN Writer w ON a.id = w.id
                             WHERE m.title LIKE ?""", ('%' + query + '%',))
             return [Score(*row) for row in cursor.fetchall()]
         

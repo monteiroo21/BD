@@ -11,7 +11,7 @@
     <p>Genre: {{ arranger.name }}</p>
     <p>Birth: {{ arranger.birthYear }}</p>
     <p>Death: {{ arranger.deathYear }}</p>
-    <form method="get" action="{{ url_for('edit_arranger_route', arranger_id=arranger.id) }}" class="d-inline">
+    <form method="get" action="{{ url_for('edit_arranger_route', arranger_id=arranger.identifier) }}" class="d-inline">
         <button type="submit" class="btn btn-success btn-sm edit-button">
             <i class="fas fa-pencil-alt"></i>
         </button>
