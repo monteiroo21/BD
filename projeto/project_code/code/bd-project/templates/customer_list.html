@@ -2,6 +2,11 @@
 <div class="card">
     <div class="d-flex justify-content-between align-items-center">
         <h2>{{ customer.name }}</h2>
+        <form method="post" action="{{ url_for('delete_customer_route', numCC=customer.numCC) }}" class="ml-auto">
+            <button type="submit" class="btn btn-danger btn-sm delete-button">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
     </div>
     <p>Email: {{ customer.email_address }}</p>
     <p>Bank Account: {{ customer.numBankAccount }}</p>

@@ -134,3 +134,14 @@ def search_customer_with_transaction_count(query: str) -> list[CustomerWithTrans
                 GROUP BY c.numCC, c.email_address, c.numBankAccount, c.cellNumber, c.name
             """, ('%' + query + '%',))
             return [CustomerWithTransactionCount(*row) for row in cursor.fetchall()]
+
+
+def delete_customer(numCC: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            try:
+                cursor.execute("DELETE FROM Customer WHERE numCC = ?", (numCC,))
+                conn.commit()
+                print("Customer deleted successfully.")
+            except Exception as e:
+                print(f"An error occurred: {e}")

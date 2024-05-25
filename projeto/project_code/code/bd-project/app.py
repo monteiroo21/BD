@@ -579,7 +579,17 @@ def new_customer_create():
             return redirect(url_for('base'))
         
     return render_template("customer_create.html")
-    
+
+
+@app.route("/customer-delete/<int:numCC>", methods=["POST"])
+def delete_customer_route(numCC):
+    try:
+        customer.delete_customer(numCC)
+        flash("Customer deleted successfully!")
+    except Exception as e:
+        flash(str(e))
+    return redirect(url_for('base'))
+
 
 
 if __name__ == "__main__":
