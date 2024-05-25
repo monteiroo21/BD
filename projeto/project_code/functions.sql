@@ -455,3 +455,48 @@ BEGIN
     END
 END;
 GO
+
+CREATE OR ALTER PROCEDURE edit_score
+    @register_num INT,
+    @new_edition VARCHAR(50),
+    @new_price DECIMAL(10, 2),
+    @new_availability INT,
+    @new_difficultyGrade INT,
+    @new_music_id INT,
+    @new_editor_id INT
+AS
+BEGIN
+    -- Check if the score exists
+    IF NOT EXISTS (SELECT 1 FROM Score WHERE register_num = @register_num)
+    BEGIN
+        PRINT 'Score does not exist.';
+        RETURN;
+    END
+
+    -- Check if the new music exists
+    IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @new_music_id)
+    BEGIN
+        PRINT 'Music does not exist.';
+        RETURN;
+    END
+
+    -- Check if the new editor exists
+    IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @new_editor_id)
+    BEGIN
+        PRINT 'Editor does not exist.';
+        RETURN;
+    END
+
+    -- Update the Score table with new details
+    UPDATE Score
+    SET edition = @new_edition, 
+        price = @new_price, 
+        availability = @new_availability, 
+        difficultyGrade = @new_difficultyGrade, 
+        musicId = @new_music_id, 
+        editorId = @new_editor_id
+    WHERE register_num = @register_num;
+
+    PRINT 'Score details updated successfully.';
+END;
+GO

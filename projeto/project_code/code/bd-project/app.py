@@ -333,6 +333,39 @@ def delete_score_route(register_num):
         flash(str(e))
     return redirect(url_for('base'))
 
+@app.route("/score-edit/<int:register_num>", methods=["GET", "POST"])
+def edit_score_route(register_num):
+    if request.method == "POST":
+        edition = request.form.get("edition")
+        price = request.form.get("price")
+        availability = request.form.get("availability")
+        difficulty_grade = request.form.get("difficultyGrade")
+        music_id = request.form.get("music_id")
+        editor_id = request.form.get("editor_id")
+
+        # Create a Score object with the new details
+        new_details = Score(register_num, edition, price, availability, difficulty_grade, music_id, editor_id, '')
+
+        try:
+            # Call the edit_score function to update the score record
+            score.edit_score(new_details)
+            flash("Score edited successfully!")
+            return redirect(url_for('base'))
+        except ValueError as e:
+            flash(f"Error: {e}")
+            return redirect(url_for('base'))
+    else:
+        # Fetch the current score details for the GET request
+        current_score = score.get_score_by_id(register_num)
+        musics = score.list_musics()
+        editors = score.list_editors()
+
+        if current_score is None:
+            flash("Score not found", "error")
+            return redirect(url_for('base'))
+        
+        return render_template("score_edit.html", score=current_score, musics=musics, editors=editors)
+
 
 
 ####################################################################

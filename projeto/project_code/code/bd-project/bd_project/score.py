@@ -96,3 +96,36 @@ def delete_score(register_num: int):
             except IntegrityError as e:
                 conn.rollback()
                 raise RuntimeError(f"Failed to delete score with register number {register_num}: {e}")
+            
+
+def edit_score(score: Score):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT register_num FROM Score WHERE register_num = ?", (score.register_num,))
+            if cursor.fetchone() is None:
+                raise ValueError(f"Score with register number '{score.register_num}' does not exist")
+            
+            try:
+                cursor.execute("""EXEC edit_score @register_num=?, @new_edition=?, @new_price=?, @new_availability=?, @new_difficultyGrade=?, @new_music_id=?, @new_editor_id=?
+                               """, (score.register_num, score.edition, score.price, score.availability, score.difficultyGrade, score.music, score.editor))
+                conn.commit()
+                print(f"Score with register number {score.register_num} edited successfully.")
+            except IntegrityError as e:
+                conn.rollback()
+                raise RuntimeError(f"Failed to edit score with register number {score.register_num}: {e}")
+
+            
+def get_score_by_id(register_num: int) -> Score:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+            SELECT s.register_num, s.edition, s.price, s.availability, 
+                   s.difficultyGrade, s.musicId, s.editorId
+            FROM Score s
+            WHERE s.register_num = ?
+            """, (register_num,))
+            row = cursor.fetchone()
+            register_num, edition, price, availability, difficultyGrade, music, editor = row
+            if row is None:
+                return None
+            return Score(register_num, edition, price, availability, difficultyGrade, music, editor, '')

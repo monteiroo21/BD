@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Score</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Edit Score</h1>
+        <form method="post" action="{{ url_for('edit_score_route', register_num=score.register_num) }}">
+            <div class="form-group">
+                <label for="edition">Edition:</label>
+                <input type="text" class="form-control" id="edition" name="edition" value="{{ score.edition }}" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" class="form-control" id="price" name="price" value="{{ score.price }}" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="availability">Availability:</label>
+                <input type="number" class="form-control" id="availability" name="availability" value="{{ score.availability }}" required>
+            </div>
+            <div class="form-group">
+                <label for="difficultyGrade">Difficulty Grade:</label>
+                <input type="number" class="form-control" id="difficultyGrade" name="difficultyGrade" value="{{ score.difficultyGrade }}" required>
+            </div>
+            <div class="form-group">
+                <label for="music_id">Music:</label>
+                <select class="form-control" id="music_id" name="music_id" required>
+                    {% for music in musics %}
+                    <option value="{{ music.id }}" {% if music.id == score.music %}selected{% endif %}>{{ music }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editor_id">Editor:</label>
+                <select class="form-control" id="editor_id" name="editor_id" required>
+                    {% for editor in editors %}
+                    <option value="{{ editor.id }}" {% if editor.id == score.editor %}selected{% endif %}>{{ editor }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+        <a href="{{ url_for('score_list') }}" class="btn btn-secondary mt-2">Back to Score List</a>
+    </div>
+</body>
+
+</html>
