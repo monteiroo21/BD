@@ -5,41 +5,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Composer Details</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
-        .composer-details {
-            margin: 20px;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .composer-header {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 50%;
+            box-sizing: border-box;
+            transition: box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
+
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .details-button {
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #6c757d;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .details-button:hover {
+            background-color: #5a6268;
+        }
+
+        .delete-button {
+            padding: 6px 10px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #dc3545;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
         }
 
         .composer-info {
-            margin-top: 20px;
-        }
-
-        .musics-list {
-            margin-top: 20px;
-        }
-
-        .music-item {
-            background-color: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
+            margin-left: -530px;
+            /* Ajuste a margem para a esquerda */
         }
     </style>
 </head>
 
 <body>
-
-    <div class="container composer-details">
+    <div class="container">
+        <h1 style="margin-top: 10px; margin-bottom: 30px;">Composer Details</h1>
         {% if composer %}
-        <div class="composer-header">
-            <h2>{{ composer.Fname }} {{ composer.Lname }}</h2>
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 style="margin-right: 200px;">{{ composer.Fname }} {{ composer.Lname }}</h2>
+            <a href="{{ url_for('base') }}" class="btn btn-primary btn-sm ml-auto">Back to Composer List</a>
         </div>
         <div class="composer-info">
             <p><strong>Genre:</strong> {{ composer.genre }}</p>
@@ -48,16 +109,14 @@
         </div>
 
         {% if composer.musics %}
-        <div class="musics-list">
-            <h3>Musics:</h3>
-            <div class="w-100">
-                {% for title, genre in composer.musics.items() %}
-                <div class="music-item">
-                    <p><strong>Title:</strong> {{ title }}</p>
-                    <p><strong>Genre:</strong> {{ genre }}</p>
-                </div>
-                {% endfor %}
+        <h3 style="margin-top: 20px; margin-bottom: 15px;">Musics:</h3>
+        <div class="w-100">
+            {% for title, genre in composer.musics.items() %}
+            <div class="card music-item">
+                <p><strong>Title:</strong> {{ title }}</p>
+                <p><strong>Genre:</strong> {{ genre }}</p>
             </div>
+            {% endfor %}
         </div>
         {% else %}
         <p>No musics found for this composer.</p>
