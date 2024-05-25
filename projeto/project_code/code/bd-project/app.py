@@ -363,6 +363,12 @@ def edit_score_route(register_num):
             return redirect(url_for('base'))
         
         return render_template("score_edit.html", score=current_score, musics=musics, editors=editors)
+    
+
+@app.route("/score-list-sorted", methods=["GET"])
+def score_list_sorted():
+    scores = score.filter_scores_by_price()
+    return render_template("scores_list.html", scores=scores)
 
 
 

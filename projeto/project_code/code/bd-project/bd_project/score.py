@@ -129,3 +129,21 @@ def get_score_by_id(register_num: int) -> Score:
             if row is None:
                 return None
             return Score(register_num, edition, price, availability, difficultyGrade, music, editor, '')
+        
+
+def filter_scores_by_price() -> list[Score]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT s.register_num, s.edition, s.price, s.availability, 
+                       s.difficultyGrade, m.title as music, e.name as editor, 
+                       w.Fname + ' ' + w.Lname as WriterName
+                FROM Score s
+                JOIN Music m ON s.musicId = m.music_id
+                JOIN Editor e ON s.editorId = e.identifier
+                JOIN arranges ar ON s.register_num = ar.score_register
+                JOIN Arranger a ON ar.arranger_id = a.id
+                JOIN Writer w ON a.id = w.id
+                ORDER BY s.price ASC
+            """)
+            return [Score(*row) for row in cursor.fetchall()]
