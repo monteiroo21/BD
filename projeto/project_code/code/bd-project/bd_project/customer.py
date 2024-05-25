@@ -28,3 +28,11 @@ def search_customer(query: str) -> list[Customer]:
                 FROM Customer AS c
                 WHERE c.name LIKE ?""", ('%' + query + '%',))
             return [Customer(*row) for row in cursor.fetchall()]
+        
+
+def delete_customer(numCC: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("DELETE FROM Customer WHERE numCC = ?", (numCC,))
+            if cursor.rowcount == 0:
+                raise ValueError(f"Customer with numCC '{numCC}' does not exist")
