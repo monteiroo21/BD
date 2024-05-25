@@ -549,14 +549,14 @@ def edit_arranger_route(arranger_id):
 
 @app.route("/customer-list", methods=["GET"])
 def customer_list():
-    customers = customer.list_customers()
+    customers = customer.list_customers_with_transaction_count()
     return render_template("customer_list.html", customers=customers)
 
 
 @app.route("/customer-search", methods=["GET"])
 def customer_search():
     query = request.args.get('query', '')
-    customers = customer.search_customer(query)
+    customers = customer.search_customer_with_transaction_count(query)
     return render_template("customer_list.html", customers=customers)
 
 
