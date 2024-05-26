@@ -544,6 +544,10 @@ def edit_arranger_route(arranger_id):
         genres = arranger.list_genres()
         return render_template("arranger_edit.html", genres=genres, arranger=current_arranger)
     
+@app.route("/arranger-details/<int:arranger_id>", methods=["GET"])
+def detail_arranger(arranger_id):
+    arranger_details = arranger.detail_arranger(arranger_id)
+    return render_template("arranger_details.html", arranger=arranger_details)
 
 ####################################################################
 

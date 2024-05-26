@@ -15,6 +15,16 @@ class Arranger (NamedTuple):
     deathYear:  int
     name:   str
 
+class ArrangerDetails (NamedTuple):
+    identifier: int
+    fname:  str
+    lname:  str
+    genre:  str
+    birthYear:  int
+    deathYear:  int
+    name:   str
+    musics: dict[str, str]
+
 
 def list_arranger() -> list[Arranger]:
     with create_connection() as conn:
@@ -55,6 +65,39 @@ def create_arranger(arranger: Arranger):
             except Exception as e:
                 print(f"Failed to create arranger: {e}")
                 conn.rollback()
+
+def detail_arranger(arranger_id: int) -> ArrangerDetails:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Query para buscar informações detalhadas sobre o compositor
+            cursor.execute("""
+            SELECT w.id, w.Fname, w.Lname, w.genre, w.birthYear, w.deathYear, g.name AS mus_genre
+                FROM Writer w
+                JOIN Arranger a ON w.id = a.id
+                JOIN MusicalGenre g ON w.musGenre_id = g.id
+                WHERE w.id = ?
+            """, (arranger_id,))
+            
+            row = cursor.fetchone()
+            if row is None:
+                return None  # Se nenhuma linha for retornada, o compositor não existe
+
+            # Extrair informações básicas sobre o compositor
+            arranger_info = row[:7]
+
+            # Query para buscar as músicas associadas ao compositor
+            cursor.execute("""
+                SELECT m.title, mg.name AS music_genre
+                FROM arranges ar
+                JOIN Score s ON ar.score_register = s.register_num
+				JOIN Music m ON s.musicId = m.music_id
+                JOIN MusicalGenre mg ON m.musGenre_id = mg.id
+                WHERE ar.arranger_id = ?
+            """, (arranger_id,))
+            
+            musics = {music[0]: music[1] for music in cursor.fetchall()}
+
+            return ArrangerDetails(*arranger_info, musics)    
 
 
 def list_genres() -> list[str]:
