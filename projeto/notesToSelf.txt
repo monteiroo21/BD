@@ -1,0 +1,6 @@
+TODO:
+Solve everything on scores ie solve the edit and develop the details
+Details from the warehouse
+Develop the customer (dont know what's missing)
+See more complicated querys to put onto my database
+Edit the values in the database (INSERTS)
