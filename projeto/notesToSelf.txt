@@ -1,6 +1,6 @@
 TODO:
-Solve everything on scores ie solve the edit and develop the details
-Details from the warehouse
+Solve everything on scores ie solve the edit and develop the details -> Half DONE
+Details from the warehouse -> DONE
 Develop the customer (dont know what's missing)
 See more complicated querys to put onto my database
 Edit the values in the database (INSERTS)
