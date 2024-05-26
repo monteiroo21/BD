@@ -13,7 +13,14 @@ class Score(NamedTuple):
     arranger: str
     type: str
 
-def create_score(score: Score):
+class Instrumentation(NamedTuple):
+    instrument: str
+    quantity: int
+    family: str
+    role: str
+
+
+def create_score(score: Score, instrumentations: list[Instrumentation]):
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("SELECT identifier FROM Editor WHERE name = ?", (score.editor,))
@@ -38,12 +45,22 @@ def create_score(score: Score):
                 cursor.execute("""
                     EXEC add_score @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?, @arrangerId=?, @type=?
                 """, (score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id, arranger_id, score.type))
+
+                cursor.execute("SELECT SCOPE_IDENTITY()")
+                new_score_id = cursor.fetchone()[0]
+
+                for instr in instrumentations:
+                    cursor.execute("""
+                        INSERT INTO Instrumentation (instrument, quantity, family, role, scoreNum)
+                        VALUES (?, ?, ?, ?, ?)
+                    """, (instr.instrument, instr.quantity, instr.family, instr.role, new_score_id))
+
                 conn.commit()
             except Exception as e:
                 print(f"Failed to create score: {e}")
                 conn.rollback()
 
-def edit_score(score: Score):
+def edit_score(score: Score, instrumentations: list[Instrumentation]):
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("SELECT register_num FROM Score WHERE register_num = ?", (score.register_num,))
@@ -72,6 +89,15 @@ def edit_score(score: Score):
                 cursor.execute("""
                     EXEC edit_score @register_num=?, @new_edition=?, @new_price=?, @new_availability=?, @new_difficultyGrade=?, @new_music_id=?, @new_editor_id=?, @new_arranger_id=?, @type=?
                 """, (score.register_num, score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id, arranger_id, score.type))
+
+                cursor.execute("DELETE FROM Instrumentation WHERE scoreNum = ?", (score.register_num,))
+
+                for instr in instrumentations:
+                    cursor.execute("""
+                        INSERT INTO Instrumentation (instrument, quantity, family, role, scoreNum)
+                        VALUES (?, ?, ?, ?, ?)
+                    """, (instr.instrument, instr.quantity, instr.family, instr.role, score.register_num))
+
                 conn.commit()
             except IntegrityError as e:
                 conn.rollback()
@@ -187,3 +213,13 @@ def list_arrangers() -> list[str]:
                 JOIN Writer w ON a.id = w.id
             """)
             return [row[0] for row in cursor.fetchall()]
+        
+def get_instrumentations_by_score_id(register_num: int) -> list[Instrumentation]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT instrument, quantity, family, role
+                FROM Instrumentation
+                WHERE scoreNum = ?
+            """, (register_num,))
+            return [Instrumentation(*row) for row in cursor.fetchall()]

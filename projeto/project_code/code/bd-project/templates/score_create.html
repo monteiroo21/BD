@@ -55,10 +55,56 @@
             </div>
             <div class="form-group">
                 <label for="type">Arrange Type:</label>
-                <input type="type" class="form-control" id="type" name="type" required>
+                <input type="text" class="form-control" id="type" name="type" required>
             </div>
+            <div id="instrumentation-container">
+                <div class="form-group">
+                    <label for="instrument">Instrument:</label>
+                    <input type="text" class="form-control" id="instrument" name="instrument[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="family">Family:</label>
+                    <input type="text" class="form-control" id="family" name="family[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role:</label>
+                    <input type="text" class="form-control" id="role" name="role[]" required>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="addInstrumentation()">Add More Instrumentation</button>
             <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>
+
+    <script>
+        function addInstrumentation() {
+            const container = document.getElementById('instrumentation-container');
+            const instrumentationFields = `
+                <div class="form-group">
+                    <label for="instrument">Instrument:</label>
+                    <input type="text" class="form-control" id="instrument" name="instrument[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="family">Family:</label>
+                    <input type="text" class="form-control" id="family" name="family[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role:</label>
+                    <input type="text" class="form-control" id="role" name="role[]" required>
+                </div>
+            `;
+            const div = document.createElement('div');
+            div.innerHTML = instrumentationFields;
+            container.appendChild(div);
+        }
+    </script>
 </body>
 </html>
