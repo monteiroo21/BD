@@ -66,7 +66,8 @@
         #score-container,
         #warehouse-container,
         #arranger-container,
-        #customer-container {
+        #customer-container,
+        #transaction-container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
@@ -155,7 +156,8 @@
         #search-score,
         #search-warehouse,
         #search-arranger,
-        #search-customer {
+        #search-customer,
+        #search-transaction {
             margin: 20px 0;
             display: flex;
             gap: 10px;
@@ -167,7 +169,8 @@
         #search-score input,
         #search-warehouse input,
         #search-arranger input,
-        #search-customer input {
+        #search-customer input,
+        #search-transaction input {
             padding: 10px;
             font-size: 16px;
             border: 1px solid #ccc;
@@ -182,7 +185,8 @@
         #search-score input:focus,
         #search-warehouse input:focus,
         #search-arranger input:focus,
-        #search-customer input:focus {
+        #search-customer input:focus,
+        #search-transaction input:focus {
             border-color: #007bff;
             outline: none;
         }
@@ -193,7 +197,8 @@
         #search-score button,
         #search-warehouse button,
         #search-arranger button,
-        #search-customer button {
+        #search-customer button,
+        #search-transaction button {
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
@@ -210,7 +215,8 @@
         #search-score button:hover,
         #search-warehouse button:hover,
         #search-arranger button:hover,
-        #search-customer button:hover {
+        #search-customer button:hover,
+        #search-transaction button:hover {
             background-color: #0056b3;
         }
 
@@ -277,6 +283,7 @@
             <button id="score-tab">Scores</button>
             <button id="warehouse-tab">Warehouses</button>
             <button id="customer-tab">Customers</button>
+            <button id="transaction-tab">Transactions</button>
         </div>
     </div>
 
@@ -346,6 +353,14 @@
             <a href="{{ url_for('new_customer_create') }}" class="new-btn">New</a>
         </form>
 
+        <form id="search-transaction" style="display: none;" hx-get="/transaction-search"
+            hx-target="#transaction-container" hx-trigger="submit" style="margin-left: 80px;">
+            <input type="text" name="query" placeholder="Search for transaction ...">
+            <button type="submit">Search</button>
+            <button hx-get="/transaction-list" hx-target="#transaction-container" hx-swap="innerHTML">Update Transaction
+                List</button>
+        </form>
+
         <div id="music-container" hx-get="/music-list" hx-trigger="load">
             <!-- Music list will be loaded here -->
         </div>
@@ -374,6 +389,10 @@
             <!-- Customer list will be loaded here -->
         </div>
 
+        <div id="transaction-container" style="display: none;" hx-get="/transaction-list" hx-trigger="load">
+            <!-- Transaction list will be loaded here -->
+        </div>
+
         <script>
             document.getElementById('musics-tab').addEventListener('click', function () {
                 this.classList.add('active');
@@ -383,6 +402,7 @@
                 document.getElementById('warehouse-tab').classList.remove('active');
                 document.getElementById('arranger-tab').classList.remove('active');
                 document.getElementById('customer-tab').classList.remove('active');
+                document.getElementById('transaction-tab').classList.remove('active');
                 document.getElementById('music-container').style.display = 'flex';
                 document.getElementById('composer-container').style.display = 'none';
                 document.getElementById('editor-container').style.display = 'none';
@@ -390,6 +410,7 @@
                 document.getElementById('warehouse-container').style.display = 'none';
                 document.getElementById('arranger-container').style.display = 'none';
                 document.getElementById('customer-container').style.display = 'none';
+                document.getElementById('transaction-container').style.display = 'none';
                 document.getElementById('search-music').style.display = 'flex';
                 document.getElementById('search-composer').style.display = 'none';
                 document.getElementById('search-editor').style.display = 'none';
@@ -397,6 +418,7 @@
                 document.getElementById('search-warehouse').style.display = 'none';
                 document.getElementById('search-arranger').style.display = 'none';
                 document.getElementById('search-customer').style.display = 'none';
+                document.getElementById('search-transaction').style.display = 'none';
                 document.getElementById('list-title').textContent = 'Music List';
             });
 
@@ -408,6 +430,7 @@
                 document.getElementById('warehouse-tab').classList.remove('active');
                 document.getElementById('arranger-tab').classList.remove('active');
                 document.getElementById('customer-tab').classList.remove('active');
+                document.getElementById('transaction-tab').classList.remove('active');
                 document.getElementById('music-container').style.display = 'none';
                 document.getElementById('composer-container').style.display = 'flex';
                 document.getElementById('editor-container').style.display = 'none';
@@ -415,6 +438,7 @@
                 document.getElementById('warehouse-container').style.display = 'none';
                 document.getElementById('arranger-container').style.display = 'none';
                 document.getElementById('customer-container').style.display = 'none';
+                document.getElementById('transaction-container').style.display = 'none';
                 document.getElementById('search-music').style.display = 'none';
                 document.getElementById('search-composer').style.display = 'flex';
                 document.getElementById('search-editor').style.display = 'none';
@@ -422,6 +446,7 @@
                 document.getElementById('search-warehouse').style.display = 'none';
                 document.getElementById('search-arranger').style.display = 'none';
                 document.getElementById('search-customer').style.display = 'none';
+                document.getElementById('search-transaction').style.display = 'none';
                 document.getElementById('list-title').textContent = 'Composer List';
 
             });
@@ -434,6 +459,7 @@
                 document.getElementById('warehouse-tab').classList.remove('active');
                 document.getElementById('arranger-tab').classList.remove('active');
                 document.getElementById('customer-tab').classList.remove('active');
+                document.getElementById('transaction-tab').classList.remove('active');
                 document.getElementById('music-container').style.display = 'none';
                 document.getElementById('composer-container').style.display = 'none';
                 document.getElementById('editor-container').style.display = 'flex';
@@ -441,6 +467,7 @@
                 document.getElementById('warehouse-container').style.display = 'none';
                 document.getElementById('arranger-container').style.display = 'none';
                 document.getElementById('customer-container').style.display = 'none';
+                document.getElementById('transaction-container').style.display = 'none';
                 document.getElementById('search-music').style.display = 'none';
                 document.getElementById('search-composer').style.display = 'none';
                 document.getElementById('search-editor').style.display = 'flex';
@@ -448,6 +475,7 @@
                 document.getElementById('search-warehouse').style.display = 'none';
                 document.getElementById('search-arranger').style.display = 'none';
                 document.getElementById('search-customer').style.display = 'none';
+                document.getElementById('search-transaction').style.display = 'none';
                 document.getElementById('list-title').textContent = 'Editor List';
 
             });
@@ -460,6 +488,7 @@
                 document.getElementById('warehouse-tab').classList.remove('active');
                 document.getElementById('arranger-tab').classList.remove('active');
                 document.getElementById('customer-tab').classList.remove('active');
+                document.getElementById('transaction-tab').classList.remove('active');
                 document.getElementById('music-container').style.display = 'none';
                 document.getElementById('composer-container').style.display = 'none';
                 document.getElementById('editor-container').style.display = 'none';
@@ -467,6 +496,7 @@
                 document.getElementById('warehouse-container').style.display = 'none';
                 document.getElementById('arranger-container').style.display = 'none';
                 document.getElementById('customer-container').style.display = 'none';
+                document.getElementById('transaction-container').style.display = 'none';
                 document.getElementById('search-music').style.display = 'none';
                 document.getElementById('search-composer').style.display = 'none';
                 document.getElementById('search-editor').style.display = 'none';
@@ -474,6 +504,7 @@
                 document.getElementById('search-warehouse').style.display = 'none';
                 document.getElementById('search-arranger').style.display = 'none';
                 document.getElementById('search-customer').style.display = 'none';
+                document.getElementById('search-transaction').style.display = 'none';
                 document.getElementById('list-title').textContent = 'Score List';
             });
 
@@ -485,6 +516,7 @@
                 document.getElementById('score-tab').classList.remove('active');
                 document.getElementById('arranger-tab').classList.remove('active');
                 document.getElementById('customer-tab').classList.remove('active');
+                document.getElementById('transaction-tab').classList.remove('active');
                 document.getElementById('music-container').style.display = 'none';
                 document.getElementById('composer-container').style.display = 'none';
                 document.getElementById('editor-container').style.display = 'none';
@@ -492,6 +524,7 @@
                 document.getElementById('warehouse-container').style.display = 'flex';
                 document.getElementById('arranger-container').style.display = 'none';
                 document.getElementById('customer-container').style.display = 'none';
+                document.getElementById('transaction-container').style.display = 'none';
                 document.getElementById('search-music').style.display = 'none';
                 document.getElementById('search-composer').style.display = 'none';
                 document.getElementById('search-editor').style.display = 'none';
@@ -499,6 +532,7 @@
                 document.getElementById('search-warehouse').style.display = 'flex';
                 document.getElementById('search-arranger').style.display = 'none';
                 document.getElementById('search-customer').style.display = 'none';
+                document.getElementById('search-transaction').style.display = 'none';
                 document.getElementById('list-title').textContent = 'Warehouse List';
 
             });
@@ -511,6 +545,7 @@
                 document.getElementById('score-tab').classList.remove('active');
                 document.getElementById('warehouse-tab').classList.remove('active');
                 document.getElementById('customer-tab').classList.remove('active');
+                document.getElementById('transaction-tab').classList.remove('active');
                 document.getElementById('music-container').style.display = 'none';
                 document.getElementById('composer-container').style.display = 'none';
                 document.getElementById('editor-container').style.display = 'none';
@@ -518,6 +553,7 @@
                 document.getElementById('warehouse-container').style.display = 'none';
                 document.getElementById('arranger-container').style.display = 'flex';
                 document.getElementById('customer-container').style.display = 'none';
+                document.getElementById('transaction-container').style.display = 'none';
                 document.getElementById('search-music').style.display = 'none';
                 document.getElementById('search-composer').style.display = 'none';
                 document.getElementById('search-editor').style.display = 'none';
@@ -525,6 +561,7 @@
                 document.getElementById('search-warehouse').style.display = 'none';
                 document.getElementById('search-arranger').style.display = 'flex';
                 document.getElementById('search-customer').style.display = 'none';
+                document.getElementById('search-transaction').style.display = 'none';
                 document.getElementById('list-title').textContent = 'Arranger List';
 
             });
@@ -537,6 +574,7 @@
                 document.getElementById('score-tab').classList.remove('active');
                 document.getElementById('warehouse-tab').classList.remove('active');
                 document.getElementById('arranger-tab').classList.remove('active');
+                document.getElementById('transaction-tab').classList.remove('active');
                 document.getElementById('music-container').style.display = 'none';
                 document.getElementById('composer-container').style.display = 'none';
                 document.getElementById('editor-container').style.display = 'none';
@@ -544,6 +582,7 @@
                 document.getElementById('warehouse-container').style.display = 'none';
                 document.getElementById('arranger-container').style.display = 'none';
                 document.getElementById('customer-container').style.display = 'flex';
+                document.getElementById('transaction-container').style.display = 'none';
                 document.getElementById('search-music').style.display = 'none';
                 document.getElementById('search-composer').style.display = 'none';
                 document.getElementById('search-editor').style.display = 'none';
@@ -551,7 +590,37 @@
                 document.getElementById('search-warehouse').style.display = 'none';
                 document.getElementById('search-arranger').style.display = 'none';
                 document.getElementById('search-customer').style.display = 'flex';
+                document.getElementById('search-transaction').style.display = 'none';
                 document.getElementById('list-title').textContent = 'Customer List';
+
+            });
+
+            document.getElementById('transaction-tab').addEventListener('click', function () {
+                this.classList.add('active');
+                document.getElementById('musics-tab').classList.remove('active');
+                document.getElementById('composer-tab').classList.remove('active');
+                document.getElementById('editor-tab').classList.remove('active');
+                document.getElementById('score-tab').classList.remove('active');
+                document.getElementById('warehouse-tab').classList.remove('active');
+                document.getElementById('arranger-tab').classList.remove('active');
+                document.getElementById('customer-tab').classList.remove('active');
+                document.getElementById('music-container').style.display = 'none';
+                document.getElementById('composer-container').style.display = 'none';
+                document.getElementById('editor-container').style.display = 'none';
+                document.getElementById('score-container').style.display = 'none';
+                document.getElementById('warehouse-container').style.display = 'none';
+                document.getElementById('arranger-container').style.display = 'none';
+                document.getElementById('customer-container').style.display = 'none';
+                document.getElementById('transaction-container').style.display = 'flex';
+                document.getElementById('search-music').style.display = 'none';
+                document.getElementById('search-composer').style.display = 'none';
+                document.getElementById('search-editor').style.display = 'none';
+                document.getElementById('search-score').style.display = 'none';
+                document.getElementById('search-warehouse').style.display = 'none';
+                document.getElementById('search-arranger').style.display = 'none';
+                document.getElementById('search-customer').style.display = 'none';
+                document.getElementById('search-transaction').style.display = 'flex';
+                document.getElementById('list-title').textContent = 'Transaction List';
 
             });
         </script>

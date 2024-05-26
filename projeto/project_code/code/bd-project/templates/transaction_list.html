@@ -1,0 +1,14 @@
+{% for transaction in transactions %}
+<div class="card">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">{{ transaction.transaction_id }}</h2>
+
+
+
+    </div>
+    <p>Transaction Value: {{ transaction.value }}$</p>
+    <p>Transaction Date: {{ transaction.date }}</p>
+    <p>Transaction Amount: {{ transaction.customer_CC }}</p>
+
+</div>
+{% endfor %}

@@ -7,6 +7,7 @@ from bd_project import editor
 from bd_project import score
 from bd_project import warehouse
 from bd_project import arranger
+from bd_project import transaction
 from bd_project.music import Music
 from bd_project.composer import Composer
 from bd_project.editor import Editor
@@ -14,6 +15,7 @@ from bd_project.score import Score
 from bd_project.warehouse import Warehouse
 from bd_project.arranger import Arranger
 from bd_project.customer import Customer
+from bd_project.transaction import Transaction
 
 
 app = Flask(__name__)
@@ -613,6 +615,23 @@ def delete_customer_route(numCC):
     except Exception as e:
         flash(str(e))
     return redirect(url_for('base'))
+
+
+####################################################################
+
+@app.route("/transaction-list", methods=["GET"])
+def transaction_list():
+    transactions = transaction.list_transactions()
+    return render_template("transaction_list.html", transactions=transactions)
+
+
+@app.route("/transaction-search", methods=["GET"])
+def transaction_search():
+    query = request.args.get('query', '')
+    transactions = transaction.search_transaction(query)
+    return render_template("transaction_list.html", transactions=transactions)
+
+
 
 
 
