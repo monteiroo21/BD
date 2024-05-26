@@ -7,6 +7,10 @@
                 <i class="fas fa-trash-alt"></i>
             </button>
         </form>
+        <a class="btn btn-primary btn-sm details-button"
+            href="{{ url_for('detail_editor', editor_id=editor.identifier) }}">
+            Details
+        </a>
     </div>
     <p>Location: {{ editor.location }}</p>
     <form method="get" action="{{ url_for('edit_editor_route', editor_id=editor.identifier) }}" class="d-inline">

@@ -11,6 +11,12 @@ class Editor (NamedTuple):
     identifier: int
     location: str
 
+class EditorDetails (NamedTuple):
+    name: str
+    identifier: int
+    location: str
+    warehouses: dict[str, str]
+
 
 def list_editor() -> list[Editor]:
     with create_connection() as conn:
@@ -41,6 +47,35 @@ def create_editor(editor: Editor):
             except Exception as e:
                 print(f"Failed to create editor: {e}")
                 conn.rollback()
+
+def detail_editor(editor_id: int) -> EditorDetails:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Query para buscar informações detalhadas sobre o compositor
+            cursor.execute("""
+                SELECT name, identifier, location
+                FROM Editor
+                WHERE identifier = ?
+            """, (editor_id,))
+            
+            row = cursor.fetchone()
+            if row is None:
+                return None  # Se nenhuma linha for retornada, o compositor não existe
+
+            # Extrair informações básicas sobre o compositor
+            editor_info = row[:3]
+
+            # Query para buscar as músicas associadas ao compositor
+            cursor.execute("""
+            SELECT w.name, wl.warehouse_location FROM Editor as e
+                    LEFT OUTER JOIN Warehouse as w ON e.identifier = w.editorId
+                    JOIN warehouse_location as wl ON w.id = wl.warehouse_id
+                    WHERE e.identifier = ?
+            """, (editor_id,))
+            
+            musics = {music[0]: music[1] for music in cursor.fetchall()}
+
+            return EditorDetails(*editor_info, musics)
 
 
 def delete_editor(editor_id: int):

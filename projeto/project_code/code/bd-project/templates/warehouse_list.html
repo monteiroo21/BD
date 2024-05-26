@@ -10,6 +10,7 @@
     </div>
     <p>Storage: {{ warehouse.storage }}</p>
     <p>Editor: {{ warehouse.editor_name }}</p>
+    <p>Location: {{ warehouse.location }}</p>
     <form method="get" action="{{ url_for('edit_warehouse_route', warehouse_id=warehouse.identifier) }}" class="d-inline">
         <button type="submit" class="btn btn-success btn-sm edit-button">
             <i class="fas fa-pencil-alt"></i>

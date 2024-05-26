@@ -174,7 +174,8 @@ GO
 CREATE OR ALTER PROCEDURE add_warehouse
     @warehouse_name VARCHAR(80),
     @storage INT,
-    @editorId INT
+    @editorId INT,
+    @warehouse_location VARCHAR(80)
 AS
 BEGIN
     -- Check if the editor exists
@@ -198,6 +199,10 @@ BEGIN
     -- Insert into Warehouse table
     INSERT INTO Warehouse (id, name, storage, editorId)
     VALUES (@new_warehouse_id, @warehouse_name, @storage, @editorId);
+
+    -- Insert into warehouse_location table
+    INSERT INTO warehouse_location (warehouse_location, warehouse_id)
+    VALUES (@warehouse_location, @new_warehouse_id);
 
     PRINT 'Warehouse added successfully.';
 END;
@@ -427,9 +432,10 @@ GO
 
 CREATE OR ALTER PROCEDURE edit_warehouse
     @warehouse_id INT,
-    @new_name VARCHAR(50),
+    @new_name VARCHAR(80),
     @new_storage INT,
-    @new_editor_id INT
+    @new_editor_id INT,
+    @new_warehouse_location VARCHAR(80)
 AS
 BEGIN
     -- Check if the warehouse exists
@@ -450,6 +456,11 @@ BEGIN
     UPDATE Warehouse
     SET name = @new_name, storage = @new_storage, editorId = @new_editor_id
     WHERE id = @warehouse_id;
+
+    -- Update the warehouse location
+    UPDATE warehouse_location
+    SET warehouse_location = @new_warehouse_location
+    WHERE warehouse_id = @warehouse_id;
 
     PRINT 'Warehouse details updated successfully.';
 END;

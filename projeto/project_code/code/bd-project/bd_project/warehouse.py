@@ -11,14 +11,16 @@ class Warehouse (NamedTuple):
     identifier: int
     storage: int
     editor_name: str
+    location: str
 
 
 def list_warehouse() -> list[Warehouse]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("""SELECT w.name, w.id, w.storage, e.name 
+            cursor.execute("""SELECT w.name, w.id, w.storage, e.name, wl.warehouse_location
                             FROM Warehouse AS w
                                 JOIN Editor AS e ON w.editorId = e.identifier
+								JOIN warehouse_location wl ON w.id = wl.warehouse_id
                 """)
             return [Warehouse(*row) for row in cursor.fetchall()]
 
@@ -26,9 +28,10 @@ def list_warehouse() -> list[Warehouse]:
 def search_warehouse(query: str) -> list[Warehouse]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("""SELECT w.name, w.id, w.storage, e.name 
-                FROM Warehouse AS w
-                    JOIN Editor AS e ON w.editorId = e.identifier
+            cursor.execute("""SELECT w.name, w.id, w.storage, e.name, wl.warehouse_location
+                            FROM Warehouse AS w
+                                JOIN Editor AS e ON w.editorId = e.identifier
+								JOIN warehouse_location wl ON w.id = wl.warehouse_id
                 WHERE w.name LIKE ?""", ('%' + query + '%',))
             return [Warehouse(*row) for row in cursor.fetchall()]
         
@@ -44,8 +47,8 @@ def create_warehouse(warehouse: Warehouse):
 
             try:
                 cursor.execute("""
-                    EXEC add_warehouse @warehouse_name=?, @storage=?, @editorId=?
-                            """, (warehouse.name, warehouse.storage, editor_id))
+                    EXEC add_warehouse @warehouse_name=?, @storage=?, @editorId=?, @warehouse_location=?
+                            """, (warehouse.name, warehouse.storage, editor_id, warehouse.location))
                 conn.commit()
             except Exception as e:
                 print(f"Failed to create warehouse: {e}")
@@ -89,8 +92,8 @@ def edit_warehouse(warehouse: Warehouse):
 
             # Execute the stored procedure to update the warehouse
             cursor.execute("""
-                EXEC edit_warehouse @warehouse_id=?, @new_name=?, @new_storage=?, @new_editor_id=?
-            """, (warehouse.identifier, warehouse.name, warehouse.storage, editor_id))
+                EXEC edit_warehouse @warehouse_id=?, @new_name=?, @new_storage=?, @new_editor_id=?, @new_warehouse_location=?
+            """, (warehouse.identifier, warehouse.name, warehouse.storage, editor_id, warehouse.location))
             conn.commit()
 
 

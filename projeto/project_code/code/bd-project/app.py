@@ -284,6 +284,13 @@ def edit_editor_route(editor_id):
             return redirect(url_for('base'))
         
         return render_template("editor_edit.html", editor=current_editor)
+    
+@app.route("/editor-details/<int:editor_id>", methods=["GET"])
+def detail_editor(editor_id):
+    editor_details = editor.detail_editor(editor_id)
+    return render_template("editor_details.html", editor=editor_details)
+
+################################################################################
 
 
 @app.route("/score-list", methods=["GET"])
@@ -398,7 +405,9 @@ def new_warehouse_create():
         name = request.form.get("name")
         storage = request.form.get("storage")
         editor_name = request.form.get("editor_name")
-        new_details = Warehouse(name, 0, storage, editor_name)
+        location = request.form.get("location")
+        new_details = Warehouse(name, 0, storage, editor_name, location)
+        
 
         try:
             warehouse.create_warehouse(new_details)
@@ -429,8 +438,9 @@ def edit_warehouse_route(warehouse_id):
         name = request.form.get("name")
         storage = request.form.get("storage")
         editor_name = request.form.get("editor_name")
+        location = request.form.get("location")
 
-        new_details = Warehouse(name, warehouse_id, storage, editor_name)
+        new_details = Warehouse(name, warehouse_id, storage, editor_name, location)
 
         try:
             warehouse.edit_warehouse(new_details)
