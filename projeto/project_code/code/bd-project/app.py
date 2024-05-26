@@ -463,6 +463,12 @@ def edit_warehouse_route(warehouse_id):
             return redirect(url_for('base'))
         
         return render_template("warehouse_edit.html", warehouse=current_warehouse, editors=editors)
+    
+
+@app.route("/warehouse-details/<int:warehouse_id>", methods=["GET"])
+def detail_warehouse(warehouse_id):
+    warehouse_details = warehouse.detail_warehouse(warehouse_id)
+    return render_template("warehouse_details.html", warehouse=warehouse_details)
 
 
 

@@ -13,6 +13,14 @@ class Warehouse (NamedTuple):
     editor_name: str
     location: str
 
+class WarehouseDetails(NamedTuple):
+    name: str
+    identifier: int
+    storage: int
+    editor_name: str
+    location: str
+    scores: dict[tuple[str, str, str]]
+
 
 def list_warehouse() -> list[Warehouse]:
     with create_connection() as conn:
@@ -105,3 +113,37 @@ def get_warehouse_by_id(warehouse_id: int) -> Warehouse:
             if row is None:
                 return None
             return Warehouse(*row)
+        
+def detail_warehouse(warehouse_id: int) -> WarehouseDetails:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""SELECT w.name, w.id, w.storage, e.name, wl.warehouse_location
+                            FROM Warehouse AS w
+                                JOIN Editor AS e ON w.editorId = e.identifier
+								JOIN warehouse_location wl ON w.id = wl.warehouse_id
+                            WHERE w.id=?
+                """, (warehouse_id,))
+
+
+            row = cursor.fetchone()
+            if row is None:
+                return None  # Se nenhuma linha for retornada, o compositor não existe
+
+            # Extrair informações básicas sobre o compositor
+            warehouse_info = row[:5]
+
+            # Query para buscar as músicas associadas ao compositor
+            cursor.execute("""SELECT m.title, wr.Fname + ' ' + wr.Lname as writerName, ar.type 
+                FROM stores as st
+                JOIN Score as s ON st.score_register = s.register_num
+                JOIN Warehouse as w ON st.warehouse_id = w.id
+                JOIN Music as m ON s.musicId = m.music_id
+                JOIN arranges as ar ON s.register_num = ar.score_register
+                JOIN Arranger as a ON ar.arranger_id = a.id
+                JOIN Writer as wr ON a.id = wr.id
+                WHERE w.id = ?
+            """, (warehouse_id,))
+            
+            scores = {(score[0], score[1], score[2]) for score in cursor.fetchall()}
+
+            return WarehouseDetails(*warehouse_info, scores)
