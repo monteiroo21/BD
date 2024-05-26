@@ -2,7 +2,7 @@ from typing import NamedTuple
 from pyodbc import IntegrityError
 from bd_project.session import create_connection
 
-class Score (NamedTuple):
+class Score(NamedTuple):
     register_num: int
     edition: int
     price: float
@@ -11,36 +11,7 @@ class Score (NamedTuple):
     music: str
     editor: str
     arranger: str
-
-
-def list_allScores() -> list[Score]:
-    with create_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("""SELECT s.register_num, s.edition, s.price, s.availability, 
-                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName
-                            FROM Score s
-                            JOIN Music m ON s.musicId = m.music_id
-							JOIN Editor e ON s.editorId = e.identifier
-							JOIN arranges ar ON s.register_num = ar.score_register
-							JOIN Arranger a ON ar.arranger_id = a.id
-							JOIN Writer w ON a.id = w.id""")
-            return [Score(*row) for row in cursor.fetchall()]
-        
-
-def search_score(query: str) -> list[Score]:
-    with create_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("""SELECT s.register_num, s.edition, s.price, s.availability, 
-                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName
-                            FROM Score s
-                            JOIN Music m ON s.musicId = m.music_id
-							JOIN Editor e ON s.editorId = e.identifier
-							JOIN arranges ar ON s.register_num = ar.score_register
-							JOIN Arranger a ON ar.arranger_id = a.id
-							JOIN Writer w ON a.id = w.id
-                            WHERE m.title LIKE ?""", ('%' + query + '%',))
-            return [Score(*row) for row in cursor.fetchall()]
-        
+    type: str
 
 def create_score(score: Score):
     with create_connection() as conn:
@@ -51,19 +22,89 @@ def create_score(score: Score):
                 raise ValueError(f"Editor '{score.editor}' does not exist")
             editor_id = editor_id[0]
 
+            cursor.execute("SELECT music_id FROM Music WHERE title = ?", (score.music,))
+            music_id = cursor.fetchone()
+            if music_id is None:
+                raise ValueError(f"Music '{score.music}' does not exist")
+            music_id = music_id[0]
+
+            cursor.execute("SELECT id FROM Writer WHERE Fname + ' ' + Lname = ?", (score.arranger,))
+            arranger_id = cursor.fetchone()
+            if arranger_id is None:
+                raise ValueError(f"Arranger '{score.arranger}' does not exist")
+            arranger_id = arranger_id[0]
+
             try:
-                cursor.execute("SELECT music_id FROM Music WHERE title = ?", (score.music,))
-                music_id = cursor.fetchone()
-                if editor_id is None:
-                    raise ValueError(f"Music '{score.music}' does not exist")
-                music_id = music_id[0]
                 cursor.execute("""
-                    EXEC add_score @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?
-                            """, (score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id))
+                    EXEC add_score @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?, @arrangerId=?, @type=?
+                """, (score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id, arranger_id, score.type))
                 conn.commit()
             except Exception as e:
                 print(f"Failed to create score: {e}")
                 conn.rollback()
+
+def edit_score(score: Score):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT register_num FROM Score WHERE register_num = ?", (score.register_num,))
+            if cursor.fetchone() is None:
+                raise ValueError(f"Score with register number '{score.register_num}' does not exist")
+
+            cursor.execute("SELECT identifier FROM Editor WHERE name = ?", (score.editor,))
+            editor_id = cursor.fetchone()
+            if editor_id is None:
+                raise ValueError(f"Editor '{score.editor}' does not exist")
+            editor_id = editor_id[0]
+
+            cursor.execute("SELECT music_id FROM Music WHERE title = ?", (score.music,))
+            music_id = cursor.fetchone()
+            if music_id is None:
+                raise ValueError(f"Music '{score.music}' does not exist")
+            music_id = music_id[0]
+
+            cursor.execute("SELECT id FROM Writer WHERE Fname + ' ' + Lname = ?", (score.arranger,))
+            arranger_id = cursor.fetchone()
+            if arranger_id is None:
+                raise ValueError(f"Arranger '{score.arranger}' does not exist")
+            arranger_id = arranger_id[0]
+
+            try:
+                cursor.execute("""
+                    EXEC edit_score @register_num=?, @new_edition=?, @new_price=?, @new_availability=?, @new_difficultyGrade=?, @new_music_id=?, @new_editor_id=?, @new_arranger_id=?, @type=?
+                """, (score.register_num, score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id, arranger_id, score.type))
+                conn.commit()
+            except IntegrityError as e:
+                conn.rollback()
+                raise RuntimeError(f"Failed to edit score with register number {score.register_num}: {e}")
+
+
+def list_allScores() -> list[Score]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""SELECT s.register_num, s.edition, s.price, s.availability, 
+                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName, ar.type
+                            FROM Score s
+                            JOIN Music m ON s.musicId = m.music_id
+							JOIN Editor e ON s.editorId = e.identifier
+							LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+							LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+							LEFT OUTER JOIN Writer w ON a.id = w.id""")
+            return [Score(*row) for row in cursor.fetchall()]
+        
+
+def search_score(query: str) -> list[Score]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""SELECT s.register_num, s.edition, s.price, s.availability, 
+                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName, ar.type
+                            FROM Score s
+                            JOIN Music m ON s.musicId = m.music_id
+							JOIN Editor e ON s.editorId = e.identifier
+							LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+							LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+							LEFT OUTER JOIN Writer w ON a.id = w.id
+                            WHERE m.title LIKE ?""", ('%' + query + '%',))
+            return [Score(*row) for row in cursor.fetchall()]
 
 
 def list_editors() -> list[str]:
@@ -96,23 +137,6 @@ def delete_score(register_num: int):
             except IntegrityError as e:
                 conn.rollback()
                 raise RuntimeError(f"Failed to delete score with register number {register_num}: {e}")
-            
-
-def edit_score(score: Score):
-    with create_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT register_num FROM Score WHERE register_num = ?", (score.register_num,))
-            if cursor.fetchone() is None:
-                raise ValueError(f"Score with register number '{score.register_num}' does not exist")
-            
-            try:
-                cursor.execute("""EXEC edit_score @register_num=?, @new_edition=?, @new_price=?, @new_availability=?, @new_difficultyGrade=?, @new_music_id=?, @new_editor_id=?
-                               """, (score.register_num, score.edition, score.price, score.availability, score.difficultyGrade, score.music, score.editor))
-                conn.commit()
-                print(f"Score with register number {score.register_num} edited successfully.")
-            except IntegrityError as e:
-                conn.rollback()
-                raise RuntimeError(f"Failed to edit score with register number {score.register_num}: {e}")
 
             
 def get_score_by_id(register_num: int) -> Score:
@@ -120,15 +144,20 @@ def get_score_by_id(register_num: int) -> Score:
         with conn.cursor() as cursor:
             cursor.execute("""
             SELECT s.register_num, s.edition, s.price, s.availability, 
-                   s.difficultyGrade, s.musicId, s.editorId
-            FROM Score s
+                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName, ar.type
+                            FROM Score s
+                            JOIN Music m ON s.musicId = m.music_id
+							JOIN Editor e ON s.editorId = e.identifier
+							LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+							LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+							LEFT OUTER JOIN Writer w ON a.id = w.id
             WHERE s.register_num = ?
             """, (register_num,))
             row = cursor.fetchone()
-            register_num, edition, price, availability, difficultyGrade, music, editor = row
+            register_num, edition, price, availability, difficultyGrade, music, editor, arranger, type = row
             if row is None:
                 return None
-            return Score(register_num, edition, price, availability, difficultyGrade, music, editor, '')
+            return Score(register_num, edition, price, availability, difficultyGrade, music, editor, arranger, type)
         
 
 def filter_scores_by_price() -> list[Score]:
@@ -137,7 +166,7 @@ def filter_scores_by_price() -> list[Score]:
             cursor.execute("""
                 SELECT s.register_num, s.edition, s.price, s.availability, 
                        s.difficultyGrade, m.title as music, e.name as editor, 
-                       w.Fname + ' ' + w.Lname as WriterName
+                       w.Fname + ' ' + w.Lname as WriterName, ar.type
                 FROM Score s
                 JOIN Music m ON s.musicId = m.music_id
                 JOIN Editor e ON s.editorId = e.identifier
@@ -147,3 +176,14 @@ def filter_scores_by_price() -> list[Score]:
                 ORDER BY s.price ASC
             """)
             return [Score(*row) for row in cursor.fetchall()]
+        
+
+def list_arrangers() -> list[str]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT w.Fname + ' ' + w.Lname
+                FROM Arranger a
+                JOIN Writer w ON a.id = w.id
+            """)
+            return [row[0] for row in cursor.fetchall()]

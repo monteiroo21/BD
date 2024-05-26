@@ -214,32 +214,25 @@ CREATE OR ALTER PROCEDURE add_score
     @availability INT,
     @difficultyGrade INT,
     @musicId INT,
-    @editorId INT
+    @editorId INT,
+    @arrangerId INT,
+    @type VARCHAR(20)
 AS
 BEGIN
-    -- Check if the music exists
-    IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @musicId)
-    BEGIN
-        RAISERROR ('Music does not exist', 16, 1);
-        RETURN;
-    END
+    DECLARE @register_num INT;
 
-    -- Check if the editor exists
-    IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @editorId)
-    BEGIN
-        RAISERROR ('Editor does not exist', 16, 1);
-        RETURN;
-    END
+    -- Generate a new register number
+    SELECT @register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
 
-    -- Declare variable for new score register number
-    DECLARE @new_register_num INT;
-    SELECT @new_register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
-
-    -- Insert into Score table
+    -- Insert the new score
     INSERT INTO Score (register_num, edition, price, availability, difficultyGrade, musicId, editorId)
-    VALUES (@new_register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
+    VALUES (@register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
 
-    PRINT 'Score added successfully.';
+    -- Insert into the arranges table
+    INSERT INTO arranges (score_register, arranger_id, [type])
+    VALUES (@register_num, @arrangerId, @type);
+
+    PRINT 'Score and arranger added successfully.';
 END;
 GO
 
@@ -514,45 +507,26 @@ GO
 
 CREATE OR ALTER PROCEDURE edit_score
     @register_num INT,
-    @new_edition VARCHAR(50),
+    @new_edition INT,
     @new_price DECIMAL(10, 2),
     @new_availability INT,
     @new_difficultyGrade INT,
     @new_music_id INT,
-    @new_editor_id INT
+    @new_editor_id INT,
+    @new_arranger_id INT,
+	@type VARCHAR(20)
 AS
 BEGIN
-    -- Check if the score exists
-    IF NOT EXISTS (SELECT 1 FROM Score WHERE register_num = @register_num)
-    BEGIN
-        PRINT 'Score does not exist.';
-        RETURN;
-    END
-
-    -- Check if the new music exists
-    IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @new_music_id)
-    BEGIN
-        PRINT 'Music does not exist.';
-        RETURN;
-    END
-
-    -- Check if the new editor exists
-    IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @new_editor_id)
-    BEGIN
-        PRINT 'Editor does not exist.';
-        RETURN;
-    END
-
-    -- Update the Score table with new details
+    -- Update the score details
     UPDATE Score
-    SET edition = @new_edition, 
-        price = @new_price, 
-        availability = @new_availability, 
-        difficultyGrade = @new_difficultyGrade, 
-        musicId = @new_music_id, 
-        editorId = @new_editor_id
+    SET edition = @new_edition, price = @new_price, availability = @new_availability, difficultyGrade = @new_difficultyGrade, musicId = @new_music_id, editorId = @new_editor_id
     WHERE register_num = @register_num;
 
-    PRINT 'Score details updated successfully.';
+    -- Update the arranges table
+    UPDATE arranges
+    SET arranger_id = @new_arranger_id, [type] = @type -- Assuming a default type
+    WHERE score_register = @register_num;
+
+    PRINT 'Score and arranger updated successfully.';
 END;
 GO

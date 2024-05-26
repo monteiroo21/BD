@@ -1,3 +1,4 @@
+from bd_project.session import create_connection
 from flask import Flask, flash, make_response, render_template, render_template_string, request, redirect, url_for
 
 from bd_project import customer, music
@@ -315,18 +316,21 @@ def new_score_create():
         difficultyGrade = request.form.get("difficultyGrade")
         editor_name = request.form.get("editor_name")
         music = request.form.get("music")
-        new_details = Score(0, edition, price, availability, difficultyGrade, music, editor_name)
+        arranger = request.form.get("arranger")
+        type = request.form.get("type")
+        new_details = Score(0, edition, price, availability, difficultyGrade, music, editor_name, arranger, type)
 
         try:
             score.create_score(new_details)
             flash("Score created successfully!")
             return redirect(url_for('base'))  # Redirecionar para a página principal
         except ValueError as e:
-            return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), error=str(e))
+            return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
         
     editors = score.list_editors()
     musics = score.list_musics()
-    return render_template("score_create.html", editors=editors, musics=musics)
+    arrangers = score.list_arrangers()
+    return render_template("score_create.html", editors=editors, musics=musics, arrangers=arrangers)
 
 
 @app.route("/score-delete/<int:register_num>", methods=["POST"])
@@ -346,32 +350,32 @@ def edit_score_route(register_num):
         edition = request.form.get("edition")
         price = request.form.get("price")
         availability = request.form.get("availability")
-        difficulty_grade = request.form.get("difficultyGrade")
-        music_id = request.form.get("music_id")
-        editor_id = request.form.get("editor_id")
+        difficultyGrade = request.form.get("difficultyGrade")
+        editor_name = request.form.get("editor_name")
+        music = request.form.get("music")
+        arranger = request.form.get("arranger")
+        type = request.form.get("type")
 
-        # Create a Score object with the new details
-        new_details = Score(register_num, edition, price, availability, difficulty_grade, music_id, editor_id, '')
+        new_details = Score(register_num, edition, price, availability, difficultyGrade, music, editor_name, arranger, type)
 
         try:
-            # Call the edit_score function to update the score record
             score.edit_score(new_details)
             flash("Score edited successfully!")
-            return redirect(url_for('base'))
+            return redirect(url_for('base'))  # Redirect to the main page
         except ValueError as e:
-            flash(f"Error: {e}")
-            return redirect(url_for('base'))
+            return render_template("score_edit.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e), score=new_details)
+        
     else:
-        # Fetch the current score details for the GET request
         current_score = score.get_score_by_id(register_num)
-        musics = score.list_musics()
-        editors = score.list_editors()
 
         if current_score is None:
             flash("Score not found", "error")
             return redirect(url_for('base'))
-        
-        return render_template("score_edit.html", score=current_score, musics=musics, editors=editors)
+
+        editors = score.list_editors()
+        musics = score.list_musics()
+        arrangers = score.list_arrangers()
+        return render_template("score_edit.html", editors=editors, musics=musics, arrangers=arrangers, score=current_score)
     
 
 @app.route("/score-list-sorted", methods=["GET"])
