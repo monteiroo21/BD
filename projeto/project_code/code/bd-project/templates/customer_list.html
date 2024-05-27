@@ -16,5 +16,10 @@
     <p>Bank Account: {{ customer.numBankAccount }}</p>
     <p>Cell Number: {{ customer.cellNumber }}</p>
     <p>Number of transactions: {{ customer.transaction_count }}</p>
+    <form method="get" action="{{ url_for('edit_customer_route', numCC=customer.numCC) }}" class="d-inline">
+        <button type="submit" class="btn btn-success btn-sm edit-button">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+    </form>
 </div>
 {% endfor %}

@@ -530,3 +530,24 @@ BEGIN
     PRINT 'Score and arranger updated successfully.';
 END;
 GO
+
+
+CREATE OR ALTER PROCEDURE edit_customer
+    @numCC INT,
+    @new_email_address VARCHAR(80),
+    @new_numBankAccount INT,
+    @new_cellNumber INT,
+    @new_name VARCHAR(60)
+AS
+BEGIN
+    BEGIN TRY
+        UPDATE Customer
+        SET email_address = @new_email_address, numBankAccount = @new_numBankAccount, cellNumber = @new_cellNumber, [name] = @new_name
+        WHERE numCC = @numCC;
+
+        PRINT 'Cliente atualizado com sucesso.';
+    END TRY
+    BEGIN CATCH
+        PRINT 'Erro ao atualizar o cliente.';
+    END CATCH
+END;

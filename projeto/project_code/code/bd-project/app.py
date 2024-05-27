@@ -632,6 +632,34 @@ def delete_customer_route(numCC):
     return redirect(url_for('base'))
 
 
+@app.route("/customer-edit/<int:numCC>", methods=["GET", "POST"])
+def edit_customer_route(numCC):
+    if request.method == "POST":
+        email_address = request.form.get("email_address")
+        numBankAccount = request.form.get("numBankAccount")
+        cellNumber = request.form.get("cellNumber")
+        name = request.form.get("name")
+        
+        try:
+            # Chama a função edit_customer com todos os parâmetros necessários
+            customer.edit_customer(numCC, name, email_address, numBankAccount, cellNumber)
+            flash("Customer edited successfully!")
+            return redirect(url_for('base'))
+        except ValueError as e:
+            flash(f"Error: {e}")
+            return redirect(url_for('base'))
+    else:
+        # Busca os detalhes atuais do cliente para a requisição GET
+        current_customer = customer.detail_customer(numCC)
+
+        if current_customer is None:
+            flash("Customer not found", "error")
+            return redirect(url_for('base'))
+
+        return render_template("customer_edit.html", customer=current_customer)
+
+
+
 ####################################################################
 
 @app.route("/transaction-list", methods=["GET"])
@@ -655,6 +683,9 @@ def detail_customer_route(numCC):
     except ValueError as e:
         flash(str(e))
         return redirect(url_for('base'))
+    
+
+
 
 
 
