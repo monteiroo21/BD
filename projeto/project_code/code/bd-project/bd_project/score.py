@@ -13,6 +13,18 @@ class Score(NamedTuple):
     arranger: str
     type: str
 
+class ScoreDetails(NamedTuple):
+    register_num: int
+    edition: int
+    price: float
+    availability: int
+    difficultyGrade: int
+    music: str
+    editor: str
+    arranger: str
+    type: str
+    instrumentation: dict[str, str]
+
 class Instrumentation(NamedTuple):
     instrument: str
     quantity: int
@@ -223,3 +235,38 @@ def get_instrumentations_by_score_id(register_num: int) -> list[Instrumentation]
                 WHERE scoreNum = ?
             """, (register_num,))
             return [Instrumentation(*row) for row in cursor.fetchall()]
+        
+
+def detail_score(register_num: int) -> ScoreDetails:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Query para buscar informações detalhadas sobre o compositor
+            cursor.execute("""
+            SELECT s.register_num, s.edition, s.price, s.availability, 
+                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName, ar.type
+                            FROM Score s
+                            JOIN Music m ON s.musicId = m.music_id
+							JOIN Editor e ON s.editorId = e.identifier
+							LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+							LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+							LEFT OUTER JOIN Writer w ON a.id = w.id
+            WHERE s.register_num = ?
+            """, (register_num,))
+            
+            row = cursor.fetchone()
+            if row is None:
+                return None  # Se nenhuma linha for retornada, o compositor não existe
+
+            # Extrair informações básicas sobre o compositor
+            score_info = row[:9]
+
+            # Query para buscar as músicas associadas ao compositor
+            cursor.execute("""
+                SELECT instrument, quantity
+                FROM Instrumentation
+                WHERE scoreNum = ?
+            """, (register_num,))
+            
+            instrumentation = {instrumentation[0]: instrumentation[1] for instrumentation in cursor.fetchall()}
+
+            return ScoreDetails(*score_info, instrumentation)
