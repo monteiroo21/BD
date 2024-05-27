@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Score</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
+
 <body>
-    <div class="container">
+    <div class="container" style="margin-bottom: 30px;">
         <h1>Create New Score</h1>
         {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
@@ -75,9 +77,11 @@
                     <input type="text" class="form-control" id="role" name="role[]" required>
                 </div>
             </div>
-            <button type="button" class="btn btn-secondary" onclick="addInstrumentation()">Add More Instrumentation</button>
+            <button type="button" class="btn btn-secondary" onclick="addInstrumentation()">Add More
+                Instrumentation</button>
             <button type="submit" class="btn btn-primary">Create</button>
         </form>
+        <a href="{{ url_for('base') }}" class="btn btn-secondary mt-2">Back to Music List</a>
     </div>
 
     <script>
@@ -107,4 +111,5 @@
         }
     </script>
 </body>
+
 </html>
