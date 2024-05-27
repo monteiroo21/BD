@@ -301,13 +301,11 @@ def score_list():
     scores = score.list_allScores()
     return render_template("scores_list.html", scores=scores)
 
-
 @app.route("/score-search", methods=["GET"])
 def score_search():
     query = request.args.get('query', '')
     scores = score.search_score(query)
     return render_template("scores_list.html", scores=scores)
-
 
 @app.route("/score-create", methods=["GET", "POST"])
 def new_score_create():
@@ -337,14 +335,16 @@ def new_score_create():
             flash("Score created successfully!")
             return redirect(url_for('base'))
         except ValueError as e:
-            return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), error=str(e))
+            flash(str(e))
+            return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
+        except Exception as e:
+            flash(f"Unexpected error: {e}")
+            return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
 
     editors = score.list_editors()
     musics = score.list_musics()
     arrangers = score.list_arrangers()
     return render_template("score_create.html", editors=editors, musics=musics, arrangers=arrangers)
-
-
 
 @app.route("/score-delete/<int:register_num>", methods=["POST"])
 def delete_score_route(register_num):
@@ -385,7 +385,11 @@ def edit_score_route(register_num):
             flash("Score updated successfully!")
             return redirect(url_for('base'))
         except ValueError as e:
-            return render_template("score_edit.html", score=updated_details, instrumentations=instrumentations, editors=score.list_editors(), musics=score.list_musics(), error=str(e))
+            flash(str(e))
+            return render_template("score_edit.html", score=updated_details, instrumentations=instrumentations, editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
+        except Exception as e:
+            flash(f"Unexpected error: {e}")
+            return render_template("score_edit.html", score=updated_details, instrumentations=instrumentations, editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
 
     score_details = score.get_score_by_id(register_num)
     instrumentations = score.get_instrumentations_by_score_id(register_num)
@@ -393,7 +397,6 @@ def edit_score_route(register_num):
     musics = score.list_musics()
     arrangers = score.list_arrangers()
     return render_template("score_edit.html", score=score_details, instrumentations=instrumentations, editors=editors, musics=musics, arrangers=arrangers)
-    
 
 @app.route("/score-list-sorted", methods=["GET"])
 def score_list_sorted():

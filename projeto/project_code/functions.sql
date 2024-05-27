@@ -216,21 +216,20 @@ CREATE OR ALTER PROCEDURE add_score
     @musicId INT,
     @editorId INT,
     @arrangerId INT,
-    @type VARCHAR(20)
+    @type VARCHAR(20),
+    @new_register_num INT OUTPUT  -- Output parameter to return the new register number
 AS
 BEGIN
-    DECLARE @register_num INT;
-
     -- Generate a new register number
-    SELECT @register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
+    SELECT @new_register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
 
     -- Insert the new score
     INSERT INTO Score (register_num, edition, price, availability, difficultyGrade, musicId, editorId)
-    VALUES (@register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
+    VALUES (@new_register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
 
     -- Insert into the arranges table
     INSERT INTO arranges (score_register, arranger_id, [type])
-    VALUES (@register_num, @arrangerId, @type);
+    VALUES (@new_register_num, @arrangerId, @type);
 
     PRINT 'Score and arranger added successfully.';
 END;
