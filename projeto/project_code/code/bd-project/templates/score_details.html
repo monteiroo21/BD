@@ -74,14 +74,12 @@
             <p><strong>Type:</strong> {{ score.type }}</p>
         </div>
         
-        {% if instrumentations %}
+        {% if score.instrumentation %}
         <h3>Instrumentation:</h3>
-        {% for instr in instrumentations %}
+        {% for instrument, quantity in score.instrumentation.items() %}
         <div class="card">
-            <p><strong>Instrument:</strong> {{ instr.instrument }}</p>
-            <p><strong>Quantity:</strong> {{ instr.quantity }}</p>
-            <p><strong>Family:</strong> {{ instr.family }}</p>
-            <p><strong>Role:</strong> {{ instr.role }}</p>
+            <p><strong>Instrument:</strong> {{ instrument }}</p>
+            <p><strong>Quantity:</strong> {{ quantity }}</p>
         </div>
         {% endfor %}
         {% endif %}

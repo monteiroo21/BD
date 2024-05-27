@@ -400,6 +400,11 @@ def score_list_sorted():
     scores = score.filter_scores_by_price()
     return render_template("scores_list.html", scores=scores)
 
+@app.route("/score-details/<int:register_num>", methods=["GET"])
+def detail_score(register_num):
+    score_details = score.detail_score(register_num)
+    return render_template("score_details.html", score=score_details)
+
 
 
 ####################################################################
