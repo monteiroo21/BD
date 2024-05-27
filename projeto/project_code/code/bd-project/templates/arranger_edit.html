@@ -26,23 +26,25 @@
             </div>
             <div class="form-group">
                 <label for="birthYear">Birth Year:</label>
-                <input type="number" class="form-control" id="birthYear" name="birthYear" value="{{ arranger.birthYear }}" required>
+                <input type="number" class="form-control" id="birthYear" name="birthYear"
+                    value="{{ arranger.birthYear }}" required>
             </div>
             <div class="form-group">
                 <label for="deathYear">Death Year:</label>
-                <input type="number" class="form-control" id="deathYear" name="deathYear" value="{{ arranger.deathYear }}">
+                <input type="number" class="form-control" id="deathYear" name="deathYear"
+                    value="{{ arranger.deathYear }}">
             </div>
             <div class="form-group">
                 <label for="genre_name">Musical Genre:</label>
                 <select class="form-control" id="genre_name" name="genre_name" required>
                     {% for genre in genres %}
-                    <option value="{{ genre }}" {% if genre == arranger.name %}selected{% endif %}>{{ genre }}</option>
+                    <option value="{{ genre }}" {% if genre==arranger.name %}selected{% endif %}>{{ genre }}</option>
                     {% endfor %}
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </form>
-        <a href="{{ url_for('arranger_list') }}" class="btn btn-secondary mt-2">Back to Arranger List</a>
+        <a href="{{ url_for('base') }}" class="btn btn-secondary mt-2">Back to Arranger List</a>
     </div>
 </body>
 
