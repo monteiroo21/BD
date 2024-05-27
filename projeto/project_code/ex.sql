@@ -487,6 +487,7 @@ INSERT INTO stores (warehouse_id, score_register) VALUES
 
 INSERT INTO purchases (costumerCC, score_register) VALUES
     (10010000, 101),
+    (10010000, 102),
     (10020000, 102),
     (10030000, 103),
     (10040000, 104),
@@ -511,6 +512,7 @@ INSERT INTO warehouse_location (warehouse_location, warehouse_id) VALUES
 -- Linking transactions and scores
 INSERT INTO constitutes (score_register, transaction_id) VALUES
     (101, 1),
+    (102, 1),
     (102, 2),
     (103, 3),
     (104, 4),
