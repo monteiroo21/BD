@@ -647,6 +647,14 @@ def transaction_search():
     return render_template("transaction_list.html", transactions=transactions)
 
 
+@app.route("/customer-details/<int:numCC>", methods=["GET"])
+def detail_customer_route(numCC):
+    try:
+        customer_details = customer.detail_customer(numCC)
+        return render_template("customer_details.html", customer=customer_details)
+    except ValueError as e:
+        flash(str(e))
+        return redirect(url_for('base'))
 
 
 

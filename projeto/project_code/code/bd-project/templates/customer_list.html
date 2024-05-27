@@ -7,6 +7,10 @@
                 <i class="fas fa-trash-alt"></i>
             </button>
         </form>
+        <a class="btn btn-primary btn-sm details-button"
+            href="{{ url_for('detail_customer_route', numCC=customer.numCC) }}">
+            Details
+        </a>
     </div>
     <p>Email: {{ customer.email_address }}</p>
     <p>Bank Account: {{ customer.numBankAccount }}</p>

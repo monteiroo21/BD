@@ -21,6 +21,15 @@ class CustomerWithTransactionCount(NamedTuple):
     transaction_count: int
 
 
+class CustomerDetails(NamedTuple):
+    numCC: int
+    email_address: str
+    numBankAccount: int
+    cellNumber: int
+    name: str
+    transactions: dict[str, str]
+
+
 def list_customers() -> list[Customer]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
@@ -88,3 +97,51 @@ def delete_customer(numCC: int):
                 print("Customer deleted successfully.")
             except Exception as e:
                 print(f"An error occurred: {e}")
+
+
+def detail_customer(numCC: int) -> CustomerDetails:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT c.numCC, c.email_address, c.numBankAccount, c.cellNumber, c.name
+                FROM Customer c
+                WHERE c.numCC = ?
+            """, (numCC,))
+            
+            row = cursor.fetchone()
+            if row is None:
+                return None
+
+            customer_info = Customer(*row)
+
+            cursor.execute("""
+                SELECT t.transaction_id, t.[date], m.title
+                FROM [Transaction] t
+                JOIN constitutes c ON t.transaction_id = c.transaction_id
+                JOIN Score s ON c.score_register = s.register_num
+                JOIN Music m ON s.musicId = m.music_id
+                WHERE t.customer_CC = ?
+                ORDER BY t.transaction_id
+            """, (numCC,))
+            
+            transactions = cursor.fetchall()
+
+            transaction_dict = {}
+            for transaction_id, date, title in transactions:
+                if transaction_id not in transaction_dict:
+                    transaction_dict[transaction_id] = {"date": date, "scores": []}
+                transaction_dict[transaction_id]["scores"].append(title)
+            
+            formatted_transactions = {
+                f"Transaction {tid} on {details['date']}": ", ".join(details["scores"])
+                for tid, details in transaction_dict.items()
+            }
+
+            return CustomerDetails(
+                numCC=customer_info.numCC,
+                email_address=customer_info.email_address,
+                numBankAccount=customer_info.numBankAccount,
+                cellNumber=customer_info.cellNumber,
+                name=customer_info.name,
+                transactions=formatted_transactions
+            )
