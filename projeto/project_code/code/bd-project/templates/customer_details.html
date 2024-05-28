@@ -7,6 +7,7 @@
     <title>Customer Details</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://unpkg.com/htmx.org@1.5.0"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,10 +37,11 @@
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 50%;
+            width: calc(50% - 20px);
             box-sizing: border-box;
             transition: box-shadow 0.3s ease;
             margin-bottom: 20px;
+            margin: 10px;
             position: relative;
         }
 
@@ -57,43 +59,27 @@
             color: #555;
         }
 
-        .details-button,
-        .buy-button,
-        .sort-btn {
+        .details-button {
             padding: 8px 12px;
             font-size: 14px;
-            color: #fff;
-            background-color: #6c757d;
-            border: none;
+            color: #28a745;
+            background-color: transparent;
+            border: 2px solid #28a745;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
 
-        .details-button:hover,
-        .buy-button:hover,
-        .sort-btn:hover {
-            background-color: #5a6268;
-        }
-
-        .delete-button {
-            padding: 6px 10px;
-            font-size: 14px;
+        .details-button:hover {
+            background-color: #28a745;
             color: #fff;
-            background-color: #dc3545;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .delete-button:hover {
-            background-color: #c82333;
         }
 
         .customer-info {
             margin-left: -530px;
-            /* Ajuste a margem para a esquerda */
         }
 
         .new-btn {
@@ -129,7 +115,7 @@
 
         {% if customer.transactions %}
         <h3 style="margin-top: 20px; margin-bottom: 15px;">Transactions:</h3>
-        <div class="w-100">
+        <div class="d-flex flex-wrap">
             {% for transaction, scores in customer.transactions.items() %}
             <div class="card transaction-item">
                 <p><strong>{{ transaction }}:</strong> {{ scores }}</p>
@@ -146,45 +132,36 @@
         <!-- Scores Section -->
         <div id="scores-container" style="width: 100%; margin-top: 40px;">
             <h2>Scores</h2>
-            <form id="search-score" style="display: none;" hx-get="/score-search" hx-target="#score-container"
-                hx-trigger="submit" style="margin-left: 80px;">
+            <form id="search-score" action="{{ url_for('search_scores') }}" method="GET"
+                hx-get="{{ url_for('search_scores') }}" hx-target="#score-container" hx-trigger="submit">
+                <input type="hidden" name="numCC" value="{{ customer.numCC }}">
                 <input type="text" name="query" placeholder="Search for score ...">
                 <button type="submit">Search</button>
-                <button hx-get="/score-list" hx-target="#score-container" hx-swap="innerHTML">Update Score List</button>
-                <a href="{{ url_for('new_score_create') }}" class="new-btn">New</a>
-                <button type="button" class="sort-btn" hx-get="/score-list-sorted" hx-target="#score-container"
-                    hx-swap="innerHTML">Sort by Price</button>
+                <button type="button" id="update-score-list" hx-get="{{ url_for('score_list') }}"
+                    hx-target="#score-container">Update Score List</button>
+                <button type="button" class="sort-btn" hx-get="{{ url_for('score_list_sorted') }}"
+                    hx-target="#score-container">Sort by Price</button>
             </form>
-            {% for score in scores %}
-            <div class="card">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="mb-0">{{ score.music }}</h2>
-                    <form method="post" action="{{ url_for('delete_score_route', register_num=score.register_num) }}"
-                        class="ml-auto">
-                        <button type="submit" class="btn btn-danger btn-sm delete-button">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </form>
-                    <a class="btn btn-primary btn-sm details-button"
-                        href="{{ url_for('detail_score', register_num=score.register_num) }}">
-                        Details
-                    </a>
+            <div class="d-flex flex-wrap" id="score-container" hx-get="{{ url_for('score_list') }}" hx-trigger="load">
+                {% for score in scores %}
+                <div class="card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">{{ score.music }}</h2>
+                        <a class="btn details-button"
+                            href="{{ url_for('detail_score', register_num=score.register_num) }}">
+                            Buy
+                        </a>
+                    </div>
+                    <p>Edition: {{ score.edition }}</p>
+                    <p>Availability: {{ score.availability }}</p>
+                    <p>Difficulty Grade: {{ score.difficultyGrade }}</p>
+                    <p>Price: {{ score.price }}$</p>
+                    <p>Arranger: {{ score.arranger_type }}</p>
+                    <p>Writer: {{ score.writer_name }}</p>
+                    <p>Editor: {{ score.editor_name }}</p>
                 </div>
-                <p>Edition: {{ score.edition }}</p>
-                <p>Availability: {{ score.availability }}</p>
-                <p>Difficulty Grade: {{ score.difficultyGrade }}</p>
-                <p>Price: {{ score.price }}$</p>
-                <p>Arranger: {{ score.arranger_type }}</p>
-                <p>Writer: {{ score.writer_name }}</p>
-                <p>Editor: {{ score.editor_name }}</p>
-                <form method="get" action="{{ url_for('edit_score_route', register_num=score.register_num) }}"
-                    class="d-inline">
-                    <button type="submit" class="btn btn-success btn-sm edit-button">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                </form>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
 </body>

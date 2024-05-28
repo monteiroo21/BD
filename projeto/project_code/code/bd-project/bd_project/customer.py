@@ -58,6 +58,7 @@ def list_all_scores_with_details() -> list[ScoreDetail]:
             """)
             return [ScoreDetail(*row) for row in cursor.fetchall()]
         
+        
 def search_scores(query: str) -> list[ScoreDetail]:
     with create_connection() as conn:
         with conn.cursor() as cursor:

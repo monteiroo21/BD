@@ -633,6 +633,16 @@ def transaction_search():
     return render_template("transaction_list.html", transactions=transactions)
 
 
+# @app.route("/customer-details/<int:numCC>", methods=["GET"])
+# def detail_customer_route(numCC):
+#     try:
+#         customer_details = customer.detail_customer(numCC)
+#         scores = customer.list_all_scores_with_details()
+#         return render_template("customer_details.html", customer=customer_details, scores=scores)
+#     except ValueError as e:
+#         flash(str(e))
+#         return redirect(url_for('base'))
+
 @app.route("/customer-details/<int:numCC>", methods=["GET"])
 def detail_customer_route(numCC):
     try:
@@ -642,15 +652,24 @@ def detail_customer_route(numCC):
     except ValueError as e:
         flash(str(e))
         return redirect(url_for('base'))
+
     
+
+# @app.route("/score-search", methods=["GET"])
+# def search_scores():
+#     query = request.args.get('query', '')
+#     numCC = request.args.get('numCC', '')
+#     scores = customer.search_scores(query)
+#     customer_details = customer.detail_customer(int(numCC))
+#     return render_template("customer_details.html", customer=customer_details, scores=scores)
+
 
 @app.route("/score-search", methods=["GET"])
 def search_scores():
     query = request.args.get('query', '')
-    scores = customer.search_scores(query)
     numCC = request.args.get('numCC', '')
-    customer_details = customer.detail_customer(int(numCC))  
-    return render_template("customer_details.html", customer=customer_details, scores=scores)
+    scores = customer.search_scores(query)
+    return render_template("score_list_partial.html", scores=scores)
 
 
 @app.route("/score-list", methods=["GET"])
