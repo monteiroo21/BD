@@ -143,6 +143,87 @@ BEGIN
 END;
 GO
 
+CREATE TYPE InstrumentationTableType AS TABLE
+(
+    instrument VARCHAR(60),
+    quantity INT,
+    family VARCHAR(50),
+    role VARCHAR(50)
+);
+GO
+CREATE OR ALTER PROCEDURE add_score
+    @edition INT,
+    @price DECIMAL(10, 2),
+    @availability INT,
+    @difficultyGrade INT,
+    @musicId INT,
+    @editorId INT,
+    @arrangerId INT,
+    @arrangementType VARCHAR(60),
+    @Instrumentations InstrumentationTableType READONLY
+AS
+BEGIN
+    DECLARE @newRegisterNum INT;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Calculate the new register number
+        SELECT @newRegisterNum = COALESCE(MAX(register_num), 0) + 1 FROM Score;
+
+        -- Insert new score into Score table and get the new register number
+        INSERT INTO Score (register_num, edition, price, availability, difficultyGrade, musicId, editorId)
+        VALUES (@newRegisterNum, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
+
+        -- Insert into the arranges table
+        INSERT INTO arranges (score_register, arranger_id, type)
+        VALUES (@newRegisterNum, @arrangerId, @arrangementType);
+
+        -- Declare cursor for iterating over the instrumentations table
+        DECLARE @instrument VARCHAR(60);
+        DECLARE @quantity INT;
+        DECLARE @family VARCHAR(50);
+        DECLARE @role VARCHAR(50);
+
+        DECLARE instrumentation_cursor CURSOR FOR
+        SELECT instrument, quantity, family, role
+        FROM @Instrumentations;
+
+        OPEN instrumentation_cursor;
+        FETCH NEXT FROM instrumentation_cursor INTO @instrument, @quantity, @family, @role;
+
+        -- Iterate over the rows in the instrumentations table
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            -- Insert each instrumentation into Instrumentation table
+            INSERT INTO Instrumentation (instrument, quantity, family, role, scoreNum)
+            VALUES (@instrument, @quantity, @family, @role, @newRegisterNum);
+
+            FETCH NEXT FROM instrumentation_cursor INTO @instrument, @quantity, @family, @role;
+        END;
+
+        CLOSE instrumentation_cursor;
+        DEALLOCATE instrumentation_cursor;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        -- Handle error
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        DECLARE @ErrorSeverity INT;
+        DECLARE @ErrorState INT;
+
+        SELECT 
+            @ErrorMessage = ERROR_MESSAGE(),
+            @ErrorSeverity = ERROR_SEVERITY(),
+            @ErrorState = ERROR_STATE();
+
+        RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+    END CATCH
+END;
+GO
+
 
 CREATE OR ALTER PROCEDURE add_editor
     @name VARCHAR(50),
@@ -352,6 +433,93 @@ BEGIN
     BEGIN
         PRINT 'Composer does not exist.';
     END
+END;
+GO
+
+CREATE OR ALTER PROCEDURE edit_score
+    @register_num INT,
+    @edition INT,
+    @price DECIMAL(10, 2),
+    @availability INT,
+    @difficultyGrade INT,
+    @musicId INT,
+    @editorId INT,
+    @arrangerId INT,
+    @arrangementType VARCHAR(60),
+    @Instrumentations InstrumentationTableType READONLY
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        -- Update score details in Score table
+        UPDATE Score
+        SET edition = @edition,
+            price = @price,
+            availability = @availability,
+            difficultyGrade = @difficultyGrade,
+            musicId = @musicId,
+            editorId = @editorId
+        WHERE register_num = @register_num;
+
+        -- Update or insert into the arranges table
+        IF EXISTS (SELECT 1 FROM arranges WHERE score_register = @register_num AND arranger_id = @arrangerId)
+        BEGIN
+            UPDATE arranges
+            SET type = @arrangementType
+            WHERE score_register = @register_num AND arranger_id = @arrangerId;
+        END
+        ELSE
+        BEGIN
+            INSERT INTO arranges (score_register, arranger_id, type)
+            VALUES (@register_num, @arrangerId, @arrangementType);
+        END
+
+        -- Delete existing instrumentations related to the score
+        DELETE FROM Instrumentation WHERE scoreNum = @register_num;
+
+        -- Declare cursor for iterating over the instrumentations table
+        DECLARE @instrument VARCHAR(60);
+        DECLARE @quantity INT;
+        DECLARE @family VARCHAR(50);
+        DECLARE @role VARCHAR(50);
+
+        DECLARE instrumentation_cursor CURSOR FOR
+        SELECT instrument, quantity, family, role
+        FROM @Instrumentations;
+
+        OPEN instrumentation_cursor;
+        FETCH NEXT FROM instrumentation_cursor INTO @instrument, @quantity, @family, @role;
+
+        -- Iterate over the rows in the instrumentations table
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            -- Insert each instrumentation into Instrumentation table
+            INSERT INTO Instrumentation (instrument, quantity, family, role, scoreNum)
+            VALUES (@instrument, @quantity, @family, @role, @register_num);
+
+            FETCH NEXT FROM instrumentation_cursor INTO @instrument, @quantity, @family, @role;
+        END;
+
+        CLOSE instrumentation_cursor;
+        DEALLOCATE instrumentation_cursor;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        -- Handle error
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        DECLARE @ErrorSeverity INT;
+        DECLARE @ErrorState INT;
+
+        SELECT 
+            @ErrorMessage = ERROR_MESSAGE(),
+            @ErrorSeverity = ERROR_SEVERITY(),
+            @ErrorState = ERROR_STATE();
+
+        RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState);
+    END CATCH
 END;
 GO
 
