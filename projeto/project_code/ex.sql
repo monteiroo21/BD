@@ -103,10 +103,10 @@ CREATE TABLE Writer
     Lname VARCHAR(60),
     genre VARCHAR(1)	CHECK(genre = 'F' or genre = 'M'),
     birthYear INT NOT NULL		CHECK(birthYear > 0 and birthYear < 2025),
-    deathYear INT		        CHECK(deathYear > 0 and deathYear < 2025),
+    deathYear INT		        CHECK(deathYear IS NULL OR (deathYear > 0 and deathYear < 2025)),
     musGenre_id INT,
 
-	CHECK(deathYear > birthYear),
+	CHECK(deathYear IS NULL OR deathYear > birthYear),
     PRIMARY KEY(id),
     FOREIGN KEY(musGenre_id) REFERENCES MusicalGenre(id)
 );

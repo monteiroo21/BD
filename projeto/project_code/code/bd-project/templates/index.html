@@ -253,6 +253,21 @@
             /* Tom mais escuro de verde */
         }
 
+        .new-btn2 {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .new-btn2:hover {
+            background-color: #007bff;
+        }
+
         button.sort-btn {
             padding: 10px 20px;
             font-size: 16px;
@@ -318,6 +333,7 @@
             <button type="submit">Search</button>
             <button hx-get="/music-list" hx-target="#music-container" hx-swap="innerHTML">Update Music List</button>
             <a href="{{ url_for('new_music_create') }}" class="new-btn">New</a>
+            <a href="{{ url_for('view_deleted_musics') }}" class="new-btn2">View Deleted Musics</a>
         </form>
 
         <form id="search-composer" style="display: none;" hx-get="/composer-search" hx-target="#composer-container"
@@ -345,6 +361,7 @@
             <a href="{{ url_for('new_score_create') }}" class="new-btn">New</a>
             <button type="button" class="sort-btn" hx-get="/score-list-sorted" hx-target="#score-container"
                 hx-swap="innerHTML">Sort by Price</button>
+            <a href="{{ url_for('genre_sales_stats') }}" class="new-btn2">View Genre Sales Stats</a>
         </form>
 
         <form id="search-warehouse" style="display: none;" hx-get="/warehouse-search" hx-target="#warehouse-container"

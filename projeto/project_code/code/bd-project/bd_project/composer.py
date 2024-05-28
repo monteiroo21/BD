@@ -31,7 +31,7 @@ def list_Composers() -> list[Composer]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("""SELECT Composer.id, Fname, Lname, genre, birthYear, deathYear, MusicalGenre.name FROM Composer
-			JOIN Writer ON Composer.id=Writer.id
+			LEFT OUTER JOIN Writer ON Composer.id=Writer.id
 			JOIN MusicalGenre ON Writer.musGenre_id=MusicalGenre.id""")
             return [Composer(*row) for row in cursor.fetchall()]
         
@@ -40,7 +40,7 @@ def search_composer(query: str) -> list[Composer]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("""SELECT Composer.id, Fname, Lname, genre, birthYear, deathYear, MusicalGenre.name FROM Composer
-			JOIN Writer ON Composer.id=Writer.id
+			LEFT OUTER JOIN Writer ON Composer.id=Writer.id
 			JOIN MusicalGenre ON Writer.musGenre_id=MusicalGenre.id
             WHERE Fname LIKE ? OR Lname LIKE ?""", ('%' + query + '%', '%' + query + '%'))
             return [Composer(*row) for row in cursor.fetchall()]
@@ -72,7 +72,7 @@ def detail_composer(composer_id: int) -> ComposerDetails:
             cursor.execute("""
                 SELECT w.id, w.Fname, w.Lname, w.genre, w.birthYear, w.deathYear, g.name AS mus_genre
                 FROM Writer w
-                JOIN Composer c ON w.id = c.id
+                LEFT OUTER JOIN Composer c ON w.id = c.id
                 JOIN MusicalGenre g ON w.musGenre_id = g.id
                 WHERE w.id = ?
             """, (composer_id,))
@@ -147,7 +147,7 @@ def get_composer_by_id(composer_id: int) -> Composer:
             cursor.execute("""
                 SELECT w.id, w.Fname, w.Lname, w.genre, w.birthYear, w.deathYear, g.name AS mus_genre
                 FROM Writer w
-                JOIN Composer c ON w.id = c.id
+                LEFT OUTER JOIN Composer c ON w.id = c.id
                 JOIN MusicalGenre g ON w.musGenre_id = g.id
                 WHERE w.id = ?
             """, (composer_id,))

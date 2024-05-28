@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genre Sales Stats</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Genre Sales Stats</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Genre</th>
+                    <th>Total Sales</th>
+                    <th>Total Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for genre, total_sales, total_count in stats %}
+                <tr>
+                    <td>{{ genre }}</td>
+                    <td>{{ total_sales }}</td>
+                    <td>{{ total_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('base') }}" class="btn btn-primary">Back to Home</a>
+    </div>
+</body>
+</html>

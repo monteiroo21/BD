@@ -162,3 +162,19 @@ def detail_music(music_id: int) -> MusicDetails:
             } for score in rows if score[6]]
             
             return MusicDetails(*music_info, scores)
+        
+
+def get_deleted_musics() -> list:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT music_id, title, year, musGenre_id FROM DeletedMusic")
+            rows = cursor.fetchall()
+            return [
+                {
+                    "music_id": row[0],
+                    "title": row[1],
+                    "year": row[2],
+                    "musGenre_id": row[3]
+                }
+                for row in rows
+            ]

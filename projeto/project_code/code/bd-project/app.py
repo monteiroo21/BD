@@ -101,6 +101,11 @@ def edit_music_route(music_id):
         genres = music.list_genres()
         return render_template("music_edit.html", genres=genres, music=current_music)
     
+@app.route("/deleted-musics", methods=["GET"])
+def view_deleted_musics():
+    deleted_musics = music.get_deleted_musics()
+    return render_template("deleted_musics.html", deleted_musics=deleted_musics)
+    
 
 @app.route("/composer-list", methods=["GET"])
 def composer_list():
@@ -124,6 +129,9 @@ def new_composer_create():
         birthYear = request.form.get("birthYear")
         deathYear = request.form.get("deathYear")
         genre_name = request.form.get("genre_name")
+
+        if deathYear == "":
+            deathYear = None
 
         new_details = Composer(0, fname, lname, genre, birthYear, deathYear, genre_name)
 
@@ -160,6 +168,9 @@ def edit_composer_route(composer_id):
         birth_year = request.form.get("birthYear")
         death_year = request.form.get("deathYear")
         genre_name = request.form.get("genre_name")
+
+        if death_year == "":
+            death_year = None
 
         current_composer = composer.get_composer_by_id(composer_id)
         if current_composer is None:
@@ -383,6 +394,11 @@ def detail_score(register_num):
     score_details = score.detail_score(register_num)
     return render_template("score_details.html", score=score_details)
 
+@app.route("/genre-sales-stats", methods=["GET"])
+def genre_sales_stats():
+    stats = score.list_genre_sales_stats()
+    return render_template("genre_sales_stats.html", stats=stats)
+
 
 @app.route("/warehouse-list", methods=["GET"])
 def warehouse_list():
@@ -486,6 +502,9 @@ def new_arranger_create():
         deathYear = request.form.get("deathYear")
         genre_name = request.form.get("genre_name")
 
+        if deathYear == "":
+            deathYear = None
+
         new_details = Arranger(0, fname, lname, genre, birthYear, deathYear, genre_name)
 
         try:
@@ -520,6 +539,9 @@ def edit_arranger_route(arranger_id):
         birth_year = request.form.get("birthYear")
         death_year = request.form.get("deathYear")
         genre_name = request.form.get("genre_name")
+
+        if death_year == "":
+            death_year = None
 
         current_arranger = arranger.get_arranger_by_id(arranger_id)
         if current_arranger is None:
