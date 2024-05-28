@@ -82,12 +82,9 @@
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             width: calc(50% - 40px);
-            /* Alterado para 50% */
             box-sizing: border-box;
             transition: box-shadow 0.3s ease;
             margin-bottom: 20px;
-            /* Adicionado espaçamento entre os cards */
-            box-sizing: border-box;
             position: relative;
         }
 
@@ -113,20 +110,16 @@
             font-size: 14px;
             color: #fff;
             background-color: #6c757d;
-            /* Nova cor cinza */
             border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             margin-right: 5px;
-            /* Aumenta a margem direita */
             margin-top: 5px;
-            /* Aumenta a margem superior */
         }
 
         .details-button:hover {
             background-color: #5a6268;
-            /* Nova cor cinza mais escura */
         }
 
         .delete-button {
@@ -134,20 +127,16 @@
             font-size: 14px;
             color: #fff;
             background-color: #dc3545;
-            /* Nova cor vermelha */
             border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             margin-right: 5px;
-            /* Aumenta a margem direita */
             margin-top: 5px;
-            /* Aumenta a margem superior */
         }
 
         .delete-button:hover {
             background-color: #c82333;
-            /* Nova cor vermelha mais escura */
         }
 
         #search-music,
@@ -241,7 +230,6 @@
             font-size: 16px;
             color: #fff;
             background-color: #28a745;
-            /* Verde */
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -250,7 +238,6 @@
 
         .new-btn:hover {
             background-color: #218838;
-            /* Tom mais escuro de verde */
         }
 
         button.sort-btn {
@@ -273,20 +260,33 @@
             font-size: 14px;
             color: #fff;
             background-color: #28a745;
-            /* Verde */
             border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             margin-right: 5px;
-            /* Aumenta a margem direita */
             margin-top: 5px;
-            /* Aumenta a margem superior */
         }
 
         .edit-button:hover {
             background-color: #218838;
-            /* Tom mais escuro de verde */
+        }
+
+        .buy-button {
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #ffc107;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+
+        .buy-button:hover {
+            background-color: #e0a800;
         }
     </style>
 </head>
@@ -345,6 +345,8 @@
             <a href="{{ url_for('new_score_create') }}" class="new-btn">New</a>
             <button type="button" class="sort-btn" hx-get="/score-list-sorted" hx-target="#score-container"
                 hx-swap="innerHTML">Sort by Price</button>
+            <button type="button" class="confirm-btn" hx-get="/confirm-transaction" hx-target="#score-container"
+                hx-swap="innerHTML">Confirm Transaction</button>
         </form>
 
         <form id="search-warehouse" style="display: none;" hx-get="/warehouse-search" hx-target="#warehouse-container"
