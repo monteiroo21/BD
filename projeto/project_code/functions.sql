@@ -208,33 +208,6 @@ BEGIN
 END;
 GO
 
-CREATE OR ALTER PROCEDURE add_score
-    @edition INT,
-    @price DECIMAL(10, 2),
-    @availability INT,
-    @difficultyGrade INT,
-    @musicId INT,
-    @editorId INT,
-    @arrangerId INT,
-    @type VARCHAR(20),
-    @new_register_num INT OUTPUT  -- Output parameter to return the new register number
-AS
-BEGIN
-    -- Generate a new register number
-    SELECT @new_register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
-
-    -- Insert the new score
-    INSERT INTO Score (register_num, edition, price, availability, difficultyGrade, musicId, editorId)
-    VALUES (@new_register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
-
-    -- Insert into the arranges table
-    INSERT INTO arranges (score_register, arranger_id, [type])
-    VALUES (@new_register_num, @arrangerId, @type);
-
-    PRINT 'Score and arranger added successfully.';
-END;
-GO
-
 
 CREATE OR ALTER PROCEDURE add_customer
     @numCC INT,
@@ -501,32 +474,6 @@ BEGIN
     BEGIN
         PRINT 'Arranger does not exist.';
     END
-END;
-GO
-
-CREATE OR ALTER PROCEDURE edit_score
-    @register_num INT,
-    @new_edition INT,
-    @new_price DECIMAL(10, 2),
-    @new_availability INT,
-    @new_difficultyGrade INT,
-    @new_music_id INT,
-    @new_editor_id INT,
-    @new_arranger_id INT,
-	@type VARCHAR(20)
-AS
-BEGIN
-    -- Update the score details
-    UPDATE Score
-    SET edition = @new_edition, price = @new_price, availability = @new_availability, difficultyGrade = @new_difficultyGrade, musicId = @new_music_id, editorId = @new_editor_id
-    WHERE register_num = @register_num;
-
-    -- Update the arranges table
-    UPDATE arranges
-    SET arranger_id = @new_arranger_id, [type] = @type -- Assuming a default type
-    WHERE score_register = @register_num;
-
-    PRINT 'Score and arranger updated successfully.';
 END;
 GO
 
