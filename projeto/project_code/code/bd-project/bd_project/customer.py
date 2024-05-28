@@ -1,5 +1,3 @@
-import random
-import string
 from typing import NamedTuple
 from pyodbc import IntegrityError
 from bd_project.session import create_connection
@@ -30,6 +28,70 @@ class CustomerDetails(NamedTuple):
     cellNumber: int
     name: str
     transactions: dict[str, str]
+
+
+class ScoreDetail(NamedTuple):
+    register_num: int
+    edition: int
+    price: float
+    availability: int
+    difficultyGrade: int
+    music: str
+    editor_name: str
+    writer_name: str
+    arranger_type: str
+
+
+def list_all_scores_with_details() -> list[ScoreDetail]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT s.register_num, s.edition, s.price, s.availability, 
+                       s.difficultyGrade, m.title as music, e.name, 
+                       w.Fname + ' ' + w.Lname as writer_name, ar.type
+                FROM Score s
+                JOIN Music m ON s.musicId = m.music_id
+                JOIN Editor e ON s.editorId = e.identifier
+                LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+                LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+                LEFT OUTER JOIN Writer w ON a.id = w.id
+            """)
+            return [ScoreDetail(*row) for row in cursor.fetchall()]
+        
+def search_scores(query: str) -> list[ScoreDetail]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT s.register_num, s.edition, s.price, s.availability, 
+                       s.difficultyGrade, m.title as music, e.name, 
+                       w.Fname + ' ' + w.Lname as writer_name, ar.type
+                FROM Score s
+                JOIN Music m ON s.musicId = m.music_id
+                JOIN Editor e ON s.editorId = e.identifier
+                LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+                LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+                LEFT OUTER JOIN Writer w ON a.id = w.id
+                WHERE m.title LIKE ?
+            """, ('%' + query + '%',))
+            return [ScoreDetail(*row) for row in cursor.fetchall()]
+
+
+def list_all_scores_sorted_by_price() -> list[ScoreDetail]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT s.register_num, s.edition, s.price, s.availability, 
+                       s.difficultyGrade, m.title as music, e.name, 
+                       w.Fname + ' ' + w.Lname as writer_name, ar.type
+                FROM Score s
+                JOIN Music m ON s.musicId = m.music_id
+                JOIN Editor e ON s.editorId = e.identifier
+                LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+                LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+                LEFT OUTER JOIN Writer w ON a.id = w.id
+                ORDER BY s.price
+            """)
+            return [ScoreDetail(*row) for row in cursor.fetchall()]
 
 
 def list_customers() -> list[Customer]:

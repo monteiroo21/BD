@@ -1,13 +1,7 @@
 from bd_project.session import create_connection
-from flask import Flask, flash, make_response, render_template, render_template_string, request, redirect, url_for
+from flask import Flask, flash, render_template, request, redirect, url_for
 
-from bd_project import customer, music
-from bd_project import composer
-from bd_project import editor
-from bd_project import score
-from bd_project import warehouse
-from bd_project import arranger
-from bd_project import transaction
+from bd_project import customer, music, composer, editor, score, warehouse, arranger, transaction
 from bd_project.music import Music
 from bd_project.composer import Composer
 from bd_project.editor import Editor
@@ -88,11 +82,9 @@ def edit_music_route(music_id):
         fname = request.form.get("fname")
         lname = request.form.get("lname")
         
-        # Create a Music object with the provided details, including the music_id
         new_details = Music(music_id, title, int(year), genre_name, fname, lname)
 
         try:
-            # Call the edit_music function to update the music record
             music.edit_music(new_details)
             flash("Music edited successfully!")
             return redirect(url_for('base'))
@@ -100,20 +92,15 @@ def edit_music_route(music_id):
             flash(f"Error: {e}")
             return redirect(url_for('base'))
     else:
-        # Fetch the current music details for the GET request
-        current_music = music.get_music_by_id(music_id)  # Assuming this function fetches the music details
+        current_music = music.get_music_by_id(music_id)
 
         if current_music is None:
             flash("Music not found", "error")
             return redirect(url_for('base'))
         
-        # Fetch the list of genres for the dropdown menu in the form
         genres = music.list_genres()
         return render_template("music_edit.html", genres=genres, music=current_music)
     
-
-####################################################################
-
 
 @app.route("/composer-list", methods=["GET"])
 def composer_list():
@@ -143,7 +130,7 @@ def new_composer_create():
         try:
             composer.create_composer(new_details)
             flash("Composer created successfully!")
-            return redirect(url_for('base'))  # Redirecionar para a página principal
+            return redirect(url_for('base'))
         except ValueError as e:
             print(f"Error: {e}")
             return redirect(url_for('base'))
@@ -174,17 +161,14 @@ def edit_composer_route(composer_id):
         death_year = request.form.get("deathYear")
         genre_name = request.form.get("genre_name")
 
-        # Fetch the current composer details
         current_composer = composer.get_composer_by_id(composer_id)
         if current_composer is None:
             flash("Composer not found", "error")
             return redirect(url_for('base'))
 
-        # Create a Composer object with the new details
         new_details = Composer(composer_id, fname, lname, genre, birth_year, death_year, genre_name)
 
         try:
-            # Call the edit_composer function to update the composer record
             composer.edit_composer(new_details, current_composer.Fname, current_composer.Lname)
             flash("Composer edited successfully!")
             return redirect(url_for('base'))
@@ -192,14 +176,12 @@ def edit_composer_route(composer_id):
             flash(f"Error: {e}")
             return redirect(url_for('base'))
     else:
-        # Fetch the current composer details for the GET request
         current_composer = composer.get_composer_by_id(composer_id)
 
         if current_composer is None:
             flash("Composer not found", "error")
             return redirect(url_for('base'))
         
-        # Fetch the list of genres for the dropdown menu in the form
         genres = composer.list_genres()
         return render_template("composer_edit.html", genres=genres, composer=current_composer)
     
@@ -208,10 +190,6 @@ def edit_composer_route(composer_id):
 def detail_composer(composer_id):
     composer_details = composer.detail_composer(composer_id)
     return render_template("composer_details.html", composer=composer_details)
-
-
-####################################################################
-
 
 
 @app.route("/editor-list", methods=["GET"])
@@ -238,7 +216,7 @@ def new_editor_create():
         try:
             editor.create_editor(new_details)
             flash("Editor created successfully!")
-            return redirect(url_for('base'))  # Redirecionar para a página principal
+            return redirect(url_for('base'))
         except ValueError as e:
             return render_template("editor_create.html", error=str(e))
         
@@ -264,14 +242,12 @@ def edit_editor_route(editor_id):
         location = request.form.get("location")
 
         try:
-            # Fetch the current editor details using the editor_id
             current_editor = editor.get_editor_by_id(editor_id)
             
             if current_editor is None:
                 flash("Editor not found", "error")
                 return redirect(url_for('base'))
             
-            # Update editor details
             editor.edit_editor(current_editor.name, name, location)
             flash("Editor edited successfully!")
             return redirect(url_for('base'))
@@ -279,7 +255,6 @@ def edit_editor_route(editor_id):
             flash(f"Error: {e}")
             return redirect(url_for('base'))
     else:
-        # Fetch the current editor details for the GET request
         current_editor = editor.get_editor_by_id(editor_id)
 
         if current_editor is None:
@@ -288,12 +263,11 @@ def edit_editor_route(editor_id):
         
         return render_template("editor_edit.html", editor=current_editor)
     
+
 @app.route("/editor-details/<int:editor_id>", methods=["GET"])
 def detail_editor(editor_id):
     editor_details = editor.detail_editor(editor_id)
     return render_template("editor_details.html", editor=editor_details)
-
-################################################################################
 
 
 @app.route("/score-list", methods=["GET"])
@@ -301,11 +275,13 @@ def score_list():
     scores = score.list_allScores()
     return render_template("scores_list.html", scores=scores)
 
+
 @app.route("/score-search", methods=["GET"])
-def score_search():
+def search_score():
     query = request.args.get('query', '')
     scores = score.search_score(query)
     return render_template("scores_list.html", scores=scores)
+
 
 @app.route("/score-create", methods=["GET", "POST"])
 def new_score_create():
@@ -328,7 +304,7 @@ def new_score_create():
         for instrument, quantity, family, role in zip(instruments, quantities, families, roles):
             instrumentations.append(score.Instrumentation(instrument, int(quantity), family, role))
 
-        new_details = score.Score(0, int(edition), float(price), int(availability), int(difficultyGrade), music, editor_name, arranger, type)
+        new_details = Score(0, int(edition), float(price), int(availability), int(difficultyGrade), music, editor_name, arranger, type)
 
         try:
             score.create_score(new_details, instrumentations)
@@ -378,7 +354,7 @@ def edit_score_route(register_num):
         for instrument, quantity, family, role in zip(instruments, quantities, families, roles):
             instrumentations.append(score.Instrumentation(instrument, int(quantity), family, role))
 
-        updated_details = score.Score(register_num, int(edition), float(price), int(availability), int(difficultyGrade), music, editor_name, arranger, type)
+        updated_details = Score(register_num, int(edition), float(price), int(availability), int(difficultyGrade), music, editor_name, arranger, type)
 
         try:
             score.edit_score(updated_details, instrumentations)
@@ -409,12 +385,6 @@ def detail_score(register_num):
     return render_template("score_details.html", score=score_details)
 
 
-
-####################################################################
-
-
-
-
 @app.route("/warehouse-list", methods=["GET"])
 def warehouse_list():
     warehouses = warehouse.list_warehouse()
@@ -437,11 +407,10 @@ def new_warehouse_create():
         location = request.form.get("location")
         new_details = Warehouse(name, 0, storage, editor_name, location)
         
-
         try:
             warehouse.create_warehouse(new_details)
             flash("Warehouse created successfully!")
-            return redirect(url_for('base'))  # Redirecionar para a página principal
+            return redirect(url_for('base'))
         except ValueError as e:
             return render_template("warehouse_create.html", editors=warehouse.list_editors(), error=str(e))
         
@@ -479,7 +448,6 @@ def edit_warehouse_route(warehouse_id):
             flash(f"Error: {e}")
             return redirect(url_for('base'))
     else:
-        # Fetch the current warehouse details for the GET request
         current_warehouse = warehouse.get_warehouse_by_id(warehouse_id)
         editors = warehouse.list_editors()
 
@@ -494,12 +462,6 @@ def edit_warehouse_route(warehouse_id):
 def detail_warehouse(warehouse_id):
     warehouse_details = warehouse.detail_warehouse(warehouse_id)
     return render_template("warehouse_details.html", warehouse=warehouse_details)
-
-
-
-####################################################################
-
-
 
 
 @app.route("/arranger-list", methods=["GET"])
@@ -530,7 +492,7 @@ def new_arranger_create():
         try:
             arranger.create_arranger(new_details)
             flash("Arranger created successfully!")
-            return redirect(url_for('base'))  # Redirecionar para a página principal
+            return redirect(url_for('base'))
         except ValueError as e:
             return render_template("arranger_create.html", genres=arranger.list_genres(), error=str(e))
         
@@ -560,17 +522,14 @@ def edit_arranger_route(arranger_id):
         death_year = request.form.get("deathYear")
         genre_name = request.form.get("genre_name")
 
-        # Fetch the current arranger details
         current_arranger = arranger.get_arranger_by_id(arranger_id)
         if current_arranger is None:
             flash("Arranger not found", "error")
             return redirect(url_for('base'))
 
-        # Create a Arranger object with the new details
         new_details = Arranger(arranger_id, fname, lname, genre, birth_year, death_year, genre_name)
 
         try:
-            # Call the edit_arranger function to update the arranger record
             arranger.edit_arranger(new_details, current_arranger.fname, current_arranger.lname)
             flash("Arranger edited successfully!")
             return redirect(url_for('base'))
@@ -578,14 +537,12 @@ def edit_arranger_route(arranger_id):
             flash(f"Error: {e}")
             return redirect(url_for('base'))
     else:
-        # Fetch the current arranger details for the GET request
         current_arranger = arranger.get_arranger_by_id(arranger_id)
 
         if current_arranger is None:
             flash("Arranger not found", "error")
             return redirect(url_for('base'))
         
-        # Fetch the list of genres for the dropdown menu in the form
         genres = arranger.list_genres()
         return render_template("arranger_edit.html", genres=genres, arranger=current_arranger)
     
@@ -594,7 +551,6 @@ def detail_arranger(arranger_id):
     arranger_details = arranger.detail_arranger(arranger_id)
     return render_template("arranger_details.html", arranger=arranger_details)
 
-####################################################################
 
 @app.route("/customer-list", methods=["GET"])
 def customer_list():
@@ -649,7 +605,6 @@ def edit_customer_route(numCC):
         name = request.form.get("name")
         
         try:
-            # Chama a função edit_customer com todos os parâmetros necessários
             customer.edit_customer(numCC, name, email_address, numBankAccount, cellNumber)
             flash("Customer edited successfully!")
             return redirect(url_for('base'))
@@ -657,7 +612,6 @@ def edit_customer_route(numCC):
             flash(f"Error: {e}")
             return redirect(url_for('base'))
     else:
-        # Busca os detalhes atuais do cliente para a requisição GET
         current_customer = customer.detail_customer(numCC)
 
         if current_customer is None:
@@ -666,9 +620,6 @@ def edit_customer_route(numCC):
 
         return render_template("customer_edit.html", customer=current_customer)
 
-
-
-####################################################################
 
 @app.route("/transaction-list", methods=["GET"])
 def transaction_list():
@@ -687,14 +638,36 @@ def transaction_search():
 def detail_customer_route(numCC):
     try:
         customer_details = customer.detail_customer(numCC)
-        return render_template("customer_details.html", customer=customer_details)
+        scores = customer.list_all_scores_with_details()
+        return render_template("customer_details.html", customer=customer_details, scores=scores)
     except ValueError as e:
         flash(str(e))
         return redirect(url_for('base'))
     
 
+@app.route("/score-search", methods=["GET"])
+def search_scores():
+    query = request.args.get('query', '')
+    scores = customer.search_scores(query)
+    numCC = request.args.get('numCC', '')
+    customer_details = customer.detail_customer(int(numCC))  
+    return render_template("customer_details.html", customer=customer_details, scores=scores)
 
 
+@app.route("/score-list", methods=["GET"])
+def list_scores():
+    scores = customer.list_all_scores_with_details()
+    numCC = request.args.get('numCC', '')
+    customer_details = customer.detail_customer(int(numCC))
+    return render_template("customer_details.html", customer=customer_details, scores=scores)
+
+
+@app.route("/score-list-sorted", methods=["GET"])
+def list_scores_sorted():
+    scores = customer.list_all_scores_sorted_by_price()
+    numCC = request.args.get('numCC', '')
+    customer_details = customer.detail_customer(int(numCC))
+    return render_template("customer_details.html", customer=customer_details, scores=scores)
 
 
 if __name__ == "__main__":
