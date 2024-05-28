@@ -308,7 +308,7 @@ def new_score_create():
         try:
             score.create_score(new_details, instrumentations)
             flash("Score created successfully!")
-            return redirect(url_for('score_list'))
+            return redirect(url_for('base'))
         except ValueError as e:
             flash(str(e))
             return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))

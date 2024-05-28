@@ -191,81 +191,87 @@ def detail_score(register_num: int) -> ScoreDetails:
 def create_score(score: Score, instrumentations: list[Instrumentation]):
     with create_connection() as conn:
         with conn.cursor() as cursor:
+            # Fetch the editor ID
             cursor.execute("SELECT identifier FROM Editor WHERE name = ?", (score.editor,))
             editor_id = cursor.fetchone()
             if editor_id is None:
                 raise ValueError(f"Editor '{score.editor}' does not exist")
             editor_id = editor_id[0]
 
+            # Fetch the music ID
             cursor.execute("SELECT music_id FROM Music WHERE title = ?", (score.music,))
             music_id = cursor.fetchone()
             if music_id is None:
                 raise ValueError(f"Music '{score.music}' does not exist")
             music_id = music_id[0]
 
+            # Fetch the arranger ID
             cursor.execute("SELECT id FROM Writer WHERE Fname + ' ' + Lname = ?", (score.arranger,))
             arranger_id = cursor.fetchone()
             if arranger_id is None:
                 raise ValueError(f"Arranger '{score.arranger}' does not exist")
             arranger_id = arranger_id[0]
 
-            # Create a list of tuples for the instrumentation data
-            instrumentation_data = [(instr.instrument, instr.quantity, instr.family, instr.role) for instr in instrumentations]
-
-            # Create a table-valued parameter from the list of tuples
-            tvp = cursor.execute("""
-                DECLARE @Instrumentations InstrumentationTableType;
-                INSERT INTO @Instrumentations (instrument, quantity, family, role) VALUES (?, ?, ?, ?);
-            """, instrumentation_data).fetchall()
-
             try:
+                # Create a table-valued parameter for the instrumentation
+                tvp = cursor.execute("""
+                    DECLARE @InstrumentationTableType InstrumentationTableType;
+                    INSERT INTO @InstrumentationTableType (instrument, quantity, family, role)
+                    VALUES (?, ?, ?, ?);
+                """, instrumentations)
+
+                # Call the stored procedure to add the score and instrumentations
                 cursor.execute("""
-                    EXEC add_score @newRegisterNum OUTPUT, @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?, @arrangerId=?, @arrangementType=?, @Instrumentations;
-                """, (score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id, arranger_id, score.type, tvp))
+                    EXEC add_score @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?, @arrangerId=?, @arrangementType=?, @Instrumentations=?
+                """, score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id, arranger_id, score.type, tvp)
 
                 conn.commit()
             except Exception as e:
+                print(f"Failed to create score: {e}")
                 conn.rollback()
-                raise
+
 
 def edit_score(score: Score, instrumentations: list[Instrumentation]):
     with create_connection() as conn:
         with conn.cursor() as cursor:
+            # Check if the score exists
             cursor.execute("SELECT register_num FROM Score WHERE register_num = ?", (score.register_num,))
             if cursor.fetchone() is None:
                 raise ValueError(f"Score with register number '{score.register_num}' does not exist")
 
+            # Fetch the editor ID
             cursor.execute("SELECT identifier FROM Editor WHERE name = ?", (score.editor,))
             editor_id = cursor.fetchone()
             if editor_id is None:
                 raise ValueError(f"Editor '{score.editor}' does not exist")
             editor_id = editor_id[0]
 
+            # Fetch the music ID
             cursor.execute("SELECT music_id FROM Music WHERE title = ?", (score.music,))
             music_id = cursor.fetchone()
             if music_id is None:
                 raise ValueError(f"Music '{score.music}' does not exist")
             music_id = music_id[0]
 
+            # Fetch the arranger ID
             cursor.execute("SELECT id FROM Writer WHERE Fname + ' ' + Lname = ?", (score.arranger,))
             arranger_id = cursor.fetchone()
             if arranger_id is None:
                 raise ValueError(f"Arranger '{score.arranger}' does not exist")
             arranger_id = arranger_id[0]
 
-            # Create a list of tuples for the instrumentation data
-            instrumentation_data = [(instr.instrument, instr.quantity, instr.family, instr.role) for instr in instrumentations]
-
-            # Create a table-valued parameter from the list of tuples
-            tvp = cursor.execute("""
-                DECLARE @Instrumentations InstrumentationTableType;
-                INSERT INTO @Instrumentations (instrument, quantity, family, role) VALUES (?, ?, ?, ?);
-            """, instrumentation_data).fetchall()
-
             try:
+                # Create a table-valued parameter for the instrumentation
+                tvp = cursor.execute("""
+                    DECLARE @InstrumentationTableType InstrumentationTableType;
+                    INSERT INTO @InstrumentationTableType (instrument, quantity, family, role)
+                    VALUES (?, ?, ?, ?);
+                """, instrumentations)
+
+                # Call the stored procedure to edit the score and instrumentations
                 cursor.execute("""
-                    EXEC edit_score @register_num=?, @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?, @arrangerId=?, @arrangementType=?, @Instrumentations;
-                """, (score.register_num, score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id, arranger_id, score.type, tvp))
+                    EXEC edit_score @register_num=?, @edition=?, @price=?, @availability=?, @difficultyGrade=?, @musicId=?, @editorId=?, @arrangerId=?, @arrangementType=?, @Instrumentations=?
+                """, score.register_num, score.edition, score.price, score.availability, score.difficultyGrade, music_id, editor_id, arranger_id, score.type, tvp)
 
                 conn.commit()
             except IntegrityError as e:
