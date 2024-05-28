@@ -128,41 +128,6 @@
         {% else %}
         <p>Customer not found.</p>
         {% endif %}
-
-        <!-- Scores Section -->
-        <div id="scores-container" style="width: 100%; margin-top: 40px;">
-            <h2>Scores</h2>
-            <form id="search-score" action="{{ url_for('search_scores') }}" method="GET"
-                hx-get="{{ url_for('search_scores') }}" hx-target="#score-container" hx-trigger="submit">
-                <input type="hidden" name="numCC" value="{{ customer.numCC }}">
-                <input type="text" name="query" placeholder="Search for score ...">
-                <button type="submit">Search</button>
-                <button type="button" id="update-score-list" hx-get="{{ url_for('score_list') }}"
-                    hx-target="#score-container">Update Score List</button>
-                <button type="button" class="sort-btn" hx-get="{{ url_for('score_list_sorted') }}"
-                    hx-target="#score-container">Sort by Price</button>
-            </form>
-            <div class="d-flex flex-wrap" id="score-container" hx-get="{{ url_for('score_list') }}" hx-trigger="load">
-                {% for score in scores %}
-                <div class="card">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h2 class="mb-0">{{ score.music }}</h2>
-                        <a class="btn details-button"
-                            href="{{ url_for('detail_score', register_num=score.register_num) }}">
-                            Buy
-                        </a>
-                    </div>
-                    <p>Edition: {{ score.edition }}</p>
-                    <p>Availability: {{ score.availability }}</p>
-                    <p>Difficulty Grade: {{ score.difficultyGrade }}</p>
-                    <p>Price: {{ score.price }}$</p>
-                    <p>Arranger: {{ score.arranger_type }}</p>
-                    <p>Writer: {{ score.writer_name }}</p>
-                    <p>Editor: {{ score.editor_name }}</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
     </div>
 </body>
 
