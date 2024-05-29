@@ -551,3 +551,22 @@ BEGIN
         PRINT 'Erro ao atualizar o cliente.';
     END CATCH
 END;
+
+
+CREATE OR ALTER PROCEDURE delete_score
+    @register_num INT
+AS
+BEGIN
+    BEGIN 
+    -- Delete from dependent tables first
+    DELETE FROM constitutes WHERE score_register = @register_num;
+    DELETE FROM purchases WHERE score_register = @register_num;
+    DELETE FROM stores WHERE score_register = @register_num;
+    DELETE FROM arranges WHERE score_register = @register_num;
+    DELETE FROM Instrumentation WHERE scoreNum = @register_num;
+        
+    -- Delete from the Score table
+    DELETE FROM Score WHERE register_num = @register_num;
+	END
+END
+GO

@@ -85,7 +85,7 @@ def delete_score(register_num: int):
 
             # Delete the score entry from the Score table
             try:
-                cursor.execute("DELETE FROM Score WHERE register_num = ?", (register_num,))
+                cursor.execute("EXEC delete_score @register_num=?", (register_num,))
                 conn.commit()
                 print(f"Score with register number {register_num} deleted successfully.")
             except IntegrityError as e:
@@ -262,3 +262,20 @@ def list_genre_sales_stats() -> list[tuple]:
                 JOIN MusicalGenre g ON gs.musGenre_id = g.id
             """)
             return cursor.fetchall()
+        
+def add_instrumentation(instrument: str, quantity: int, family: str, role: str, register_num: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+
+            try:
+                cursor.execute("""
+                INSERT INTO Instrumentation (instrument, quantity, family, role, scoreNum)
+                VALUES (?, ?, ?, ?, ?)
+                """,(instrument, quantity, family, role, register_num))
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                raise ValueError(f"Failed to add instrumentation: {e}")
+            finally:
+                cursor.close()
+                conn.close()
