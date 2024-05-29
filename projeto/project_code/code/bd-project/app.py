@@ -304,15 +304,29 @@ def new_score_create():
         music = request.form.get("music")
         arranger = request.form.get("arranger")
         type = request.form.get("type")
-        new_details = Score(0, edition, price, availability, difficultyGrade, music, editor_name, arranger, type)
+
+        instrumentations = []
+        instruments = request.form.getlist("instrument[]")
+        quantities = request.form.getlist("quantity[]")
+        families = request.form.getlist("family[]")
+        roles = request.form.getlist("role[]")
+
+        for instrument, quantity, family, role in zip(instruments, quantities, families, roles):
+            instrumentations.append(score.Instrumentation(instrument, int(quantity), family, role))
+
+        new_details = score.Score(0, int(edition), float(price), int(availability), int(difficultyGrade), music, editor_name, arranger, type)
 
         try:
-            score.create_score(new_details)
+            score.create_score(new_details, instrumentations)
             flash("Score created successfully!")
-            return redirect(url_for('base'))  # Redirecionar para a página principal
+            return redirect(url_for('base'))
         except ValueError as e:
+            flash(str(e))
             return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
-        
+        except Exception as e:
+            flash(f"Unexpected error: {e}")
+            return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
+
     editors = score.list_editors()
     musics = score.list_musics()
     arrangers = score.list_arrangers()
@@ -341,26 +355,34 @@ def edit_score_route(register_num):
         arranger = request.form.get("arranger")
         type = request.form.get("type")
 
-        new_details = Score(register_num, edition, price, availability, difficultyGrade, music, editor_name, arranger, type)
+        instrumentations = []
+        instruments = request.form.getlist("instrument[]")
+        quantities = request.form.getlist("quantity[]")
+        families = request.form.getlist("family[]")
+        roles = request.form.getlist("role[]")
+
+        for instrument, quantity, family, role in zip(instruments, quantities, families, roles):
+            instrumentations.append(score.Instrumentation(instrument, int(quantity), family, role))
+
+        updated_details = score.Score(register_num, int(edition), float(price), int(availability), int(difficultyGrade), music, editor_name, arranger, type)
 
         try:
-            score.edit_score(new_details)
-            flash("Score edited successfully!")
-            return redirect(url_for('base'))  # Redirect to the main page
+            score.edit_score(updated_details, instrumentations)
+            flash("Score updated successfully!")
+            return redirect(url_for('score_list'))
         except ValueError as e:
-            return render_template("score_edit.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e), score=new_details)
-        
-    else:
-        current_score = score.get_score_by_id(register_num)
+            flash(str(e))
+            return render_template("score_edit.html", score=updated_details, instrumentations=instrumentations, editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
+        except Exception as e:
+            flash(f"Unexpected error: {e}")
+            return render_template("score_edit.html", score=updated_details, instrumentations=instrumentations, editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
 
-        if current_score is None:
-            flash("Score not found", "error")
-            return redirect(url_for('base'))
-
-        editors = score.list_editors()
-        musics = score.list_musics()
-        arrangers = score.list_arrangers()
-        return render_template("score_edit.html", editors=editors, musics=musics, arrangers=arrangers, score=current_score)
+    score_details = score.get_score_by_id(register_num)
+    instrumentations = score.get_instrumentations_by_score_id(register_num)
+    editors = score.list_editors()
+    musics = score.list_musics()
+    arrangers = score.list_arrangers()
+    return render_template("score_edit.html", score=score_details, instrumentations=instrumentations, editors=editors, musics=musics, arrangers=arrangers)
 
 @app.route("/score-list-sorted", methods=["GET"])
 def score_list_sorted():
@@ -577,10 +599,10 @@ def new_customer_create():
         try:
             customer.create_customer(new_details)
             flash("Customer created successfully!")
-            return redirect(url_for('base'))
+            return redirect(url_for('customer_list'))
         except Exception as e:
-            print(f"Error: {e}")
-            return redirect(url_for('base'))
+            flash(f"Error: {e}")
+            return redirect(url_for('customer_list'))
         
     return render_template("customer_create.html")
 
@@ -592,7 +614,7 @@ def delete_customer_route(numCC):
         flash("Customer deleted successfully!")
     except Exception as e:
         flash(str(e))
-    return redirect(url_for('base'))
+    return redirect(url_for('customer_list'))
 
 
 @app.route("/customer-edit/<int:numCC>", methods=["GET", "POST"])
@@ -606,18 +628,28 @@ def edit_customer_route(numCC):
         try:
             customer.edit_customer(numCC, name, email_address, numBankAccount, cellNumber)
             flash("Customer edited successfully!")
-            return redirect(url_for('base'))
+            return redirect(url_for('customer_list'))
         except ValueError as e:
             flash(f"Error: {e}")
-            return redirect(url_for('base'))
+            return redirect(url_for('customer_list'))
     else:
         current_customer = customer.detail_customer(numCC)
 
         if current_customer is None:
             flash("Customer not found", "error")
-            return redirect(url_for('base'))
+            return redirect(url_for('customer_list'))
 
         return render_template("customer_edit.html", customer=current_customer)
+
+
+@app.route("/customer-details/<int:numCC>", methods=["GET"])
+def detail_customer_route(numCC):
+    try:
+        customer_details = customer.detail_customer(numCC)
+        return render_template("customer_details.html", customer=customer_details)
+    except ValueError as e:
+        flash(str(e))
+        return redirect(url_for('customer_list'))
 
 
 @app.route("/transaction-list", methods=["GET"])
@@ -632,17 +664,6 @@ def transaction_search():
     transactions = transaction.search_transaction(query)
     return render_template("transaction_list.html", transactions=transactions)
 
-
-@app.route("/customer-details/<int:numCC>", methods=["GET"])
-def detail_customer_route(numCC):
-    try:
-        customer_details = customer.detail_customer(numCC)
-        scores = customer.list_all_scores_with_details()
-        return render_template("customer_details.html", customer=customer_details, scores=scores)
-    except ValueError as e:
-        flash(str(e))
-        return redirect(url_for('base'))
-    
 
 @app.route("/transaction-create", methods=["GET", "POST"])
 def transaction_create():
@@ -673,6 +694,30 @@ def get_new_transaction_id():
         with conn.cursor() as cursor:
             cursor.execute("SELECT COALESCE(MAX(transaction_id), 0) + 1 FROM [Transaction]")
             return cursor.fetchone()[0]
+
+
+@app.route("/new-transaction/<int:customer_id>", methods=["GET", "POST"])
+def new_transaction(customer_id):
+    if request.method == "POST":
+        scores = request.form.getlist("scores")
+        value = request.form.get("value")
+        date = request.form.get("date")
+        
+        transaction_id = get_new_transaction_id()
+        transaction_data = Transaction(transaction_id, float(value), date, customer_id)
+
+        try:
+            transaction.create_transaction(transaction_data, [int(score) for score in scores])
+            flash("Transaction created successfully!")
+            return redirect(url_for("transaction_list"))
+        except Exception as e:
+            flash(f"Error: {e}")
+            return redirect(url_for("customer_details", numCC=customer_id))
+    
+    customer_details = customer.detail_customer(customer_id)
+    scores = customer.list_all_scores_with_details()
+    return render_template("new_transaction.html", customer=customer_details, scores=scores)
+
 
 
 
