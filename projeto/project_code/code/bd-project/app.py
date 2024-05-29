@@ -734,7 +734,6 @@ def new_transaction(customer_id):
         
         transaction_id = get_new_transaction_id()
         
-        # Calcular o valor total das partituras selecionadas
         total_value = 0
         for score_id in scores:
             score_details = score.get_score_by_id(int(score_id))
