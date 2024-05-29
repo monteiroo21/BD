@@ -372,6 +372,30 @@ def detail_score(register_num):
     score_details = score.detail_score(register_num)
     return render_template("score_details.html", score=score_details)
 
+@app.route("/add-instrumentation/<int:register_num>", methods=["GET", "POST"])
+def add_instrumentation(register_num):
+    if request.method == "POST":
+        instrument = request.form.get("instrument")
+        quantity = request.form.get("quantity")
+        family = request.form.get("family")
+        role = request.form.get("role")
+
+        try:
+            score.add_instrumentation(instrument, quantity, family, role, register_num)
+            flash("Instrumentation added successfully!")
+            return redirect(url_for('base', register_num=register_num))
+        except Exception as e:
+            flash(f"Error: {e}")
+            return redirect(url_for('base', register_num=register_num))
+
+    else:
+        score_details = score.detail_score(register_num)
+        if score_details is None:
+            flash("Score not found", "error")
+            return redirect(url_for('base'))
+        
+        return render_template("add_instrumentation.html", score=score_details)
+
 @app.route("/genre-sales-stats", methods=["GET"])
 def genre_sales_stats():
     stats = score.list_genre_sales_stats()

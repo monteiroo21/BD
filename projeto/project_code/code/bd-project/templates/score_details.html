@@ -56,12 +56,32 @@
             margin: 5px 0;
             color: #555;
         }
+
+        .new-btn2 {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .new-btn2:hover {
+            background-color: #007bff;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h1>Score Details</h1>
+        <a href="{{ url_for('base') }}" class="btn btn-primary btn-sm ml-auto">Back to Score List</a>
         {% if score %}
         <div class="card">
             <h2>{{ score.music }}</h2>
@@ -74,8 +94,8 @@
             <p><strong>Type:</strong> {{ score.type }}</p>
         </div>
         
-        {% if score.instrumentation %}
         <h3>Instrumentation:</h3>
+        {% if score.instrumentation %}
         {% for instrument, quantity in score.instrumentation.items() %}
         <div class="card">
             <p><strong>Instrument:</strong> {{ instrument }}</p>
@@ -83,6 +103,7 @@
         </div>
         {% endfor %}
         {% endif %}
+        <a href="{{ url_for('add_instrumentation', register_num=score.register_num) }}" class="new-btn2">Add Instrumentation</a>
         {% else %}
         <p>Score not found.</p>
         {% endif %}
