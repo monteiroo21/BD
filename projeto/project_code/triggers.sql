@@ -319,3 +319,63 @@ BEGIN
     DEALLOCATE customer_cursor;
 END
 GO
+
+DROP TRIGGER IF EXISTS trg_delete_editor;
+GO
+CREATE TRIGGER trg_delete_editor
+ON Editor
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @editor_id INT;
+    DECLARE @score_register INT;
+
+    -- Cursor to iterate over deleted editors
+    DECLARE editor_cursor CURSOR FOR
+        SELECT identifier FROM deleted;
+
+    OPEN editor_cursor;
+    FETCH NEXT FROM editor_cursor INTO @editor_id;
+
+    BEGIN
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            -- Cursor to iterate over scores edited by the editor
+            DECLARE score_cursor CURSOR FOR
+                SELECT register_num FROM Score WHERE editorId = @editor_id;
+
+            OPEN score_cursor;
+            FETCH NEXT FROM score_cursor INTO @score_register;
+
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+                -- Delete from related tables first to avoid foreign key constraints
+                DELETE FROM Instrumentation WHERE scoreNum = @score_register;
+                DELETE FROM stores WHERE score_register = @score_register;
+                DELETE FROM purchases WHERE score_register = @score_register;
+                DELETE FROM arranges WHERE score_register = @score_register;
+                DELETE FROM constitutes WHERE score_register = @score_register;
+                DELETE FROM Score WHERE register_num = @score_register;
+
+                FETCH NEXT FROM score_cursor INTO @score_register;
+            END
+
+            CLOSE score_cursor;
+            DEALLOCATE score_cursor;
+
+            -- Delete warehouses associated with the editor
+            DELETE FROM Warehouse WHERE editorId = @editor_id;
+
+            -- Delete the editor
+            DELETE FROM Editor WHERE identifier = @editor_id;
+
+            FETCH NEXT FROM editor_cursor INTO @editor_id;
+        END
+
+        CLOSE editor_cursor;
+        DEALLOCATE editor_cursor;
+    END
+END;
+GO

@@ -2,46 +2,21 @@ CREATE OR ALTER PROCEDURE insert_music
     @title VARCHAR(80),
     @year INT,
     @musGenre_id INT,
-    @fname VARCHAR(50),
-    @lname VARCHAR(50)
+    @composer_id INT
 AS
 BEGIN
-    -- Check if the music already exists
-    IF EXISTS (SELECT 1 FROM Music WHERE title = @title AND [year] = @year AND musGenre_id = @musGenre_id)
-    BEGIN
-        RAISERROR ('Music already exists', 16, 1);
-        RETURN;
-    END
-
     -- Declare variables for new IDs
     DECLARE @new_music_id INT;
-    DECLARE @composer_id INT;
 
     -- Generate new music ID
     SELECT @new_music_id = COALESCE(MAX(music_id), 0) + 1 FROM Music;
-
-    -- Check if the writer (composer) exists
-    SELECT @composer_id = id FROM Writer WHERE Fname = @fname AND Lname = @lname;
-
-    IF @composer_id IS NULL
-    BEGIN
-        RAISERROR ('Composer does not exist', 16, 1);
-        RETURN;
-    END
 
     -- Insert into Music table
     INSERT INTO Music (music_id, title, [year], musGenre_id)
     VALUES (@new_music_id, @title, @year, @musGenre_id);
 
-    -- Insert into Composer table if not exists
-    IF NOT EXISTS (SELECT 1 FROM Composer WHERE id = @composer_id)
-    BEGIN
-        INSERT INTO Composer (id)
-        VALUES (@composer_id);
-    END
-
     -- Insert into Writes table
-    INSERT INTO Writes (music_id, composer_id)
+    INSERT INTO writes (music_id, composer_id)
     VALUES (@new_music_id, @composer_id);
 END;
 GO
@@ -287,52 +262,29 @@ CREATE OR ALTER PROCEDURE edit_music
     @title VARCHAR(80),
     @year INT,
     @musGenre_id INT,
-    @fname VARCHAR(50),
-    @lname VARCHAR(50)
+    @composer_id INT
 AS
 BEGIN
-    -- Check if the music exists
-    IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @music_id)
     BEGIN
-        RAISERROR ('Music does not exist', 16, 1);
-        RETURN;
-    END
-
-    -- Declare variable for composer ID
-    DECLARE @composer_id INT;
-
-    -- Check if the writer (composer) exists
-    SELECT @composer_id = id FROM Writer WHERE Fname = @fname AND Lname = @lname;
-
-    IF @composer_id IS NULL
-    BEGIN
-        RAISERROR ('Composer does not exist', 16, 1);
-        RETURN;
-    END
-
-    -- Update Music table
-    UPDATE Music
-    SET title = @title, [year] = @year, musGenre_id = @musGenre_id
-    WHERE music_id = @music_id;
-
-    -- Check if the composer is already in the Composer table
-    IF NOT EXISTS (SELECT 1 FROM Composer WHERE id = @composer_id)
-    BEGIN
-        INSERT INTO Composer (id)
-        VALUES (@composer_id);
-    END
-
-    -- Update Writes table
-    IF EXISTS (SELECT 1 FROM Writes WHERE music_id = @music_id)
-    BEGIN
-        UPDATE Writes
-        SET composer_id = @composer_id
+        -- Update Music table
+        UPDATE Music
+        SET title = @title, [year] = @year, musGenre_id = @musGenre_id
         WHERE music_id = @music_id;
-    END
-    ELSE
-    BEGIN
-        INSERT INTO Writes (music_id, composer_id)
-        VALUES (@music_id, @composer_id);
+
+        -- Check if the music_id exists in the writes table
+        IF EXISTS (SELECT 1 FROM writes WHERE music_id = @music_id)
+        BEGIN
+            -- Update the writes table
+            UPDATE writes
+            SET composer_id = @composer_id
+            WHERE music_id = @music_id;
+        END
+        ELSE
+        BEGIN
+            -- Insert into the writes table
+            INSERT INTO writes (music_id, composer_id)
+            VALUES (@music_id, @composer_id);
+        END
     END
 END;
 GO
@@ -549,6 +501,46 @@ BEGIN
     END TRY
     BEGIN CATCH
         PRINT 'Erro ao atualizar o cliente.';
+    END CATCH
+END
+GO
+
+CREATE OR ALTER PROCEDURE delete_music
+    @music_id INT
+AS
+BEGIN
+    BEGIN
+        -- Delete from the writes table first
+        DELETE FROM writes WHERE music_id = @music_id;
+        
+        -- Delete from the Music table
+        DELETE FROM Music WHERE music_id = @music_id;
+
+    END
+END
+GO
+
+CREATE OR ALTER PROCEDURE delete_score
+    @register_num INT
+AS
+BEGIN
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        -- Delete from dependent tables first
+        DELETE FROM constitutes WHERE score_register = @register_num;
+        DELETE FROM purchases WHERE score_register = @register_num;
+        DELETE FROM stores WHERE score_register = @register_num;
+        DELETE FROM arranges WHERE score_register = @register_num;
+        DELETE FROM Instrumentation WHERE scoreNum = @register_num;
+        
+        -- Delete from the Score table
+        DELETE FROM Score WHERE register_num = @register_num;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
     END CATCH
 END
 GO

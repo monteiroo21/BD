@@ -21,12 +21,12 @@
                 <input type="number" class="form-control" id="year" name="year" value="{{ music.year }}" required>
             </div>
             <div class="form-group">
-                <label for="fname">First Name:</label>
-                <input type="text" class="form-control" id="fname" name="fname" value="{{ music.composer_fname }}" required>
-            </div>
-            <div class="form-group">
-                <label for="lname">Last Name:</label>
-                <input type="text" class="form-control" id="lname" name="lname" value="{{ music.composer_lname }}" required>
+                <label for="composer">Composer:</label>
+                <select class="form-control" id="composer" name="composer" required>
+                    {% for composer in composers %}
+                    <option value="{{ composer }}" {% if composer == music.composer %}selected{% endif %}>{{ composer }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="form-group">
                 <label for="genre_name">Genre:</label>

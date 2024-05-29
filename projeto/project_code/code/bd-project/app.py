@@ -41,9 +41,8 @@ def new_music_create():
         title = request.form.get("title")
         year = request.form.get("year")
         genre_name = request.form.get("genre_name")
-        fname = request.form.get("fname")
-        lname = request.form.get("lname")
-        new_details = Music(0, title, int(year), genre_name, fname, lname)
+        composer = request.form.get("composer")
+        new_details = Music(0, title, int(year), genre_name, composer)
 
         try:
             music.create_music(new_details)
@@ -54,7 +53,8 @@ def new_music_create():
             return redirect(url_for('base'))
         
     genres = music.list_genres()
-    return render_template("music_create.html", genres=genres)
+    composers = music.list_composers()
+    return render_template("music_create.html", genres=genres, composers=composers)
 
 
 @app.route("/music-details/<int:music_id>", methods=["GET"])
@@ -79,10 +79,8 @@ def edit_music_route(music_id):
         title = request.form.get("title")
         year = request.form.get("year")
         genre_name = request.form.get("genre_name")
-        fname = request.form.get("fname")
-        lname = request.form.get("lname")
-        
-        new_details = Music(music_id, title, int(year), genre_name, fname, lname)
+        composer = request.form.get("composer")
+        new_details = Music(0, title, int(year), genre_name, composer)
 
         try:
             music.edit_music(new_details)
@@ -99,7 +97,8 @@ def edit_music_route(music_id):
             return redirect(url_for('base'))
         
         genres = music.list_genres()
-        return render_template("music_edit.html", genres=genres, music=current_music)
+        composers = music.list_composers()
+        return render_template("music_edit.html", genres=genres, composers=composers, music=current_music)
     
 @app.route("/deleted-musics", methods=["GET"])
 def view_deleted_musics():

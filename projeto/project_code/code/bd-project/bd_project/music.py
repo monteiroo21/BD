@@ -9,8 +9,7 @@ class Music(NamedTuple):
     title: str
     year: int
     genre_name: str
-    composer_fname: str
-    composer_lname: str
+    composer: str
 
 
 class MusicDetails(NamedTuple):
@@ -18,15 +17,14 @@ class MusicDetails(NamedTuple):
     title: str
     year: int
     genre_name: str
-    composer_fname: str
-    composer_lname: str
+    composer: str
     scores: dict[str, str]
 
 
 def list_allMusic() -> list[Music]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("""SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname
+            cursor.execute("""SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname + ' ' + wr.Lname
                 FROM Music AS m
                 JOIN MusicalGenre AS g ON m.musGenre_id = g.id
                 JOIN writes AS mw ON m.music_id = mw.music_id
@@ -39,7 +37,7 @@ def list_allMusic() -> list[Music]:
 def search_music(query: str) -> list[Music]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("""SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname
+            cursor.execute("""SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname + ' ' + wr.Lname
                 FROM Music AS m
                 JOIN MusicalGenre AS g ON m.musGenre_id = g.id
                 JOIN writes AS mw ON m.music_id = mw.music_id
@@ -58,10 +56,16 @@ def create_music(music: Music):
                 raise ValueError(f"Genre '{music.genre_name}' does not exist")
             genre_id = genre_id[0]
 
+            cursor.execute("SELECT id FROM Writer WHERE Fname + ' ' + Lname = ?", (music.composer,))
+            composer_id = cursor.fetchone()
+            if composer_id is None:
+                raise ValueError(f"Composer '{music.composer}' does not exist")
+            composer_id = composer_id[0]
+
             try:
                 cursor.execute("""
-                    EXEC insert_music @title=?, @year=?, @musGenre_id=?, @fname=?, @lname=?
-                            """, (music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
+                    EXEC insert_music @title=?, @year=?, @musGenre_id=?, @composer_id=?
+                            """, (music.title, music.year, genre_id, composer_id))
                 conn.commit()
             except Exception as e:
                 print(f"Failed to insert music: {e}")
@@ -72,7 +76,7 @@ def get_music_by_id(music_id: int) -> Music:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT m.title, m.year, g.name AS genre_name, w.Fname, w.Lname
+                SELECT m.title, m.year, g.name AS genre_name, w.Fname + ' ' + w.Lname
                 FROM Music m
                 JOIN MusicalGenre g ON m.musGenre_id = g.id
                 JOIN Writes wr ON m.music_id = wr.music_id
@@ -84,8 +88,8 @@ def get_music_by_id(music_id: int) -> Music:
             if row is None:
                 return None
             
-            title, year, genre_name, composer_fname, composer_lname = row
-            return Music(music_id, title, year, genre_name, composer_fname, composer_lname)
+            title, year, genre_name, composer = row
+            return Music(music_id, title, year, genre_name, composer)
 
 
 def edit_music(music: Music):
@@ -97,11 +101,17 @@ def edit_music(music: Music):
             if genre_id is None:
                 raise ValueError(f"Genre '{music.genre_name}' does not exist")
             genre_id = genre_id[0]
+
+            cursor.execute("SELECT id FROM Writer WHERE Fname + ' ' + Lname = ?", (music.composer,))
+            composer_id = cursor.fetchone()
+            if composer_id is None:
+                raise ValueError(f"Composer '{music.composer}' does not exist")
+            composer_id = composer_id[0]
             
             # Execute the stored procedure to edit the music
             cursor.execute("""
-                EXEC edit_music @music_id=?, @title=?, @year=?, @musGenre_id=?, @fname=?, @lname=?
-            """, (music.music_id, music.title, music.year, genre_id, music.composer_fname, music.composer_lname))
+                EXEC edit_music @music_id=?, @title=?, @year=?, @musGenre_id=?, @composer_id=?
+            """, (music.music_id, music.title, music.year, genre_id, composer_id))
             
             # Commit the transaction
             conn.commit()
@@ -111,6 +121,17 @@ def list_genres() -> list[str]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("SELECT [name] FROM MusicalGenre")
+            return [row[0] for row in cursor.fetchall()]
+        
+
+def list_composers() -> list[str]:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT w.Fname + ' ' + w.Lname
+                FROM Composer c
+                JOIN Writer w ON c.id = w.id
+            """)
             return [row[0] for row in cursor.fetchall()]
         
 
@@ -129,9 +150,9 @@ def detail_music(music_id: int) -> MusicDetails:
     with create_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname, wr.Lname,
+                SELECT m.music_id, m.title, m.[year], g.[name] AS genre_name, wr.Fname + ' ' + wr.Lname,
                        s.register_num, s.edition, s.availability, s.difficultyGrade, s.price, e.name AS editor_name,
-                       arw.Fname AS arranger_fname, arw.Lname AS arranger_lname
+                       arw.Fname + ' ' + arw.Lname AS arranger_name
                 FROM Music AS m
                 JOIN MusicalGenre AS g ON m.musGenre_id = g.id
                 JOIN writes AS mw ON m.music_id = mw.music_id
@@ -149,16 +170,16 @@ def detail_music(music_id: int) -> MusicDetails:
             if not rows:
                 raise ValueError(f"Music with ID {music_id} not found")
 
-            music_info = rows[0][:6]
+            music_info = rows[0][:5]
             scores = [{
-                "register_num": score[6],
-                "edition": score[7],
-                "availability": score[8],
-                "difficultyGrade": score[9],
-                "price": score[10],
-                "editor_name": score[11],
-                "arranger_name": f"{score[12]} {score[13]}" if score[12] and score[13] else None
-            } for score in rows if score[6]]
+                "register_num": score[5],
+                "edition": score[6],
+                "availability": score[7],
+                "difficultyGrade": score[8],
+                "price": score[9],
+                "editor_name": score[10],
+                "arranger_name": f"{score[11]}" if score[11] else None
+            } for score in rows if score[5]]
             
             return MusicDetails(*music_info, scores)
         
