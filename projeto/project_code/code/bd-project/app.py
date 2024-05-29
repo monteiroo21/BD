@@ -599,7 +599,7 @@ def new_customer_create():
             return redirect(url_for('customer_list'))
         except Exception as e:
             flash(f"Error: {e}")
-            return redirect(url_for('customer_list'))
+            return redirect(url_for('base'))
         
     return render_template("customer_create.html")
 
@@ -611,7 +611,7 @@ def delete_customer_route(numCC):
         flash("Customer deleted successfully!")
     except Exception as e:
         flash(str(e))
-    return redirect(url_for('customer_list'))
+    return redirect(url_for('base'))
 
 
 @app.route("/customer-edit/<int:numCC>", methods=["GET", "POST"])
@@ -625,16 +625,16 @@ def edit_customer_route(numCC):
         try:
             customer.edit_customer(numCC, name, email_address, numBankAccount, cellNumber)
             flash("Customer edited successfully!")
-            return redirect(url_for('customer_list'))
+            return redirect(url_for('base'))
         except ValueError as e:
             flash(f"Error: {e}")
-            return redirect(url_for('customer_list'))
+            return redirect(url_for('base'))
     else:
         current_customer = customer.detail_customer(numCC)
 
         if current_customer is None:
             flash("Customer not found", "error")
-            return redirect(url_for('customer_list'))
+            return redirect(url_for('base'))
 
         return render_template("customer_edit.html", customer=current_customer)
 
