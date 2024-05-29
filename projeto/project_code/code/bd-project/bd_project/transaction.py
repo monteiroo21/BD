@@ -24,3 +24,43 @@ def search_transaction(query: str) -> list[Transaction]:
                 FROM [Transaction]
                 WHERE customer_CC LIKE ?""", ('%' + query + '%',))
             return [Transaction(*row) for row in cursor.fetchall()]
+        
+
+def create_transaction(transaction: Transaction, scores: list[int]):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            try:
+                cursor.execute("""
+                    INSERT INTO [Transaction] (transaction_id, value, date, customer_CC)
+                    VALUES (?, ?, ?, ?)""",
+                    (transaction.transaction_id, transaction.value, transaction.date, transaction.customer_CC)
+                )
+
+                for score in scores:
+                    cursor.execute("""
+                        INSERT INTO constitutes (score_register, transaction_id)
+                        VALUES (?, ?)""",
+                        (score, transaction.transaction_id)
+                    )
+                conn.commit()
+            except IntegrityError as e:
+                print(f"An error occurred: {e}")
+                conn.rollback()
+
+
+def list_customers():
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT numCC, name FROM Customer")
+            return cursor.fetchall()
+
+
+def list_scores():
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT s.register_num, m.title
+                FROM Score s
+                JOIN Music m ON s.musicId = m.music_id
+            """)
+            return cursor.fetchall()
