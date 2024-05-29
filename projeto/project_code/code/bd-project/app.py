@@ -10,6 +10,7 @@ from bd_project.warehouse import Warehouse
 from bd_project.arranger import Arranger
 from bd_project.customer import Customer
 from bd_project.transaction import Transaction
+from bd_project.statistics import get_composer_revenue, get_genre_sales, get_composition_count_by_composer, get_music_sales_by_genre
 
 
 app = Flask(__name__)
@@ -726,7 +727,13 @@ def new_transaction(customer_id):
     return render_template("new_transaction.html", customer=customer_details, scores=scores)
 
 
-
+@app.route("/statistics", methods=["GET"])
+def statistics():
+    composer_revenue = get_composer_revenue()
+    genre_sales = get_genre_sales()
+    composition_count = get_composition_count_by_composer()  # Adicionado
+    music_sales = get_music_sales_by_genre()  # Adicionado
+    return render_template("statistics_page.html", composer_revenue=composer_revenue, genre_sales=genre_sales, composition_count=composition_count, music_sales=music_sales)  # Atualizado
 
 
 if __name__ == "__main__":
