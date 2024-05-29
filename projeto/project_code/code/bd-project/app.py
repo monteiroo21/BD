@@ -729,12 +729,12 @@ def get_new_transaction_id():
 @app.route("/new-transaction/<int:customer_id>", methods=["GET", "POST"])
 def new_transaction(customer_id):
     if request.method == "POST":
-        scores = request.form.getlist("scores")
+        scores = request.form.get("selected_scores").split(',')
         date = request.form.get("date")
         
         transaction_id = get_new_transaction_id()
         
-        # Calculate the total value of the selected scores
+        # Calcular o valor total das partituras selecionadas
         total_value = 0
         for score_id in scores:
             score_details = score.get_score_by_id(int(score_id))
@@ -753,6 +753,7 @@ def new_transaction(customer_id):
     customer_details = customer.detail_customer(customer_id)
     scores = customer.list_all_scores_with_details()
     return render_template("new_transaction.html", customer=customer_details, scores=scores)
+
 
 
 

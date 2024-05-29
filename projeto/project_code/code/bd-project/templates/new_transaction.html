@@ -27,6 +27,10 @@
                     li.appendChild(removeButton);
                     selectedScoresList.appendChild(li);
                 });
+
+                // Update hidden input to include selected scores
+                const hiddenInput = document.getElementById("selected-scores-input");
+                hiddenInput.value = Array.from(selectedScores).map(score => score.value).join(",");
             }
 
             scoreSelect.addEventListener("change", function () {
@@ -36,13 +40,10 @@
                 updateSelectedScores();
             });
 
-            // Update hidden input to include selected scores
+            // Update hidden input to include selected scores on form submission
             document.querySelector("form").addEventListener("submit", function () {
-                const hiddenInput = document.createElement("input");
-                hiddenInput.type = "hidden";
-                hiddenInput.name = "selected_scores";
+                const hiddenInput = document.getElementById("selected-scores-input");
                 hiddenInput.value = Array.from(selectedScores).map(score => score.value).join(",");
-                this.appendChild(hiddenInput);
             });
         });
     </script>
@@ -69,6 +70,7 @@
                 <label>Selected Scores:</label>
                 <ul id="selected-scores" class="list-unstyled"></ul>
             </div>
+            <input type="hidden" id="selected-scores-input" name="selected_scores" value="">
             <button type="submit" class="btn btn-primary">Create Transaction</button>
         </form>
     </div>
