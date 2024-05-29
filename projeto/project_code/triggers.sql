@@ -240,3 +240,42 @@ BEGIN
     END
 END
 GO
+
+DROP TRIGGER IF EXISTS trg_delete_warehouse;
+GO
+CREATE TRIGGER trg_delete_warehouse
+ON Warehouse
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @warehouse_id INT;
+
+    -- Cursor to iterate over deleted warehouses
+    DECLARE warehouse_cursor CURSOR FOR
+        SELECT id FROM deleted;
+
+    OPEN warehouse_cursor;
+    FETCH NEXT FROM warehouse_cursor INTO @warehouse_id;
+
+    BEGIN
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            -- Delete from the stores table
+            DELETE FROM stores WHERE warehouse_id = @warehouse_id;
+
+            -- Delete from the warehouse_location table
+            DELETE FROM warehouse_location WHERE warehouse_id = @warehouse_id;
+
+            -- Delete the warehouse
+            DELETE FROM Warehouse WHERE id = @warehouse_id;
+
+            FETCH NEXT FROM warehouse_cursor INTO @warehouse_id;
+        END
+
+        CLOSE warehouse_cursor;
+        DEALLOCATE warehouse_cursor;
+    END
+END
+GO
