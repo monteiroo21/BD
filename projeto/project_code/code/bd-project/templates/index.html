@@ -414,6 +414,7 @@
             <button type="submit">Search</button>
             <button hx-get="/transaction-list" hx-target="#transaction-container" hx-swap="innerHTML">Update Transaction
                 List</button>
+            <a href="{{ url_for('transaction_create') }}" class="new-btn">New</a>
         </form>
 
         <div id="music-container" hx-get="/music-list" hx-trigger="load">

@@ -664,6 +664,38 @@ def detail_customer_route(numCC):
     except ValueError as e:
         flash(str(e))
         return redirect(url_for('base'))
+    
+
+@app.route("/transaction-create", methods=["GET", "POST"])
+def transaction_create():
+    if request.method == "POST":
+        customer_id = request.form.get("customer")
+        scores = request.form.getlist("scores")
+        value = request.form.get("value")
+        date = request.form.get("date")
+        
+        transaction_id = get_new_transaction_id()
+        transaction_data = Transaction(transaction_id, float(value), date, int(customer_id))
+
+        try:
+            transaction.create_transaction(transaction_data, [int(score) for score in scores])
+            flash("Transaction created successfully!")
+            return redirect(url_for("transaction_list"))
+        except Exception as e:
+            flash(f"Error: {e}")
+            return redirect(url_for("base"))
+    
+    customers = transaction.list_customers()
+    scores = transaction.list_scores()
+    return render_template("transaction_create.html", customers=customers, scores=scores)
+
+
+def get_new_transaction_id():
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT COALESCE(MAX(transaction_id), 0) + 1 FROM [Transaction]")
+            return cursor.fetchone()[0]
+
 
 
 if __name__ == "__main__":
