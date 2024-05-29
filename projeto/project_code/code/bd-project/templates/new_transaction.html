@@ -6,16 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Transaction</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const scoreSelect = document.getElementById("scores");
+            const selectedScoresList = document.getElementById("selected-scores");
+            const selectedScores = new Set();
+
+            function updateSelectedScores() {
+                selectedScoresList.innerHTML = "";
+                selectedScores.forEach(score => {
+                    const li = document.createElement("li");
+                    li.textContent = score.text;
+                    const removeButton = document.createElement("button");
+                    removeButton.textContent = "X";
+                    removeButton.className = "btn btn-danger btn-sm ml-2";
+                    removeButton.onclick = function () {
+                        selectedScores.delete(score);
+                        updateSelectedScores();
+                    };
+                    li.appendChild(removeButton);
+                    selectedScoresList.appendChild(li);
+                });
+
+                // Update hidden input to include selected scores
+                const hiddenInput = document.getElementById("selected-scores-input");
+                hiddenInput.value = Array.from(selectedScores).map(score => score.value).join(",");
+            }
+
+            scoreSelect.addEventListener("change", function () {
+                Array.from(scoreSelect.selectedOptions).forEach(option => {
+                    selectedScores.add({ value: option.value, text: option.textContent });
+                });
+                updateSelectedScores();
+            });
+
+            // Update hidden input to include selected scores on form submission
+            document.querySelector("form").addEventListener("submit", function () {
+                const hiddenInput = document.getElementById("selected-scores-input");
+                hiddenInput.value = Array.from(selectedScores).map(score => score.value).join(",");
+            });
+        });
+    </script>
 </head>
 
 <body>
     <div class="container">
         <h1>Create New Transaction for {{ customer.name }}</h1>
         <form method="POST">
-            <div class="form-group">
-                <label for="value">Transaction Value</label>
-                <input type="number" step="0.01" class="form-control" id="value" name="value" required>
-            </div>
             <div class="form-group">
                 <label for="date">Transaction Date</label>
                 <input type="date" class="form-control" id="date" name="date" required>
@@ -24,10 +61,16 @@
                 <label for="scores">Select Scores</label>
                 <select multiple class="form-control" id="scores" name="scores">
                     {% for score in scores %}
-                    <option value="{{ score.register_num }}">{{ score.music }} - {{ score.edition }}</option>
+                    <option value="{{ score.register_num }}">{{ score.music }} by {{ score.writer_name }} - edition: {{
+                        score.edition }}</option>
                     {% endfor %}
                 </select>
             </div>
+            <div class="form-group">
+                <label>Selected Scores:</label>
+                <ul id="selected-scores" class="list-unstyled"></ul>
+            </div>
+            <input type="hidden" id="selected-scores-input" name="selected_scores" value="">
             <button type="submit" class="btn btn-primary">Create Transaction</button>
         </form>
     </div>

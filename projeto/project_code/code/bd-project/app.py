@@ -694,11 +694,17 @@ def transaction_create():
     if request.method == "POST":
         customer_id = request.form.get("customer")
         scores = request.form.getlist("scores")
-        value = request.form.get("value")
         date = request.form.get("date")
         
         transaction_id = get_new_transaction_id()
-        transaction_data = Transaction(transaction_id, float(value), date, int(customer_id))
+        
+        # Calculate the total value of the selected scores
+        total_value = 0
+        for score_id in scores:
+            score_details = score.get_score_by_id(int(score_id))
+            total_value += score_details.price
+        
+        transaction_data = Transaction(transaction_id, total_value, date, int(customer_id))
 
         try:
             transaction.create_transaction(transaction_data, [int(score) for score in scores])
@@ -723,17 +729,22 @@ def get_new_transaction_id():
 @app.route("/new-transaction/<int:customer_id>", methods=["GET", "POST"])
 def new_transaction(customer_id):
     if request.method == "POST":
-        scores = request.form.getlist("scores")
-        value = request.form.get("value")
+        scores = request.form.get("selected_scores").split(',')
         date = request.form.get("date")
         
         transaction_id = get_new_transaction_id()
-        transaction_data = Transaction(transaction_id, float(value), date, customer_id)
+        
+        total_value = 0
+        for score_id in scores:
+            score_details = score.get_score_by_id(int(score_id))
+            total_value += score_details.price
+        
+        transaction_data = Transaction(transaction_id, total_value, date, customer_id)
 
         try:
             transaction.create_transaction(transaction_data, [int(score) for score in scores])
             flash("Transaction created successfully!")
-            return redirect(url_for("transaction_list"))
+            return redirect(url_for("base"))
         except Exception as e:
             flash(f"Error: {e}")
             return redirect(url_for("customer_details", numCC=customer_id))
@@ -741,6 +752,7 @@ def new_transaction(customer_id):
     customer_details = customer.detail_customer(customer_id)
     scores = customer.list_all_scores_with_details()
     return render_template("new_transaction.html", customer=customer_details, scores=scores)
+
 
 
 
