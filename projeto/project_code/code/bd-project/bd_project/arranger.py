@@ -152,7 +152,7 @@ def delete_arranger(arranger_id: int):
 
             # Delete the arranger entry from the Arranger table
             try:
-                cursor.execute("DELETE FROM Arranger WHERE id = ?", (arranger_id,))
+                cursor.execute("EXEC delete_arranger @arranger_id=?", (arranger_id,))
                 conn.commit()
                 print(f"Arranger with ID {arranger_id} deleted successfully.")
             except IntegrityError as e:
