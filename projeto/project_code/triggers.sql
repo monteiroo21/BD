@@ -279,3 +279,40 @@ BEGIN
     END
 END
 GO
+
+DROP TRIGGER IF EXISTS trg_delete_customer;
+GO
+CREATE TRIGGER trg_delete_customer
+ON Customer
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @customer_cc INT;
+
+    -- Cursor to iterate over deleted customers
+    DECLARE customer_cursor CURSOR FOR
+        SELECT numCC FROM deleted;
+
+    OPEN customer_cursor;
+    FETCH NEXT FROM customer_cursor INTO @customer_cc;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- Delete from the purchases table
+        DELETE FROM purchases WHERE costumerCC = @customer_cc;
+
+        -- Delete from the Transaction table
+        DELETE FROM [Transaction] WHERE customer_CC = @customer_cc;
+
+        -- Delete the customer
+        DELETE FROM Customer WHERE numCC = @customer_cc;
+
+        FETCH NEXT FROM customer_cursor INTO @customer_cc;
+    END
+
+    CLOSE customer_cursor;
+    DEALLOCATE customer_cursor;
+END
+GO
