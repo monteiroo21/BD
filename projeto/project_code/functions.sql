@@ -550,7 +550,8 @@ BEGIN
     BEGIN CATCH
         PRINT 'Erro ao atualizar o cliente.';
     END CATCH
-END;
+END
+GO
 
 
 CREATE OR ALTER PROCEDURE delete_score
@@ -568,5 +569,48 @@ BEGIN
     -- Delete from the Score table
     DELETE FROM Score WHERE register_num = @register_num;
 	END
+END
+GO
+
+
+CREATE OR ALTER PROCEDURE delete_music
+    @music_id INT
+AS
+BEGIN
+    BEGIN
+        -- Delete from the writes table first
+        DELETE FROM writes WHERE music_id = @music_id;
+        
+        -- Delete from the Music table
+        DELETE FROM Music WHERE music_id = @music_id;
+    END
+END
+GO
+
+CREATE OR ALTER PROCEDURE delete_composer
+    @composer_id INT
+AS
+BEGIN
+    BEGIN
+        -- Delete from the writes table first
+        DELETE FROM writes WHERE composer_id = @composer_id;
+        
+        -- Delete from the Composer table
+        DELETE FROM Composer WHERE id = @composer_id;
+    END
+END
+GO
+
+CREATE OR ALTER PROCEDURE delete_arranger
+    @arranger_id INT
+AS
+BEGIN
+    BEGIN
+        -- Delete from the writes table first
+        DELETE FROM arranges WHERE arranger_id = @arranger_id;
+        
+        -- Delete from the Composer table
+        DELETE FROM Arranger WHERE id = @arranger_id;
+    END
 END
 GO

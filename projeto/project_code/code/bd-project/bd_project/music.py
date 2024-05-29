@@ -118,8 +118,7 @@ def delete_music(music_id: int):
     with create_connection() as conn:
         with conn.cursor() as cursor:
             try:
-                cursor.execute("DELETE FROM writes WHERE music_id = ?", (music_id,))
-                cursor.execute("DELETE FROM Music WHERE music_id = ?", (music_id,))
+                cursor.execute("EXEC delete_music @music_id=?", (music_id,))
                 conn.commit()
                 print(f"Music with ID {music_id} deleted successfully.")
             except IntegrityError as e:

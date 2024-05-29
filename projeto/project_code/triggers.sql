@@ -109,4 +109,33 @@ BEGIN
         INSERT INTO GenreSalesStats (musGenre_id, total_sales, total_count)
         VALUES (@musGenre_id, @price, 1);
     END
-END;
+END
+GO
+
+
+CREATE TRIGGER trg_delete_composer
+ON Composer
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @composer_id INT;
+
+    -- Get the ID of the composer to be deleted
+    SELECT @composer_id = id FROM deleted;
+
+    BEGIN
+        -- Delete associated records from the Music table
+        DELETE FROM Music WHERE music_id IN (
+            SELECT music_id FROM writes WHERE composer_id = @composer_id
+        );
+
+		-- Delete associated records from the writes table
+        DELETE FROM writes WHERE composer_id = @composer_id;
+
+        -- Delete the composer
+        DELETE FROM Composer WHERE id = @composer_id;
+    END 
+END
+GO
