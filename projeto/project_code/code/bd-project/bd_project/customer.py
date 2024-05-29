@@ -167,14 +167,12 @@ def delete_customer(numCC: int):
 def detail_customer(numCC: int) -> CustomerDetails:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            # Obter detalhes do cliente
             cursor.execute("SELECT numCC, email_address, numBankAccount, cellNumber, name FROM Customer WHERE numCC = ?", (numCC,))
             customer_row = cursor.fetchone()
             if not customer_row:
                 raise ValueError("Customer not found")
             customer = Customer(*customer_row)
             
-            # Obter todas as transações do cliente e as partituras associadas
             cursor.execute("""
                 SELECT t.transaction_id, t.[date], s.register_num, m.title, s.price
                 FROM [Transaction] t
@@ -186,7 +184,6 @@ def detail_customer(numCC: int) -> CustomerDetails:
             """, (numCC,))
             transactions = cursor.fetchall()
             
-            # Processar as transações em um dicionário
             transaction_dict = {}
             for transaction_id, date, register_num, title, price in transactions:
                 if transaction_id not in transaction_dict:
@@ -194,13 +191,11 @@ def detail_customer(numCC: int) -> CustomerDetails:
                 transaction_dict[transaction_id]["scores"].append(title)
                 transaction_dict[transaction_id]["total_value"] += price
             
-            # Criar o dicionário final de transações formatado como strings
             formatted_transactions = {
                 f"Transaction {tid} on {details['date']} (Total: ${details['total_value']:.2f})": ", ".join(details["scores"])
                 for tid, details in transaction_dict.items()
             }
             
-            # Retornar os detalhes do cliente com as transações
             return CustomerDetails(
                 numCC=customer.numCC,
                 email_address=customer.email_address,
