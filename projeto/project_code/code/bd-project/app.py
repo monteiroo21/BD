@@ -304,29 +304,15 @@ def new_score_create():
         music = request.form.get("music")
         arranger = request.form.get("arranger")
         type = request.form.get("type")
-
-        instrumentations = []
-        instruments = request.form.getlist("instrument[]")
-        quantities = request.form.getlist("quantity[]")
-        families = request.form.getlist("family[]")
-        roles = request.form.getlist("role[]")
-
-        for instrument, quantity, family, role in zip(instruments, quantities, families, roles):
-            instrumentations.append(score.Instrumentation(instrument, int(quantity), family, role))
-
-        new_details = score.Score(0, int(edition), float(price), int(availability), int(difficultyGrade), music, editor_name, arranger, type)
+        new_details = Score(0, edition, price, availability, difficultyGrade, music, editor_name, arranger, type)
 
         try:
-            score.create_score(new_details, instrumentations)
+            score.create_score(new_details)
             flash("Score created successfully!")
-            return redirect(url_for('base'))
+            return redirect(url_for('base'))  # Redirecionar para a página principal
         except ValueError as e:
-            flash(str(e))
             return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
-        except Exception as e:
-            flash(f"Unexpected error: {e}")
-            return render_template("score_create.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
-
+        
     editors = score.list_editors()
     musics = score.list_musics()
     arrangers = score.list_arrangers()
@@ -355,34 +341,26 @@ def edit_score_route(register_num):
         arranger = request.form.get("arranger")
         type = request.form.get("type")
 
-        instrumentations = []
-        instruments = request.form.getlist("instrument[]")
-        quantities = request.form.getlist("quantity[]")
-        families = request.form.getlist("family[]")
-        roles = request.form.getlist("role[]")
-
-        for instrument, quantity, family, role in zip(instruments, quantities, families, roles):
-            instrumentations.append(score.Instrumentation(instrument, int(quantity), family, role))
-
-        updated_details = score.Score(register_num, int(edition), float(price), int(availability), int(difficultyGrade), music, editor_name, arranger, type)
+        new_details = Score(register_num, edition, price, availability, difficultyGrade, music, editor_name, arranger, type)
 
         try:
-            score.edit_score(updated_details, instrumentations)
-            flash("Score updated successfully!")
-            return redirect(url_for('score_list'))
+            score.edit_score(new_details)
+            flash("Score edited successfully!")
+            return redirect(url_for('base'))  # Redirect to the main page
         except ValueError as e:
-            flash(str(e))
-            return render_template("score_edit.html", score=updated_details, instrumentations=instrumentations, editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
-        except Exception as e:
-            flash(f"Unexpected error: {e}")
-            return render_template("score_edit.html", score=updated_details, instrumentations=instrumentations, editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e))
+            return render_template("score_edit.html", editors=score.list_editors(), musics=score.list_musics(), arrangers=score.list_arrangers(), error=str(e), score=new_details)
+        
+    else:
+        current_score = score.get_score_by_id(register_num)
 
-    score_details = score.get_score_by_id(register_num)
-    instrumentations = score.get_instrumentations_by_score_id(register_num)
-    editors = score.list_editors()
-    musics = score.list_musics()
-    arrangers = score.list_arrangers()
-    return render_template("score_edit.html", score=score_details, instrumentations=instrumentations, editors=editors, musics=musics, arrangers=arrangers)
+        if current_score is None:
+            flash("Score not found", "error")
+            return redirect(url_for('base'))
+
+        editors = score.list_editors()
+        musics = score.list_musics()
+        arrangers = score.list_arrangers()
+        return render_template("score_edit.html", editors=editors, musics=musics, arrangers=arrangers, score=current_score)
 
 @app.route("/score-list-sorted", methods=["GET"])
 def score_list_sorted():
