@@ -65,50 +65,53 @@ END;
 
 ----------------------------------------------------------------------------------------------
 
-CREATE TABLE GenreSalesStats (
-    musGenre_id INT PRIMARY KEY,
-    total_sales DECIMAL(10, 2),
-    total_count INT
-);
-IF (EXISTS (SELECT * 
-    FROM INFORMATION_SCHEMA.TABLES 
-                WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'genre_stats'))
-BEGIN
-    CREATE TABLE dbo.genre_stats (
-		musGenre_id INT PRIMARY KEY,
-		total_sales DECIMAL(10, 2),
-		total_count INT
-    );
-END
+DROP TRIGGER IF EXISTS trg_check_warehouse_editor_score;
 GO
 
-CREATE TRIGGER trg_UpdateGenreSalesStats
-ON purchases
-AFTER INSERT
+-- Create the trigger
+CREATE TRIGGER trg_check_warehouse_editor_score
+ON stores
+INSTEAD OF INSERT
 AS
 BEGIN
-    DECLARE @music_id INT;
-    DECLARE @musGenre_id INT;
-    DECLARE @price DECIMAL(10, 2);
+    SET NOCOUNT ON;
 
-    SELECT @music_id = m.music_id, @price = s.price
-    FROM inserted i
-    JOIN Score s ON i.score_register = s.register_num
-    JOIN Music m ON s.musicId = m.music_id;
+    DECLARE @warehouse_id INT;
+    DECLARE @score_register INT;
+    DECLARE @warehouse_editor_id INT;
+    DECLARE @score_editor_id INT;
 
-    SELECT @musGenre_id = musGenre_id FROM Music WHERE music_id = @music_id;
+    DECLARE insert_cursor CURSOR FOR
+        SELECT warehouse_id, score_register FROM inserted;
 
-    IF EXISTS (SELECT 1 FROM GenreSalesStats WHERE musGenre_id = @musGenre_id)
+    OPEN insert_cursor;
+    FETCH NEXT FROM insert_cursor INTO @warehouse_id, @score_register;
+
+    WHILE @@FETCH_STATUS = 0
     BEGIN
-        UPDATE GenreSalesStats
-        SET total_sales = total_sales + @price, total_count = total_count + 1
-        WHERE musGenre_id = @musGenre_id;
+        -- Get the editor ID of the warehouse
+        SELECT @warehouse_editor_id = editorId FROM Warehouse WHERE id = @warehouse_id;
+
+        -- Get the editor ID of the score
+        SELECT @score_editor_id = editorId FROM Score WHERE register_num = @score_register;
+
+        -- Check if the editors match
+        IF @warehouse_editor_id != @score_editor_id
+        BEGIN
+            -- Raise an error if they don't match
+            RAISERROR('The score cannot be stored in this warehouse because the editors do not match.', 16, 1);
+            RETURN;
+        END
+
+        -- If editors match, insert the record
+        INSERT INTO stores (warehouse_id, score_register)
+        VALUES (@warehouse_id, @score_register);
+
+        FETCH NEXT FROM insert_cursor INTO @warehouse_id, @score_register;
     END
-    ELSE
-    BEGIN
-        INSERT INTO GenreSalesStats (musGenre_id, total_sales, total_count)
-        VALUES (@musGenre_id, @price, 1);
-    END
+
+    CLOSE insert_cursor;
+    DEALLOCATE insert_cursor;
 END
 GO
 
