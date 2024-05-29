@@ -113,6 +113,8 @@ END
 GO
 
 
+DROP TRIGGER IF EXISTS trg_delete_composer;
+GO
 CREATE TRIGGER trg_delete_composer
 ON Composer
 INSTEAD OF DELETE
@@ -121,21 +123,120 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @composer_id INT;
+    DECLARE @music_id INT;
 
-    -- Get the ID of the composer to be deleted
-    SELECT @composer_id = id FROM deleted;
+    -- Cursor to iterate over deleted composers
+    DECLARE composer_cursor CURSOR FOR
+        SELECT id FROM deleted;
+
+    OPEN composer_cursor;
+    FETCH NEXT FROM composer_cursor INTO @composer_id;
 
     BEGIN
-        -- Delete associated records from the Music table
-        DELETE FROM Music WHERE music_id IN (
-            SELECT music_id FROM writes WHERE composer_id = @composer_id
-        );
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            -- Cursor to iterate over music pieces composed by the composer
+            DECLARE music_cursor CURSOR FOR
+                SELECT music_id FROM writes WHERE composer_id = @composer_id;
 
-		-- Delete associated records from the writes table
-        DELETE FROM writes WHERE composer_id = @composer_id;
+            OPEN music_cursor;
+            FETCH NEXT FROM music_cursor INTO @music_id;
 
-        -- Delete the composer
-        DELETE FROM Composer WHERE id = @composer_id;
-    END 
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+                -- Delete from the Score table and related tables
+                DELETE FROM Instrumentation WHERE scoreNum IN (SELECT register_num FROM Score WHERE musicId = @music_id);
+                DELETE FROM stores WHERE score_register IN (SELECT register_num FROM Score WHERE musicId = @music_id);
+                DELETE FROM purchases WHERE score_register IN (SELECT register_num FROM Score WHERE musicId = @music_id);
+                DELETE FROM arranges WHERE score_register IN (SELECT register_num FROM Score WHERE musicId = @music_id);
+				DELETE FROM constitutes WHERE score_register IN (SELECT register_num FROM Score WHERE musicId = @music_id);
+                DELETE FROM Score WHERE musicId = @music_id;
+
+				DELETE FROM writes WHERE music_id = @music_id;
+
+                -- Delete the music piece
+                DELETE FROM Music WHERE music_id = @music_id;
+
+                FETCH NEXT FROM music_cursor INTO @music_id;
+            END
+
+            CLOSE music_cursor;
+            DEALLOCATE music_cursor;
+
+            -- Delete the composer
+            DELETE FROM Composer WHERE id = @composer_id;
+
+            FETCH NEXT FROM composer_cursor INTO @composer_id;
+        END
+
+        CLOSE composer_cursor;
+        DEALLOCATE composer_cursor;
+
+    END
+END
+GO
+
+CREATE TRIGGER trg_delete_arranger
+ON Arranger
+INSTEAD OF DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @arranger_id INT;
+    DECLARE @score_register INT;
+
+    -- Cursor to iterate over deleted arrangers
+    DECLARE arranger_cursor CURSOR FOR
+        SELECT id FROM deleted;
+
+    OPEN arranger_cursor;
+    FETCH NEXT FROM arranger_cursor INTO @arranger_id;
+
+    BEGIN
+        WHILE @@FETCH_STATUS = 0
+        BEGIN
+            -- Cursor to iterate over scores arranged by the arranger
+            DECLARE score_cursor CURSOR FOR
+                SELECT score_register FROM arranges WHERE arranger_id = @arranger_id;
+
+            OPEN score_cursor;
+            FETCH NEXT FROM score_cursor INTO @score_register;
+
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+                -- Delete the instrumentation associated with the score
+                DELETE FROM Instrumentation WHERE scoreNum = @score_register;
+
+                -- Delete from the stores table
+                DELETE FROM stores WHERE score_register = @score_register;
+
+                -- Delete from the purchases table
+                DELETE FROM purchases WHERE score_register = @score_register;
+
+                -- Delete from the arranges table
+                DELETE FROM arranges WHERE score_register = @score_register;
+
+				-- Delete from the constitutes table
+				DELETE FROM constitutes WHERE score_register = @score_register
+
+                -- Delete the score
+                DELETE FROM Score WHERE register_num = @score_register;
+
+                FETCH NEXT FROM score_cursor INTO @score_register;
+            END
+
+            CLOSE score_cursor;
+            DEALLOCATE score_cursor;
+
+            -- Delete the arranger
+            DELETE FROM Arranger WHERE id = @arranger_id;
+
+            FETCH NEXT FROM arranger_cursor INTO @arranger_id;
+        END
+
+        CLOSE arranger_cursor;
+        DEALLOCATE arranger_cursor;
+    END
 END
 GO
