@@ -251,17 +251,6 @@ def edit_score(score: Score):
             except IntegrityError as e:
                 conn.rollback()
                 raise RuntimeError(f"Failed to edit score with register number {score.register_num}: {e}")
-            
-
-def list_genre_sales_stats() -> list[tuple]:
-    with create_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                SELECT g.name, gs.total_sales, gs.total_count
-                FROM GenreSalesStats gs
-                JOIN MusicalGenre g ON gs.musGenre_id = g.id
-            """)
-            return cursor.fetchall()
         
 def add_instrumentation(instrument: str, quantity: int, family: str, role: str, register_num: int):
     with create_connection() as conn:

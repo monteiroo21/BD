@@ -58,7 +58,7 @@ CREATE TABLE Instrumentation
     [role] VARCHAR(50),
     scoreNum INT NOT NULL,
 
-    PRIMARY KEY(instrument),
+    PRIMARY KEY(instrument, scoreNum),
     FOREIGN KEY(scoreNum) REFERENCES Score(register_num)
 );
 
