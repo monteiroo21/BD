@@ -81,7 +81,7 @@ def edit_music_route(music_id):
         year = request.form.get("year")
         genre_name = request.form.get("genre_name")
         composer = request.form.get("composer")
-        new_details = Music(0, title, int(year), genre_name, composer)
+        new_details = Music(music_id, title, int(year), genre_name, composer)
 
         try:
             music.edit_music(new_details)
@@ -101,6 +101,7 @@ def edit_music_route(music_id):
         composers = music.list_composers()
         return render_template("music_edit.html", genres=genres, composers=composers, music=current_music)
     
+
 @app.route("/deleted-musics", methods=["GET"])
 def view_deleted_musics():
     deleted_musics = music.get_deleted_musics()

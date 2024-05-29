@@ -112,7 +112,6 @@ def edit_music(music: Music):
             cursor.execute("""
                 EXEC edit_music @music_id=?, @title=?, @year=?, @musGenre_id=?, @composer_id=?
             """, (music.music_id, music.title, music.year, genre_id, composer_id))
-            
             # Commit the transaction
             conn.commit()
 
