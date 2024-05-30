@@ -25,10 +25,13 @@ class WarehouseDetails(NamedTuple):
 def list_warehouse() -> list[Warehouse]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("""SELECT w.name, w.id, w.storage, e.name, wl.warehouse_location
-                            FROM Warehouse AS w
-                                JOIN Editor AS e ON w.editorId = e.identifier
-								JOIN warehouse_location wl ON w.id = wl.warehouse_id
+            cursor.execute("""SELECT w.name, w.id, w.storage - ISNULL(SUM(s.availability), 0) as storage, e.name, wl.warehouse_location
+                                FROM Warehouse AS w
+                                    JOIN Editor AS e ON w.editorId = e.identifier
+                                    JOIN warehouse_location wl ON w.id = wl.warehouse_id
+                                    LEFT JOIN stores st ON w.id = st.warehouse_id
+                                    LEFT JOIN Score s ON st.score_register = s.register_num
+                            GROUP BY w.name, w.id, w.storage, e.name, wl.warehouse_location
                 """)
             return [Warehouse(*row) for row in cursor.fetchall()]
 
@@ -36,11 +39,14 @@ def list_warehouse() -> list[Warehouse]:
 def search_warehouse(query: str) -> list[Warehouse]:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("""SELECT w.name, w.id, w.storage, e.name, wl.warehouse_location
-                            FROM Warehouse AS w
-                                JOIN Editor AS e ON w.editorId = e.identifier
-								JOIN warehouse_location wl ON w.id = wl.warehouse_id
-                WHERE w.name LIKE ?""", ('%' + query + '%',))
+            cursor.execute("""SELECT w.name, w.id, w.storage - ISNULL(SUM(s.availability), 0) as storage, e.name, wl.warehouse_location
+                                FROM Warehouse AS w
+                                    JOIN Editor AS e ON w.editorId = e.identifier
+                                    JOIN warehouse_location wl ON w.id = wl.warehouse_id
+                                    LEFT JOIN stores st ON w.id = st.warehouse_id
+                                    LEFT JOIN Score s ON st.score_register = s.register_num
+                            GROUP BY w.name, w.id, w.storage, e.name, wl.warehouse_location
+                            WHERE w.name LIKE ?""", ('%' + query + '%',))
             return [Warehouse(*row) for row in cursor.fetchall()]
         
 
@@ -52,27 +58,6 @@ def create_warehouse(warehouse: Warehouse):
             if editor_id is None:
                 raise ValueError(f"Editor '{warehouse.editor_name}' does not exist")
             editor_id = editor_id[0]
-
-            # Get the ID of the newly created warehouse
-            cursor.execute("SELECT SCOPE_IDENTITY()")
-            new_warehouse_id = cursor.fetchone()[0]
-
-            # Retrieve the availability of each score stored in the new warehouse
-            cursor.execute("""
-                SELECT s.availability FROM Score s
-                    JOIN stores st ON s.register_num = st.score_register
-                    JOIN Warehouse w ON st.warehouse_id = w.id
-                    WHERE w.id = ?
-            """, (new_warehouse_id,))
-            
-            total_availability = sum(row[0] for row in cursor.fetchall())
-
-            # Reduce the storage of the warehouse by the total availability
-            cursor.execute("""
-                UPDATE Warehouse
-                SET storage = storage - ?
-                WHERE id = ?
-            """, (total_availability, new_warehouse_id))
 
             try:
                 cursor.execute("""
@@ -129,7 +114,14 @@ def edit_warehouse(warehouse: Warehouse):
 def get_warehouse_by_id(warehouse_id: int) -> Warehouse:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT w.name, w.id, w.storage, e.name FROM Warehouse AS w JOIN Editor AS e ON w.editorId = e.identifier WHERE w.id = ?", (warehouse_id,))
+            cursor.execute("""SELECT w.name, w.id, w.storage - ISNULL(SUM(s.availability), 0) as storage, e.name, wl.warehouse_location
+                                FROM Warehouse AS w
+                                    JOIN Editor AS e ON w.editorId = e.identifier
+                                    JOIN warehouse_location wl ON w.id = wl.warehouse_id
+                                    LEFT JOIN stores st ON w.id = st.warehouse_id
+                                    LEFT JOIN Score s ON st.score_register = s.register_num
+                            WHERE w.id=?
+                            GROUP BY w.name, w.id, w.storage, e.name, wl.warehouse_location""", (warehouse_id,))
             row = cursor.fetchone()
             if row is None:
                 return None
@@ -138,11 +130,14 @@ def get_warehouse_by_id(warehouse_id: int) -> Warehouse:
 def detail_warehouse(warehouse_id: int) -> WarehouseDetails:
     with create_connection() as conn:
         with conn.cursor() as cursor:
-            cursor.execute("""SELECT w.name, w.id, w.storage, e.name, wl.warehouse_location
-                            FROM Warehouse AS w
-                                JOIN Editor AS e ON w.editorId = e.identifier
-								JOIN warehouse_location wl ON w.id = wl.warehouse_id
+            cursor.execute("""SELECT w.name, w.id, w.storage - ISNULL(SUM(s.availability), 0) as storage, e.name, wl.warehouse_location
+                                FROM Warehouse AS w
+                                    JOIN Editor AS e ON w.editorId = e.identifier
+                                    JOIN warehouse_location wl ON w.id = wl.warehouse_id
+                                    LEFT JOIN stores st ON w.id = st.warehouse_id
+                                    LEFT JOIN Score s ON st.score_register = s.register_num
                             WHERE w.id=?
+                            GROUP BY w.name, w.id, w.storage, e.name, wl.warehouse_location
                 """, (warehouse_id,))
 
 
