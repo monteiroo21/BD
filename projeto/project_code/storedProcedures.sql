@@ -240,28 +240,14 @@ BEGIN
     -- Verifica se o número do cartão de cidadão já existe
     IF EXISTS (SELECT 1 FROM Customer WHERE numCC = @numCC)
     BEGIN
-        RAISERROR ('Cliente com este número de cartão de cidadão já existe', 16, 1);
+        RAISERROR ('CC number already in use', 16, 1);
         RETURN;
     END
 
     -- Verifica se o número da conta bancária já está associado a outro cliente
     IF EXISTS (SELECT 1 FROM Customer WHERE numBankAccount = @numBankAccount)
     BEGIN
-        RAISERROR ('Número da conta bancária já está associado a outro cliente', 16, 1);
-        RETURN;
-    END
-
-    -- Verifica se o número de celular tem exatamente 9 dígitos
-    IF LEN(CAST(@cellNumber AS VARCHAR(10))) != 9
-    BEGIN
-        RAISERROR ('Número de celular deve ter exatamente 9 dígitos', 16, 1);
-        RETURN;
-    END
-
-    -- Verifica se o número do cartão de cidadão tem exatamente 8 dígitos
-    IF LEN(CAST(@numCC AS VARCHAR(10))) != 8
-    BEGIN
-        RAISERROR ('Número do cartão de cidadão deve ter exatamente 8 dígitos', 16, 1);
+        RAISERROR ('Bank account number already associated', 16, 1);
         RETURN;
     END
 

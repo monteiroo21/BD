@@ -45,8 +45,8 @@ def search_warehouse(query: str) -> list[Warehouse]:
                                     JOIN warehouse_location wl ON w.id = wl.warehouse_id
                                     LEFT JOIN stores st ON w.id = st.warehouse_id
                                     LEFT JOIN Score s ON st.score_register = s.register_num
-                            GROUP BY w.name, w.id, w.storage, e.name, wl.warehouse_location
-                            WHERE w.name LIKE ?""", ('%' + query + '%',))
+                            WHERE w.name LIKE ?
+                            GROUP BY w.name, w.id, w.storage, e.name, wl.warehouse_location""", ('%' + query + '%',))
             return [Warehouse(*row) for row in cursor.fetchall()]
         
 

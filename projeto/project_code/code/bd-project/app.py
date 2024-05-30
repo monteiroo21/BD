@@ -597,7 +597,7 @@ def new_customer_create():
         try:
             customer.create_customer(new_details)
             flash("Customer created successfully!")
-            return redirect(url_for('customer_list'))
+            return redirect(url_for('base'))
         except Exception as e:
             flash(f"Error: {e}")
             return redirect(url_for('base'))
