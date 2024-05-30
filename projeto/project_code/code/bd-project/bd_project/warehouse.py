@@ -53,6 +53,27 @@ def create_warehouse(warehouse: Warehouse):
                 raise ValueError(f"Editor '{warehouse.editor_name}' does not exist")
             editor_id = editor_id[0]
 
+            # Get the ID of the newly created warehouse
+            cursor.execute("SELECT SCOPE_IDENTITY()")
+            new_warehouse_id = cursor.fetchone()[0]
+
+            # Retrieve the availability of each score stored in the new warehouse
+            cursor.execute("""
+                SELECT s.availability FROM Score s
+                    JOIN stores st ON s.register_num = st.score_register
+                    JOIN Warehouse w ON st.warehouse_id = w.id
+                    WHERE w.id = ?
+            """, (new_warehouse_id,))
+            
+            total_availability = sum(row[0] for row in cursor.fetchall())
+
+            # Reduce the storage of the warehouse by the total availability
+            cursor.execute("""
+                UPDATE Warehouse
+                SET storage = storage - ?
+                WHERE id = ?
+            """, (total_availability, new_warehouse_id))
+
             try:
                 cursor.execute("""
                     EXEC add_warehouse @warehouse_name=?, @storage=?, @editorId=?, @warehouse_location=?
