@@ -119,7 +119,7 @@ INSERT INTO Customer (numCC, email_address, numBankAccount, cellNumber, [name]) 
 
 
 INSERT INTO [Transaction] (transaction_id, [value], [date], customer_CC) VALUES
-    (1, 35.50, '2024-01-15', 10010000),
+    (1, 20.00, '2024-01-15', 10010000),
     (2, 15.50, '2024-01-16', 10020000),
     (3, 25.00, '2024-01-17', 10030000),
     (4, 30.00, '2024-01-18', 10040000),
