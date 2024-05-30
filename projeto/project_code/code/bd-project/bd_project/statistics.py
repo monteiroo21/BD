@@ -34,7 +34,7 @@ def get_genre_sales() -> List[Dict[str, str]]:
                 JOIN [Transaction] t ON co.transaction_id = t.transaction_id
                 WHERE YEAR(t.date) >= YEAR(GETDATE()) - 10
                 GROUP BY g.name, YEAR(t.date)
-                ORDER BY Year, SalesCount DESC
+                ORDER BY SalesCount DESC, Year DESC
             """)
             results = cursor.fetchall()
             # Convertendo os resultados em um formato JSON compatível

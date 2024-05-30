@@ -131,18 +131,35 @@ AS
 BEGIN
     DECLARE @register_num INT;
 
-    -- Generate a new register number
-    SELECT @register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
+    BEGIN
 
-    -- Insert the new score
-    INSERT INTO Score (register_num, edition, price, availability, difficultyGrade, musicId, editorId)
-    VALUES (@register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
+        -- Generate a new register number
+        SELECT @register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
 
-    -- Insert into the arranges table
-    INSERT INTO arranges (score_register, arranger_id, [type])
-    VALUES (@register_num, @arrangerId, @type);
+        -- Insert the new score
+        INSERT INTO Score (register_num, edition, price, availability, difficultyGrade, musicId, editorId)
+        VALUES (@register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
 
-    PRINT 'Score and arranger added successfully.';
+        -- Insert into the arranges table
+        INSERT INTO arranges (score_register, arranger_id, [type])
+        VALUES (@register_num, @arrangerId, @type);
+
+        -- Check if the editor has warehouses
+        IF EXISTS (SELECT 1 FROM Warehouse WHERE editorId = @editorId)
+        BEGIN
+            -- Insert into the stores table for each warehouse of the editor
+            INSERT INTO stores (warehouse_id, score_register)
+            SELECT w.id, @register_num
+            FROM Warehouse w
+            WHERE w.editorId = @editorId;
+
+            PRINT 'Score, arranger, and stores added successfully.';
+        END
+        ELSE
+        BEGIN
+            PRINT 'No warehouses found for the specified editor.';
+        END
+    END
 END;
 GO
 
