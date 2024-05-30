@@ -30,6 +30,14 @@ def create_transaction(transaction: Transaction, scores: list[int]):
     with create_connection() as conn:
         with conn.cursor() as cursor:
             try:
+                for score in scores:
+                    cursor.execute("""
+                        SELECT availability FROM Score WHERE register_num = ?
+                    """, (score,))
+                    result = cursor.fetchone()
+                    if result is None or result[0] <= 0:
+                        raise ValueError(f"Score with register_num {score} is not available.")
+
                 cursor.execute("""
                     INSERT INTO [Transaction] (transaction_id, value, date, customer_CC)
                     VALUES (?, ?, ?, ?)""",
@@ -42,10 +50,23 @@ def create_transaction(transaction: Transaction, scores: list[int]):
                         VALUES (?, ?)""",
                         (score, transaction.transaction_id)
                     )
+
+                    cursor.execute("""
+                        UPDATE Score
+                        SET availability = availability - 1
+                        WHERE register_num = ?""",
+                        (score,)
+                    )
+
                 conn.commit()
             except IntegrityError as e:
                 print(f"An error occurred: {e}")
                 conn.rollback()
+            except ValueError as e:
+                print(e)
+                conn.rollback()
+
+
 
 
 def list_customers():

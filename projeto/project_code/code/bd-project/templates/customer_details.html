@@ -144,6 +144,8 @@
             style="margin-top: 10px;">New Transaction</a>
         {% else %}
         <p>No transactions found for this customer.</p>
+        <a class="new-link" href="{{ url_for('new_transaction', customer_id=customer.numCC) }}"
+            style="margin-top: 10px;">New Transaction</a>
         {% endif %}
         {% else %}
         <p>Customer not found.</p>

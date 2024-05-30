@@ -184,7 +184,7 @@ def edit_composer_route(composer_id):
             composer.edit_composer(new_details, current_composer.Fname, current_composer.Lname)
             flash("Composer edited successfully!")
             return redirect(url_for('base'))
-        except ValueError as e:
+        except Exception as e:
             flash(f"Error: {e}")
             return redirect(url_for('base'))
     else:
