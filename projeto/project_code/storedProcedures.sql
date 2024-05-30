@@ -361,20 +361,60 @@ CREATE OR ALTER PROCEDURE edit_score
     @new_music_id INT,
     @new_editor_id INT,
     @new_arranger_id INT,
-	@type VARCHAR(20)
+    @type VARCHAR(20)
 AS
 BEGIN
-    -- Update the score details
-    UPDATE Score
-    SET edition = @new_edition, price = @new_price, availability = @new_availability, difficultyGrade = @new_difficultyGrade, musicId = @new_music_id, editorId = @new_editor_id
-    WHERE register_num = @register_num;
+    BEGIN
 
-    -- Update the arranges table
-    UPDATE arranges
-    SET arranger_id = @new_arranger_id, [type] = @type -- Assuming a default type
-    WHERE score_register = @register_num;
+        -- Check if the score exists
+        IF NOT EXISTS (SELECT 1 FROM Score WHERE register_num = @register_num)
+        BEGIN
+            RAISERROR ('Invalid register_num.', 16, 1);
+            RETURN;
+        END
 
-    PRINT 'Score and arranger updated successfully.';
+        -- Check if the new music_id exists
+        IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @new_music_id)
+        BEGIN
+            RAISERROR ('Invalid new_music_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Check if the new editor_id exists
+        IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @new_editor_id)
+        BEGIN
+            RAISERROR ('Invalid new_editor_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Check if the new arranger_id exists
+        IF NOT EXISTS (SELECT 1 FROM Arranger WHERE id = @new_arranger_id)
+        BEGIN
+            RAISERROR ('Invalid new_arranger_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Update the score details
+        UPDATE Score
+        SET edition = @new_edition, price = @new_price, availability = @new_availability, difficultyGrade = @new_difficultyGrade, musicId = @new_music_id, editorId = @new_editor_id
+        WHERE register_num = @register_num;
+
+        -- Update the arranges table
+        UPDATE arranges
+        SET arranger_id = @new_arranger_id, [type] = @type
+        WHERE score_register = @register_num;
+
+        -- Delete existing entries in the stores table for the score
+        DELETE FROM stores WHERE score_register = @register_num;
+
+        -- Insert into the stores table for each warehouse of the new editor
+        INSERT INTO stores (warehouse_id, score_register)
+        SELECT w.id, @register_num
+        FROM Warehouse w
+        WHERE w.editorId = @new_editor_id;
+
+        PRINT 'Score, arranger, and stores updated successfully.';
+    END
 END;
 GO
 
