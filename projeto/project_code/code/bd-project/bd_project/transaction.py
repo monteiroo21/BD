@@ -67,8 +67,6 @@ def create_transaction(transaction: Transaction, scores: list[int]):
                 conn.rollback()
 
 
-
-
 def list_customers():
     with create_connection() as conn:
         with conn.cursor() as cursor:
