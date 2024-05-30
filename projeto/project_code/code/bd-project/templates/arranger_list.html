@@ -1,22 +1,29 @@
-{% for arranger in arrangers %}
-<div class="card">
-    <div class="d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">{{ arranger.fname }} {{ arranger.lname }}</h2>
-        <a class="btn btn-primary btn-sm details-button"
-            href="{{ url_for('detail_arranger', arranger_id=arranger.identifier) }}">
-            Details
-        </a>
+<div class="flex-container">
+    {% for arranger in arrangers %}
+    <div class="card">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">{{ arranger.fname }} {{ arranger.lname }}</h2>
+            <a class="btn btn-primary btn-sm details-button"
+                href="{{ url_for('detail_arranger', arranger_id=arranger.identifier) }}">
+                Details
+            </a>
+        </div>
+        <p>Genre: {{ arranger.name }}</p>
+        <div class="button-container">
+            <form method="get" action="{{ url_for('edit_arranger_route', arranger_id=arranger.identifier) }}"
+                class="d-inline">
+                <button type="submit" class="btn btn-success btn-sm edit-button">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+            </form>
+            <form method="post" action="{{ url_for('delete_arranger_route', arranger_id=arranger.identifier) }}"
+                class="ml-auto">
+                <button type="submit" class="btn btn-danger btn-sm delete-button">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </form>
+        </div>
+
     </div>
-    <p>Genre: {{ arranger.name }}</p>
-    <form method="get" action="{{ url_for('edit_arranger_route', arranger_id=arranger.identifier) }}" class="d-inline">
-        <button type="submit" class="btn btn-success btn-sm edit-button">
-            <i class="fas fa-pencil-alt"></i>
-        </button>
-    </form>
-    <form method="post" action="{{ url_for('delete_arranger_route', arranger_id=arranger.identifier) }}" class="ml-auto">
-        <button type="submit" class="btn btn-danger btn-sm delete-button">
-            <i class="fas fa-trash-alt"></i>
-        </button>
-    </form>
+    {% endfor %}
 </div>
-{% endfor %}
