@@ -189,4 +189,4 @@ CREATE INDEX idx_MusicalGenre_name ON MusicalGenre ([name]);
 
 [Slides](slides.pdf "Sildes")
 
-[Video](https://elearning.ua.pt/pluginfile.php/55992/mod_label/intro/VideoTrabalho2013.mp4)
+[Video](Video.mp4)
