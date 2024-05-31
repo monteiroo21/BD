@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Score</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Create New Score</h1>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <form method="post" action="{{ url_for('new_score_create') }}">
+            <div class="form-group">
+                <label for="edition">Edition:</label>
+                <input type="number" class="form-control" id="edition" name="edition" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="availability">Availability:</label>
+                <input type="number" class="form-control" id="availability" name="availability" required>
+            </div>
+            <div class="form-group">
+                <label for="difficultyGrade">Difficulty Grade:</label>
+                <input type="number" class="form-control" id="difficultyGrade" name="difficultyGrade" required>
+            </div>
+            <div class="form-group">
+                <label for="editor_name">Editor:</label>
+                <select class="form-control" id="editor_name" name="editor_name" required>
+                    {% for editor in editors %}
+                    <option value="{{ editor }}">{{ editor }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="music">Music:</label>
+                <select class="form-control" id="music" name="music" required>
+                    {% for music in musics %}
+                    <option value="{{ music }}">{{ music }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="arranger">Arranger:</label>
+                <select class="form-control" id="arranger" name="arranger" required>
+                    {% for arranger in arrangers %}
+                    <option value="{{ arranger }}">{{ arranger }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="type">Arrange Type:</label>
+                <input type="type" class="form-control" id="type" name="type" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+</body>
+</html>

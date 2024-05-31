@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding: 5px;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+        }
+
+        /* Adiciona margens laterais e inferior para divs internas */
+        .container>div {
+            margin: 0 20px 20px 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="composer-revenue" style="margin-right: 40px;">
+            <h2>Composer Revenue</h2>
+            <ul>
+                {% for item in composer_revenue %}
+                <li>{{ item["ComposerName"] }}: ${{ item["TotalRevenue"] }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div id="genre-sales" style="margin-right: 40px;">
+            <h2>Genre Sales</h2>
+            <ul>
+                {% for item in genre_sales %}
+                <li>{{ item["GenreName"] }} ({{ item["Year"] }}): {{ item["SalesCount"] }} sales</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div id="music-sales">
+            <h2>Music Sales by Genre</h2>
+            <ul>
+                {% for item in music_sales %}
+                <li>{{ item["GenreName"] }} - {{ item["MusicTitle"] }}: {{ item["SalesCount"] }} sales</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>

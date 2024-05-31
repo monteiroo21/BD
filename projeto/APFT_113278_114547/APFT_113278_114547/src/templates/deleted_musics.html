@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deleted Musics</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Deleted Musics</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Music ID</th>
+                    <th>Title</th>
+                    <th>Year</th>
+                    <th>Genre ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for music in deleted_musics %}
+                <tr>
+                    <td>{{ music.music_id }}</td>
+                    <td>{{ music.title }}</td>
+                    <td>{{ music.year }}</td>
+                    <td>{{ music.musGenre_id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('base') }}" class="btn btn-secondary mt-2">Back to Music List</a>
+    </div>
+</body>
+</html>

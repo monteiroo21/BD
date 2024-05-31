@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 50%;
+            box-sizing: border-box;
+            transition: box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
+
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .new-btn2 {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .new-btn2:hover {
+            background-color: #007bff;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Score Details</h1>
+        <a href="{{ url_for('base') }}" class="btn btn-primary btn-sm ml-auto">Back to Score List</a>
+        {% if score %}
+        <div class="card">
+            <h2>{{ score.music }}</h2>
+            <p><strong>Edition:</strong> {{ score.edition }}</p>
+            <p><strong>Price:</strong> {{ score.price }}</p>
+            <p><strong>Availability:</strong> {{ score.availability }}</p>
+            <p><strong>Difficulty Grade:</strong> {{ score.difficultyGrade }}</p>
+            <p><strong>Editor:</strong> {{ score.editor }}</p>
+            <p><strong>Arranger:</strong> {{ score.arranger }}</p>
+            <p><strong>Type:</strong> {{ score.type }}</p>
+        </div>
+        
+        <h3>Instrumentation:</h3>
+        {% if score.instrumentation %}
+        {% for instrument, quantity in score.instrumentation.items() %}
+        <div class="card">
+            <p><strong>Instrument:</strong> {{ instrument }}</p>
+            <p><strong>Quantity:</strong> {{ quantity }}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+        <a href="{{ url_for('add_instrumentation', register_num=score.register_num) }}" class="new-btn2">Add Instrumentation</a>
+        {% else %}
+        <p>Score not found.</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>
