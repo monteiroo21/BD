@@ -69,16 +69,298 @@ As alterações perante a primeira entrega estão relacionadas com as alteraçõ
 Uma secção por formulário.
 A section for each form.
 
+Para mostrar o nosso DML, iremos mostrar os exemplos de SELECT, INSERT, DELETE e UPDATE de uma partitura.
+No geral, os INSERT's e os UPDATE's foram feitos com Stored Procedures já os DELETE's foram feitos com Triggers.
+
 ### Formulario exemplo/Example Form
 
-![Exemplo Screenshot!](screenshots/screenshot_1.jpg "AnImage")
+Inicialmente criamos alguns valores para conseguirmos testar a interação da base de dados com a interface criada
+
+![Exemplo Screenshot!](screenshots/screenshot_1.png "AnImage")
 
 ```sql
 -- Show data on the form
-SELECT * FROM MY_TABLE ....;
+SELECT s.register_num, s.edition, s.price, s.availability, 
+                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName, ar.type
+                            FROM Score s
+                            JOIN Music m ON s.musicId = m.music_id
+       JOIN Editor e ON s.editorId = e.identifier
+       LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+       LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+       LEFT OUTER JOIN Writer w ON a.id = w.id
 
 -- Insert new element
-INSERT INTO MY_TABLE ....;
+INSERT INTO Score (register_num, [edition], price, [availability], difficultyGrade, musicId, editorId) VALUES
+    (101, 1, 20.00, 5, 3, 1, 1),
+    (102, 2, 15.50, 3, 2, 2, 2),
+    (103, 1, 25.00, 4, 4, 3, 3),
+    (104, 1, 30.00, 2, 5, 4, 4),
+    (105, 1, 18.50, 5, 1, 5, 5),
+    (106, 1, 22.00, 3, 3, 6, 6),
+    (107, 1, 19.99, 4, 2, 7, 7);
+
+```
+
+### Formulario exemplo/Example Form
+
+Para adicionar uma partitura, foi feito um Stored Procedure
+
+![Exemplo Screenshot!](screenshots/screenshot_2.png "AnImage")
+
+```sql
+CREATE OR ALTER PROCEDURE add_score
+    @edition INT,
+    @price DECIMAL(10, 2),
+    @availability INT,
+    @difficultyGrade INT,
+    @musicId INT,
+    @editorId INT,
+    @arrangerId INT,
+    @type VARCHAR(20)
+AS
+BEGIN
+    DECLARE @register_num INT;
+
+    BEGIN
+
+        -- Generate a new register number
+        SELECT @register_num = COALESCE(MAX(register_num), 0) + 1 FROM Score;
+
+        -- Insert the new score
+        INSERT INTO Score (register_num, edition, price, availability, difficultyGrade, musicId, editorId)
+        VALUES (@register_num, @edition, @price, @availability, @difficultyGrade, @musicId, @editorId);
+
+        -- Insert into the arranges table
+        INSERT INTO arranges (score_register, arranger_id, [type])
+        VALUES (@register_num, @arrangerId, @type);
+
+        -- Check if the editor has warehouses
+        IF EXISTS (SELECT 1 FROM Warehouse WHERE editorId = @editorId)
+        BEGIN
+            -- Insert into the stores table for each warehouse of the editor
+            INSERT INTO stores (warehouse_id, score_register)
+            SELECT w.id, @register_num
+            FROM Warehouse w
+            WHERE w.editorId = @editorId;
+
+            PRINT 'Score, arranger, and stores added successfully.';
+        END
+        ELSE
+        BEGIN
+            PRINT 'No warehouses found for the specified editor.';
+        END
+    END
+END;
+GO
+```
+
+### Formulario exemplo/Example Form
+
+Podemos também adicionar alguma instrumentação relacionada com a partitura
+
+![Exemplo Screenshot!](screenshots/screenshot_3.png "AnImage")
+![Exemplo Screenshot!](screenshots/screenshot_4.png "AnImage")
+
+```python
+def detail_score(register_num: int) -> ScoreDetails:
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+            # Query para buscar informações detalhadas sobre o compositor
+            cursor.execute("""
+            SELECT s.register_num, s.edition, s.price, s.availability, 
+                            s.difficultyGrade, m.title as music, e.name, w.Fname + ' ' + w.Lname as WriterName, ar.type
+                            FROM Score s
+                            JOIN Music m ON s.musicId = m.music_id
+       JOIN Editor e ON s.editorId = e.identifier
+       LEFT OUTER JOIN arranges ar ON s.register_num = ar.score_register
+       LEFT OUTER JOIN Arranger a ON ar.arranger_id = a.id
+       LEFT OUTER JOIN Writer w ON a.id = w.id
+            WHERE s.register_num = ?
+            """, (register_num,))
+            
+            row = cursor.fetchone()
+            if row is None:
+                return None  # Se nenhuma linha for retornada, o compositor não existe
+
+            # Extrair informações básicas sobre o compositor
+            score_info = row[:9]
+
+            # Query para buscar as músicas associadas ao compositor
+            cursor.execute("""
+                SELECT instrument, quantity
+                FROM Instrumentation
+                WHERE scoreNum = ?
+            """, (register_num,))
+            
+            instrumentation = {instrumentation[0]: instrumentation[1] for instrumentation in cursor.fetchall()}
+
+            return ScoreDetails(*score_info, instrumentation)
+
+
+def add_instrumentation(instrument: str, quantity: int, family: str, role: str, register_num: int):
+    with create_connection() as conn:
+        with conn.cursor() as cursor:
+
+            try:
+                cursor.execute("""
+                INSERT INTO Instrumentation (instrument, quantity, family, role, scoreNum)
+                VALUES (?, ?, ?, ?, ?)
+                """,(instrument, quantity, family, role, register_num))
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                raise ValueError(f"Failed to add instrumentation: {e}")
+            finally:
+                cursor.close()
+                conn.close()
+```
+
+### Formulario exemplo/Example Form
+
+Agora iremos mostrar como editamos uma partitura, ou seja, fazemos o UPDATE.
+
+![Exemplo Screenshot!](screenshots/screenshot_5.png "AnImage")
+
+```sql
+CREATE OR ALTER PROCEDURE edit_score
+    @register_num INT,
+    @new_edition INT,
+    @new_price DECIMAL(10, 2),
+    @new_availability INT,
+    @new_difficultyGrade INT,
+    @new_music_id INT,
+    @new_editor_id INT,
+    @new_arranger_id INT,
+    @type VARCHAR(20)
+AS
+BEGIN
+    BEGIN
+
+        -- Check if the score exists
+        IF NOT EXISTS (SELECT 1 FROM Score WHERE register_num = @register_num)
+        BEGIN
+            RAISERROR ('Invalid register_num.', 16, 1);
+            RETURN;
+        END
+
+        -- Check if the new music_id exists
+        IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @new_music_id)
+        BEGIN
+            RAISERROR ('Invalid new_music_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Check if the new editor_id exists
+        IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @new_editor_id)
+        BEGIN
+            RAISERROR ('Invalid new_editor_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Check if the new arranger_id exists
+        IF NOT EXISTS (SELECT 1 FROM Arranger WHERE id = @new_arranger_id)
+        BEGIN
+            RAISERROR ('Invalid new_arranger_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Update the score details
+        UPDATE Score
+        SET edition = @new_edition, price = @new_price, availability = @new_availability, difficultyGrade = @new_difficultyGrade, musicId = @new_music_id, editorId = @new_editor_id
+        WHERE register_num = @register_num;
+
+        -- Update the arranges table
+        UPDATE arranges
+        SET arranger_id = @new_arranger_id, [type] = @type
+        WHERE score_register = @register_num;
+
+        -- Delete existing entries in the stores table for the score
+        DELETE FROM stores WHERE score_register = @register_num;
+
+        -- Insert into the stores table for each warehouse of the new editor
+        INSERT INTO stores (warehouse_id, score_register)
+        SELECT w.id, @register_num
+        FROM Warehouse w
+        WHERE w.editorId = @new_editor_id;
+
+        PRINT 'Score, arranger, and stores updated successfully.';
+    END
+END;
+GO
+```
+
+### Formulario exemplo/Example Form
+
+Por fim o DELETE de um arranjador, que elimina todos os dados dependentes do nome dele como por exemplo todas as partituras escritas por ele.
+
+![Exemplo Screenshot!](screenshots/screenshot_5.png "AnImage")
+
+```sql
+CREATE OR ALTER PROCEDURE edit_score
+    @register_num INT,
+    @new_edition INT,
+    @new_price DECIMAL(10, 2),
+    @new_availability INT,
+    @new_difficultyGrade INT,
+    @new_music_id INT,
+    @new_editor_id INT,
+    @new_arranger_id INT,
+    @type VARCHAR(20)
+AS
+BEGIN
+    BEGIN
+
+        -- Check if the score exists
+        IF NOT EXISTS (SELECT 1 FROM Score WHERE register_num = @register_num)
+        BEGIN
+            RAISERROR ('Invalid register_num.', 16, 1);
+            RETURN;
+        END
+
+        -- Check if the new music_id exists
+        IF NOT EXISTS (SELECT 1 FROM Music WHERE music_id = @new_music_id)
+        BEGIN
+            RAISERROR ('Invalid new_music_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Check if the new editor_id exists
+        IF NOT EXISTS (SELECT 1 FROM Editor WHERE identifier = @new_editor_id)
+        BEGIN
+            RAISERROR ('Invalid new_editor_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Check if the new arranger_id exists
+        IF NOT EXISTS (SELECT 1 FROM Arranger WHERE id = @new_arranger_id)
+        BEGIN
+            RAISERROR ('Invalid new_arranger_id.', 16, 1);
+            RETURN;
+        END
+
+        -- Update the score details
+        UPDATE Score
+        SET edition = @new_edition, price = @new_price, availability = @new_availability, difficultyGrade = @new_difficultyGrade, musicId = @new_music_id, editorId = @new_editor_id
+        WHERE register_num = @register_num;
+
+        -- Update the arranges table
+        UPDATE arranges
+        SET arranger_id = @new_arranger_id, [type] = @type
+        WHERE score_register = @register_num;
+
+        -- Delete existing entries in the stores table for the score
+        DELETE FROM stores WHERE score_register = @register_num;
+
+        -- Insert into the stores table for each warehouse of the new editor
+        INSERT INTO stores (warehouse_id, score_register)
+        SELECT w.id, @register_num
+        FROM Warehouse w
+        WHERE w.editorId = @new_editor_id;
+
+        PRINT 'Score, arranger, and stores updated successfully.';
+    END
+END;
+GO
 ```
 
 ...
