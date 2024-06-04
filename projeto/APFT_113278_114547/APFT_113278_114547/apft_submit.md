@@ -52,7 +52,7 @@ Em vez de associar o Writer à Music, decidimos associar apenas o Composer à Mu
 
 ### APFE
 
-Para além de fazer as alterações para manter a concordância entre o ER e o DER foi ainda alterada a tabela (falar da coisa da FOREIGN KEY)
+Para além de fazer as alterações para manter a concordância entre o ER e o DER foi ainda alterada a tabela Instrumentation, onde se alterou a Primary Key (anteriormente definida pelo instrument), para (instrument, score_num).
 
 ## ​SQL DDL - Data Definition Language
 
