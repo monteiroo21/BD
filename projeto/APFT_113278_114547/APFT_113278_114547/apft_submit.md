@@ -29,9 +29,7 @@ Please remove this section before submitting.
 
 ## Introdução / Introduction
 
-Escreva uma pequena introdução sobre o trabalho.
-Write a simple introduction about your project.
-O trabalho é sobre um sistema de gestão e compra de partituras, onde podem adicionadas, editadas e eliminadas músicas publicadas por escritores.
+O projeto envolve um sistema de gestão de uma base de dados musical.  Foram definidas algumas entidades, como por exemplo Music, Score, Writer (pode ser Composer ou Arranger), Editor, entre outros. Alguns objetivos consistem na adição, edição, remoção e pesquisa de entidades, para além do objetivo básico de compra de Scores (arranjos), onde é possível visualizar o stock do Warehouse (armazém) e a disponibilidade de um Score.
 
 ## ​Análise de Requisitos / Requirements
 
@@ -43,9 +41,8 @@ O trabalho é sobre um sistema de gestão e compra de partituras, onde podem adi
 
 ### APFE
 
-Descreva sumariamente as melhorias sobre a primeira entrega.
-Describe briefly the improvements made since the first delivery.
-Inicialmente, nós não fizemos uma relação entre a partitura e o arranjador, assim como também entre a instrumentação, que antes estava realcionada com a música original e não com a partitura em si. Também tinhamos associado o escritor à música original, o que depois foi alterado para apenas o compositor original ser relacionado apenas à música original. O que também foi alterado foi a relação do género musical que antes estava associado apenas ao compositor, o que foi alterado para o escritor pois o arranjador também pode ser associado a um genero tambem.
+Foi definida a relação entre o Score e o Arranger. Anteriormente a Instrumentation estava relacionada com a Music e passamos a atribuir uma relação Instrumentation-Score.
+Em vez de associar o Writer à Music, decidimos associar apenas o Composer à Music. Por último, alteramos ainda a relação entre Musical Genre e Composer para Musical Genre e Writer, uma vez que o Arranger também pode ter definido um género musical.
 
 ## ER - Esquema Relacional/Relational Schema
 
@@ -55,10 +52,7 @@ Inicialmente, nós não fizemos uma relação entre a partitura e o arranjador, 
 
 ### APFE
 
-Descreva sumariamente as melhorias sobre a primeira entrega.
-Describe briefly the improvements made since the first delivery.
-
-As alterações perante a primeira entrega estão relacionadas com as alterações feitas no DER.
+Para além de fazer as alterações para manter a concordância entre o ER e o DER foi ainda alterada a tabela (falar da coisa da FOREIGN KEY)
 
 ## ​SQL DDL - Data Definition Language
 
