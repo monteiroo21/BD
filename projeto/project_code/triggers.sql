@@ -332,7 +332,6 @@ BEGIN
     DECLARE @editor_id INT;
     DECLARE @score_register INT;
 
-    -- Cursor to iterate over deleted editors
     DECLARE editor_cursor CURSOR FOR
         SELECT identifier FROM deleted;
 
@@ -342,7 +341,6 @@ BEGIN
     BEGIN
         WHILE @@FETCH_STATUS = 0
         BEGIN
-            -- Cursor to iterate over scores edited by the editor
             DECLARE score_cursor CURSOR FOR
                 SELECT register_num FROM Score WHERE editorId = @editor_id;
 
@@ -351,7 +349,6 @@ BEGIN
 
             WHILE @@FETCH_STATUS = 0
             BEGIN
-                -- Delete from related tables first to avoid foreign key constraints
                 DELETE FROM Instrumentation WHERE scoreNum = @score_register;
                 DELETE FROM stores WHERE score_register = @score_register;
                 DELETE FROM purchases WHERE score_register = @score_register;
@@ -365,10 +362,7 @@ BEGIN
             CLOSE score_cursor;
             DEALLOCATE score_cursor;
 
-            -- Delete warehouses associated with the editor
             DELETE FROM Warehouse WHERE editorId = @editor_id;
-
-            -- Delete the editor
             DELETE FROM Editor WHERE identifier = @editor_id;
 
             FETCH NEXT FROM editor_cursor INTO @editor_id;
