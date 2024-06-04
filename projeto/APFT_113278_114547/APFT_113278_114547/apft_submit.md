@@ -357,8 +357,6 @@ END;
 GO
 ```
 
-...
-
 ## Normalização/Normalization
 
 Descreva os passos utilizados para minimizar a duplicação de dados / redução de espaço.
