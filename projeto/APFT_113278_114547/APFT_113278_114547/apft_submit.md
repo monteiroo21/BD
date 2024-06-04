@@ -377,6 +377,8 @@ Justify the choices made.
 Descreva os indices criados. Junte uma cópia do SQL de criação do indice.
 Describe the indexes created. Attach a copy of the SQL to create the index.
 
+Os indexes criados têm o propósito de aumentar a performance do nosso site, principalmente na pesquisa pelas principais entidades assim como no aparecimento dos dados iniciais nos cards criados nas páginas.
+
 ```sql
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'idx_Music_musGenre_id' AND object_id = OBJECT_ID('Music'))
 CREATE INDEX idx_Music_musGenre_id ON Music (musGenre_id);
