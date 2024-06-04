@@ -364,6 +364,12 @@ Justifique as opções tomadas.
 Describe the steps used to minimize data duplication / space reduction.
 Justify the choices made.
 
+A base de dados MusicScore foi cuidadosamente projetada e normalizada para minimizar a duplicação de dados e otimizar a utilização do espaço. A normalização seguiu os princípios das formas normais, organizando as tabelas de forma a que cada uma contenha apenas dados atómicos e essenciais para a sua função. Isto evita grupos de repetição e garante que cada campo contenha um único valor. Por exemplo, na tabela Customer, os campos como numCC e email_address são valores atómicos, cumprindo a Primeira Forma Normal (1NF).
+
+Para assegurar que todos os atributos não chave sejam totalmente dependentes da chave primária, cada tabela foi estruturada para atender à Segunda Forma Normal (2NF). Isto é evidente em tabelas como Score, onde todos os campos dependem unicamente da chave primária register_num. Além disso, foram criadas tabelas intermediárias como writes, arranges, stores e constitutes para tratar de relações muitos-para-muitos, garantindo que cada dependência funcional seja completa e não parcial.
+
+A Terceira Forma Normal (3NF) foi atingida ao remover dependências transitivas, assegurando que todos os atributos não chave dependem diretamente da chave primária e não de outros atributos não chave. Um exemplo disso é a tabela Writer, que armazena informações de escritores sem dependências transitivas. A forma normal de Boyce-Codd (BCNF) foi aplicada para garantir que cada determinante seja uma chave candidata, eliminando qualquer dependência parcial. Com estas práticas, a base de dados MusicScore mantém a integridade referencial, reduz a redundância e melhora a eficiência do armazenamento e da recuperação de informações.
+
 ## Índices/Indexes
 
 Descreva os indices criados. Junte uma cópia do SQL de criação do indice.
