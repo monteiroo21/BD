@@ -285,7 +285,7 @@ GO
 
 ### Formulario exemplo/Example Form
 
-Por fim o DELETE de um arranjador, que elimina todos os dados dependentes do nome dele como por exemplo todas as partituras escritas por ele.
+Por fim o DELETE de um Arranger, que elimina todos os dados dependentes do nome dele como por exemplo todas as partituras escritas por ele.
 
 ![Exemplo Screenshot!](screenshots/screenshot_5.png "AnImage")
 
