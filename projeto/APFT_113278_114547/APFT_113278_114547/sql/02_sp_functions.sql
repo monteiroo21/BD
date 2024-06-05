@@ -237,25 +237,25 @@ CREATE OR ALTER PROCEDURE add_customer
     @name VARCHAR(60)
 AS
 BEGIN
-    -- Verifica se o número do cartão de cidadão já existe
+    -- Check if the numCC already exists
     IF EXISTS (SELECT 1 FROM Customer WHERE numCC = @numCC)
     BEGIN
         RAISERROR ('CC number already in use', 16, 1);
         RETURN;
     END
 
-    -- Verifica se o número da conta bancária já está associado a outro cliente
+    -- Check if the numBankAccount already exists
     IF EXISTS (SELECT 1 FROM Customer WHERE numBankAccount = @numBankAccount)
     BEGIN
         RAISERROR ('Bank account number already associated', 16, 1);
         RETURN;
     END
 
-    -- Insere o novo cliente
+    -- Insert into Customer table
     INSERT INTO Customer (numCC, email_address, numBankAccount, cellNumber, [name])
     VALUES (@numCC, @email_address, @numBankAccount, @cellNumber, @name);
 
-    PRINT 'Cliente adicionado com sucesso.';
+    PRINT 'Cliente added successfully';
 END;
 GO
 
@@ -544,46 +544,6 @@ BEGIN
     END TRY
     BEGIN CATCH
         PRINT 'Erro ao atualizar o cliente.';
-    END CATCH
-END
-GO
-
-CREATE OR ALTER PROCEDURE delete_music
-    @music_id INT
-AS
-BEGIN
-    BEGIN
-        -- Delete from the writes table first
-        DELETE FROM writes WHERE music_id = @music_id;
-        
-        -- Delete from the Music table
-        DELETE FROM Music WHERE music_id = @music_id;
-
-    END
-END
-GO
-
-CREATE OR ALTER PROCEDURE delete_score
-    @register_num INT
-AS
-BEGIN
-    BEGIN TRANSACTION;
-    BEGIN TRY
-        -- Delete from dependent tables first
-        DELETE FROM constitutes WHERE score_register = @register_num;
-        DELETE FROM purchases WHERE score_register = @register_num;
-        DELETE FROM stores WHERE score_register = @register_num;
-        DELETE FROM arranges WHERE score_register = @register_num;
-        DELETE FROM Instrumentation WHERE scoreNum = @register_num;
-        
-        -- Delete from the Score table
-        DELETE FROM Score WHERE register_num = @register_num;
-
-        COMMIT TRANSACTION;
-    END TRY
-    BEGIN CATCH
-        ROLLBACK TRANSACTION;
-        THROW;
     END CATCH
 END
 GO

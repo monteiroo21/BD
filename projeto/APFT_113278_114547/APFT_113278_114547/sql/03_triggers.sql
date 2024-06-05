@@ -379,3 +379,43 @@ BEGIN
     END
 END;
 GO
+
+CREATE TRIGGER trg_delete_score
+ON Score
+INSTEAD OF DELETE
+AS
+BEGIN
+    DECLARE @register_num INT;
+
+    -- Get the register_num being deleted
+    SELECT @register_num = register_num FROM deleted;
+
+    -- Delete from dependent tables first
+    DELETE FROM constitutes WHERE score_register = @register_num;
+    DELETE FROM purchases WHERE score_register = @register_num;
+    DELETE FROM stores WHERE score_register = @register_num;
+    DELETE FROM arranges WHERE score_register = @register_num;
+    DELETE FROM Instrumentation WHERE scoreNum = @register_num;
+    
+    -- Delete from the Score table
+    DELETE FROM Score WHERE register_num = @register_num;
+END
+GO
+
+CREATE TRIGGER trg_delete_music
+ON Music
+INSTEAD OF DELETE
+AS
+BEGIN
+    DECLARE @music_id INT;
+
+    -- Get the music_id being deleted
+    SELECT @music_id = music_id FROM deleted;
+
+    -- Delete from the writes table first
+    DELETE FROM writes WHERE music_id = @music_id;
+
+    -- Delete from the Music table
+    DELETE FROM Music WHERE music_id = @music_id;
+END
+GO

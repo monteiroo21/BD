@@ -85,7 +85,7 @@ def delete_score(register_num: int):
 
             # Delete the score entry from the Score table
             try:
-                cursor.execute("EXEC delete_score @register_num=?", (register_num,))
+                cursor.execute("DELETE FROM Score WHERE register_num = ?", (register_num,))
                 conn.commit()
                 print(f"Score with register number {register_num} deleted successfully.")
             except IntegrityError as e:
