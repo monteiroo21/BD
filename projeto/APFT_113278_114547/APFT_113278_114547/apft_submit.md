@@ -1,31 +1,9 @@
 # BD: Trabalho Prático APF-T
 
-**Grupo**: PXGY
+**Grupo**: P5G4
 
 - Jorge Domingues, MEC: 113278
 - João Monteiro, MEC: 114547
-
-# Instructions - TO REMOVE
-
-Este template é flexível.
-É sugerido seguir a estrutura, links de ficheiros e imagens, mas adicione ou remova conteúdo sempre que achar necessário.
-
----
-
-This template is flexible.
-It is suggested to follow the structure, file links and images but add more content where necessary.
-
-The files should be organized with the following nomenclature:
-
-- sql\01_ddl.sql: mandatory for DDL
-- sql\02_sp_functions.sql: mandatory for Store Procedure, Functions,...
-- sql\03_triggers.sql: mandatory for triggers
-- sql\04_db_init.sql: scripts to init the database (i.e. inserts etc.)
-- sql\05_any_other_matter.sql: any other scripts.
-
-Por favor remova esta secção antes de submeter.
-
-Please remove this section before submitting.
 
 ## Introdução / Introduction
 
@@ -59,9 +37,6 @@ Para além de fazer as alterações para manter a concordância entre o ER e o D
 [SQL DDL File](sql/01_ddl.sql "SQLFileQuestion")
 
 ## SQL DML - Data Manipulation Language
-
-Uma secção por formulário.
-A section for each form.
 
 Para mostrar o nosso DML, iremos mostrar os exemplos de SELECT, INSERT, DELETE e UPDATE de uma partitura.
 No geral, os INSERT's e os UPDATE's foram feitos com Stored Procedures já os DELETE's foram feitos com Triggers.
@@ -359,11 +334,6 @@ GO
 
 ## Normalização/Normalization
 
-Descreva os passos utilizados para minimizar a duplicação de dados / redução de espaço.
-Justifique as opções tomadas.
-Describe the steps used to minimize data duplication / space reduction.
-Justify the choices made.
-
 A base de dados MusicScore foi cuidadosamente projetada e normalizada para minimizar a duplicação de dados e otimizar a utilização do espaço. A normalização seguiu os princípios das formas normais, organizando as tabelas de forma a que cada uma contenha apenas dados atómicos e essenciais para a sua função. Isto evita grupos de repetição e garante que cada campo contenha um único valor. Por exemplo, na tabela Customer, os campos como numCC e email_address são valores atómicos, cumprindo a Primeira Forma Normal (1NF).
 
 Para assegurar que todos os atributos não chave sejam totalmente dependentes da chave primária, cada tabela foi estruturada para atender à Segunda Forma Normal (2NF). Isto é evidente em tabelas como Score, onde todos os campos dependem unicamente da chave primária register_num. Além disso, foram criadas tabelas intermediárias como writes, arranges, stores e constitutes para tratar de relações muitos-para-muitos, garantindo que cada dependência funcional seja completa e não parcial.
@@ -371,9 +341,6 @@ Para assegurar que todos os atributos não chave sejam totalmente dependentes da
 A Terceira Forma Normal (3NF) foi atingida ao remover dependências transitivas, assegurando que todos os atributos não chave dependem diretamente da chave primária e não de outros atributos não chave. Um exemplo disso é a tabela Writer, que armazena informações de escritores sem dependências transitivas. A forma normal de Boyce-Codd (BCNF) foi aplicada para garantir que cada determinante seja uma chave candidata, eliminando qualquer dependência parcial. Com estas práticas, a base de dados MusicScore mantém a integridade referencial, reduz a redundância e melhora a eficiência do armazenamento e da recuperação de informações.
 
 ## Índices/Indexes
-
-Descreva os indices criados. Junte uma cópia do SQL de criação do indice.
-Describe the indexes created. Attach a copy of the SQL to create the index.
 
 Os indexes criados têm o propósito de aumentar a performance do nosso site, principalmente na pesquisa pelas principais entidades assim como no aparecimento dos dados iniciais nos cards criados nas páginas.
 
